@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <title>The Administrator's Registration Page</title>
+  <link rel="stylesheet" type="text/css" href="/styles/style.css">
+<body>
+  <h2>The Administrator's Registration Page</h2>
+  <form method="POST" action="/register">
+    Username:<br> <input type="text" name="username" required><br>
+    Password:<br> <input type="password" name="password" required><br><br>
+    Access Level: <br>
+    <select name="access_level">
+      <option value="user">User</option>
+      <option value="admin">Admin</option>
+    </select><br>
+    <input type="submit" value="Register" class="loginBtn">
+  </form>
+  <br>
+  <a href="/">Back to personal details</a>
+</body>
+</html>
