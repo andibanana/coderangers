@@ -2,22 +2,22 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
+	"errors"
 	"fmt"
-  "errors"
+	"github.com/gorilla/sessions"
+	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
-  "regexp"
-  "database/sql"
-  "github.com/gorilla/sessions"
-  "golang.org/x/crypto/bcrypt"
-  _ "github.com/mattn/go-sqlite3"
 )
 
 /*
@@ -35,6 +35,7 @@ type Problem struct {
 	Index       int
 	Title       string
 	Description string
+	Category    string
 	Input       string
 	Output      string
 	TimeLimit   int
@@ -61,8 +62,8 @@ const (
 )
 
 type Submission struct {
-  Username     string
-  ID           int
+	Username     string
+	ID           int
 	ProblemIndex int
 	Directory    string
 	Verdict      string
@@ -113,41 +114,55 @@ func problemsHandler(w http.ResponseWriter, r *http.Request) {
     {{ if not .IsLoggedIn }} <a href="/login">Log In here</a> {{ end }}
 		<ul>
 			{{range .ProblemList}}
-			<li><a href="/view/{{.Index}}">{{.Title}}</a></li>
+			<li>{{.Category}} - <a href="/view/{{.Index}}">{{.Title}}</a></li>
 			{{end}}
 		</ul>
 	`))
-  data := struct {
-      ProblemList []Problem
-			IsAdmin     bool
-      IsLoggedIn  bool
-		}{
-      getProblems(),
-			isAdmin(r),
-      isLoggedIn(r),
-		}
+	data := struct {
+		ProblemList []Problem
+		IsAdmin     bool
+		IsLoggedIn  bool
+	}{
+		getProblems(),
+		isAdmin(r),
+		isLoggedIn(r),
+	}
 	t.Execute(w, data)
 }
 
 func addHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
+		time_limit, err := strconv.Atoi(r.FormValue("time_limit"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		memory_limit, err := strconv.Atoi(r.FormValue("memory_limit"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		p := &Problem{
 			Index:       -1,
 			Title:       r.FormValue("title"),
 			Description: r.FormValue("description"),
+			Category:    r.FormValue("category"),
 			Input:       r.FormValue("input"),
 			Output:      r.FormValue("output"),
-			TimeLimit:   5,
-			MemoryLimit: 20,
+			TimeLimit:   time_limit,
+			MemoryLimit: memory_limit,
 		}
 		problemQueue <- p
-    addProblem(*p)
+		addProblem(*p)
 		http.Redirect(w, r, "/problems/", http.StatusFound)
 	} else {
 		t, _ := template.New("add").Parse(page(`
 			<form action="/add/" method="POST">
 				<label>Title: <input type="text" name="title"></label>
 				<label>Description: <input type="text" name="description"></label>
+        <label>Category: <input type="text" name="category"></label>
+        <label>Time Limit: <input type="text" name="time_limit"></label>
+        <label>Memory Limit: <input type="text" name="memory_limit"></label>
 				<label>Input: <textarea name="input"></textarea></label>
 				<label>Output: <textarea name="output"></textarea></label>
 				<input type="submit">
@@ -161,26 +176,27 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	index, _ := strconv.Atoi(r.URL.Path[len("/view/"):])
 	t, _ := template.New("view").Parse(page(`
 		<h1>{{.Title}}</h1>
+    <h2>{{.Category}}<h2>
 		<p>{{.Description}}</p>
 		<form action="/submit/{{.Index}}" method="POST">
 			<textarea name="code"></textarea>
 			<input type="submit">
 		</form>
 	`))
-  problem, err := getProblem(index)
-  if err != nil {
-    http.Error(w, err.Error(), http.StatusBadRequest)
-    return
-  }
+	problem, err := getProblem(index)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	t.Execute(w, problem)
 	// perhaps have a JS WARNING..
 }
 
 func submitHandler(w http.ResponseWriter, r *http.Request) {
-  if !isLoggedIn(r) {
-    http.Redirect(w, r, "/login", http.StatusFound)
-    return
-  }
+	if !isLoggedIn(r) {
+		http.Redirect(w, r, "/login", http.StatusFound)
+		return
+	}
 	index, _ := strconv.Atoi(r.URL.Path[len("/submit/"):])
 	d, _ := ioutil.TempDir(DIR, "")
 	ioutil.WriteFile(filepath.Join(d, "Main.java"), []byte(r.FormValue("code")), 0600)
@@ -189,13 +205,13 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 		Directory:    d,
 		Verdict:      Received,
 	}
-  userID, _ := getUserID(r)
-  submissionID, err := addSubmission(*s, userID)
-  s.ID = submissionID
-  if err != nil{
-    http.Error(w, err.Error(), http.StatusBadRequest)
-    return
-  }
+	userID, _ := getUserID(r)
+	submissionID, err := addSubmission(*s, userID)
+	s.ID = submissionID
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	submissionQueue <- s
 	http.Redirect(w, r, "/submissions/", http.StatusFound)
 }
@@ -212,22 +228,22 @@ func submissionsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-  createDB()
-  initTemplates()
+	createDB()
+	initTemplates()
 	wd, _ := os.Getwd()
 	DIR = filepath.Join(wd, "submissions")
 	os.Mkdir(DIR, 0777)
 	initQueues()
-  http.HandleFunc("/", problemsHandler)
-  http.HandleFunc("/problems/", problemsHandler)
+	http.HandleFunc("/", problemsHandler)
+	http.HandleFunc("/problems/", problemsHandler)
 	http.HandleFunc("/add/", addHandler)
 	http.HandleFunc("/view/", viewHandler)
 	http.HandleFunc("/submit/", submitHandler)
 	http.HandleFunc("/submissions/", submissionsHandler)
-  http.HandleFunc("/register", registerHandler)
-  http.HandleFunc("/login", loginHandler)
-  http.HandleFunc("/logout", logoutHandler)
-  http.ListenAndServe(":80", nil)
+	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/logout", logoutHandler)
+	http.ListenAndServe(":80", nil)
 }
 
 func (s *Submission) judge() {
@@ -236,40 +252,40 @@ func (s *Submission) judge() {
 	p, _ := getProblem(s.ProblemIndex)
 
 	s.Verdict = Compiling
-  updateVerdict(s.ID, Compiling)
-  
+	updateVerdict(s.ID, Compiling)
+
 	err = s.compile()
 	if err != nil {
 		s.Verdict = err.Verdict
-    updateVerdict(s.ID, err.Verdict)
+		updateVerdict(s.ID, err.Verdict)
 		return
 	}
 
 	s.Verdict = Running
 	updateVerdict(s.ID, Running)
-  t := time.Now()
+	t := time.Now()
 	output, err := s.run(p)
 	d := time.Now().Sub(t)
 	fmt.Println(d)
 	if err != nil {
 		s.Verdict = err.Verdict
-    updateVerdict(s.ID, err.Verdict)
+		updateVerdict(s.ID, err.Verdict)
 		return
 	}
 
 	s.Verdict = Judging
-  updateVerdict(s.ID, Judging)
-  
+	updateVerdict(s.ID, Judging)
+
 	if strings.Replace(output, "\r\n", "\n", -1) != strings.Replace(p.Output, "\r\n", "\n", -1) {
 		// whitespace checks..? floats? etc.
 		fmt.Println(output)
 		s.Verdict = WrongAnswer
-    updateVerdict(s.ID, WrongAnswer)
+		updateVerdict(s.ID, WrongAnswer)
 		return
 	}
 
 	s.Verdict = Accepted
-  updateVerdict(s.ID, Accepted) 
+	updateVerdict(s.ID, Accepted)
 }
 
 func (s Submission) compile() *Error {
@@ -457,155 +473,156 @@ func register(username, password string, admin bool) (int, error) {
 	return int(userID), nil
 }
 
-func addProblem(problem Problem){
+func addProblem(problem Problem) {
 
 	db, err := sql.Open("sqlite3", DatabaseURL)
 	if err != nil {
 		return
 	}
 	defer db.Close()
-  
-  tx, err := db.Begin()
+
+	tx, err := db.Begin()
 	if err != nil {
 		return
 	}
 
-	result, err := tx.Exec("INSERT INTO problems (title, description, time_limit, memory_limit) VALUES (?, ?, ?, ?)",
-		problem.Title, problem.Description, problem.TimeLimit, problem.MemoryLimit)
+	result, err := tx.Exec("INSERT INTO problems (title, description, category, time_limit, memory_limit) VALUES (?, ?, ?, ?, ?)",
+		problem.Title, problem.Description, problem.Category, problem.TimeLimit, problem.MemoryLimit)
 	if err != nil {
 		tx.Rollback()
 		return
 	}
-  
-  problemID, err := result.LastInsertId()
+
+	problemID, err := result.LastInsertId()
 	if err != nil {
 		tx.Rollback()
 		return
 	}
-  
-  _, err = tx.Exec("INSERT INTO inputoutput (problem_id, input_number, input, output) VALUES (?, ?, ?, ?)",
+
+	_, err = tx.Exec("INSERT INTO inputoutput (problem_id, input_number, input, output) VALUES (?, ?, ?, ?)",
 		problemID, 1, problem.Input, problem.Output)
-    
+
 	if err != nil {
 		tx.Rollback()
 		return
 	}
 
-  tx.Commit()
+	tx.Commit()
 }
 
 func addSubmission(submission Submission, userID int) (int, error) {
-  db, err := sql.Open("sqlite3", DatabaseURL)
+	db, err := sql.Open("sqlite3", DatabaseURL)
 	if err != nil {
 		return -1, err
 	}
 	defer db.Close()
-  
-  if _, err := getProblem(submission.ProblemIndex); err != nil {
-    return -1, errors.New("No such problem")
-  }
-  result, err := db.Exec("INSERT INTO submissions (problem_id, user_id, directory, verdict) VALUES (?, ?, ?, ?)",
-                          submission.ProblemIndex, userID, submission.Directory, submission.Verdict)
-  
-  if err != nil {
-    return -1, err
-  }
-  
-  submissionID, err := result.LastInsertId()
-  
-  if err != nil {
-    return -1, err
-  }
-  
-  return int(submissionID), nil
-} 
+
+	if _, err := getProblem(submission.ProblemIndex); err != nil {
+		return -1, errors.New("No such problem")
+	}
+	result, err := db.Exec("INSERT INTO submissions (problem_id, user_id, directory, verdict) VALUES (?, ?, ?, ?)",
+		submission.ProblemIndex, userID, submission.Directory, submission.Verdict)
+
+	if err != nil {
+		return -1, err
+	}
+
+	submissionID, err := result.LastInsertId()
+
+	if err != nil {
+		return -1, err
+	}
+
+	return int(submissionID), nil
+}
 
 func getSubmissions() []Submission {
-  db, err := sql.Open("sqlite3", DatabaseURL)
+	db, err := sql.Open("sqlite3", DatabaseURL)
 	if err != nil {
 		return nil
 	}
 	defer db.Close()
-  
-  rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict FROM problems, submissions, user_account "+
-                        "WHERE problems.id = submissions.problem_id and user_account.id = submissions.user_id ")
-  
-  var submissions []Submission
-  for rows.Next() {
-    var submission Submission
-    rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.Username, &submission.Verdict)
-    submissions = append(submissions, submission)
-  }
-  
-  return submissions
+
+	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict FROM problems, submissions, user_account " +
+		"WHERE problems.id = submissions.problem_id and user_account.id = submissions.user_id ")
+
+	var submissions []Submission
+	for rows.Next() {
+		var submission Submission
+		rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.Username, &submission.Verdict)
+		submissions = append(submissions, submission)
+	}
+
+	return submissions
 }
 
 func updateVerdict(id int, verdict string) error {
-  db, err := sql.Open("sqlite3", DatabaseURL)
+	db, err := sql.Open("sqlite3", DatabaseURL)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
-  
-  tx, err := db.Begin()
+
+	tx, err := db.Begin()
 	if err != nil {
 		tx.Rollback()
-    return err
+		return err
 	}
-  
-  _, err = tx.Exec("UPDATE submissions SET verdict = ? WHERE id = ?", verdict, id)
-  
-  if err != nil {
-    fmt.Println(err)
-    tx.Rollback()
-    return err
-  }
-  
-  tx.Commit()
-  
-  return nil
+
+	_, err = tx.Exec("UPDATE submissions SET verdict = ? WHERE id = ?", verdict, id)
+
+	if err != nil {
+		fmt.Println(err)
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
 }
 
 func getProblems() []Problem {
-  db, err := sql.Open("sqlite3", DatabaseURL)
+	db, err := sql.Open("sqlite3", DatabaseURL)
 	if err != nil {
 		return nil
 	}
 	defer db.Close()
-  rows, err := db.Query("SELECT id, title, description, time_limit, memory_limit, input, output FROM problems, inputoutput "+
-                        "WHERE problems.id = inputoutput.problem_id ")
-  
-  var problems []Problem
-  for rows.Next() {
-    var problem Problem
-    rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.TimeLimit, &problem.MemoryLimit, &problem.Input, &problem.Output)
-    problems = append(problems, problem)
-  }
-  
-  return problems
-} 
+	rows, err := db.Query("SELECT id, title, description, category, time_limit, memory_limit, input, output FROM problems, inputoutput " +
+		"WHERE problems.id = inputoutput.problem_id ")
+
+	var problems []Problem
+	for rows.Next() {
+		var problem Problem
+		rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Category, &problem.TimeLimit,
+			&problem.MemoryLimit, &problem.Input, &problem.Output)
+		problems = append(problems, problem)
+	}
+
+	return problems
+}
 
 func getProblem(index int) (Problem, error) {
-    db, err := sql.Open("sqlite3", DatabaseURL)
-  var problem Problem
+	db, err := sql.Open("sqlite3", DatabaseURL)
+	var problem Problem
 	if err != nil {
 		return problem, errors.New("DB Problem")
 	}
 	defer db.Close()
-  err = db.QueryRow("SELECT id, title, description, time_limit, memory_limit, input, output FROM problems, inputoutput "+
-                        "WHERE problems.id = inputoutput.problem_id and problems.id = ?", index).Scan(&problem.Index, &problem.Title,
-                        &problem.Description, &problem.TimeLimit, &problem.MemoryLimit, &problem.Input, &problem.Output)
-  
-  if err != nil {
-    return problem, errors.New("No such problem")
-  }
-  return problem, nil
+	err = db.QueryRow("SELECT id, title, description, category, time_limit, memory_limit, input, output FROM problems, inputoutput "+
+		"WHERE problems.id = inputoutput.problem_id and problems.id = ?", index).Scan(&problem.Index, &problem.Title,
+		&problem.Description, &problem.Category, &problem.TimeLimit, &problem.MemoryLimit, &problem.Input, &problem.Output)
+
+	if err != nil {
+		return problem, errors.New("No such problem")
+	}
+	return problem, nil
 }
 
 func createDB() error {
 	db, err := sql.Open("sqlite3", DatabaseURL)
 	if err != nil {
-    return err
+		return err
 	}
 	defer db.Close()
 
@@ -629,6 +646,7 @@ func createDB() error {
 			
 			title VARCHAR(100) NOT NULL,
       description VARCHAR(200) NOT NULL,
+      category VARCHAR(200) NOT NULL,
       time_limit INTEGER,
       memory_limit INTEGER
 		)
@@ -636,8 +654,8 @@ func createDB() error {
 	if err != nil {
 		return err
 	}
-  
-  _, err = db.Exec(`
+
+	_, err = db.Exec(`
 		CREATE TABLE inputoutput (
       problem_id INTEGER,
       input_number INTEGER,
@@ -652,8 +670,8 @@ func createDB() error {
 	if err != nil {
 		return err
 	}
-  
-  _, err = db.Exec(`
+
+	_, err = db.Exec(`
 		CREATE TABLE submissions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       problem_id INTEGER,
@@ -669,8 +687,6 @@ func createDB() error {
 	if err != nil {
 		return err
 	}
-  
-  
 
 	_, err = register("admin", "admin", true)
 
