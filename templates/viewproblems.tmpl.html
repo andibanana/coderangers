@@ -1,0 +1,9 @@
+{{ if .IsAdmin }}<a href="/add/">Create a Problem</a> {{ end }}
+{{ if .IsLoggedIn }} <form method="POST" action="/logout"><input type="submit" value="Logout"></form> {{ end }}
+{{ if not .IsLoggedIn }} <a href="/login">Log In here</a> {{ end }}
+<a href="/submissions">View Submissions</a>
+<ul>
+  {{range .ProblemList}}
+  <li>{{.Category}} - <a href="/view/{{.Index}}">{{.Title}}</a></li>
+  {{end}}
+</ul>

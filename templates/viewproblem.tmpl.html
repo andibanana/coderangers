@@ -1,0 +1,14 @@
+<title>{{.Title}}</title>
+<h1>{{.Title}}</h1>
+<h2>{{.Category}}</h2>
+<h2>{{.Difficulty}}</h2>
+<p>{{.Description}}</p>
+<h2>Sample Input</h2>
+<p>{{.SampleInput | fixNewLines}}</p>
+<h2>Sample Output</h2>
+<p>{{.SampleOutput | fixNewLines}}</p>
+<form action="/submit/{{.Index}}" method="POST">
+  <textarea name="code"></textarea>
+  <input type="submit">
+</form>
+<a href="/">back to problems</a>

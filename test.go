@@ -32,14 +32,18 @@ TODO:
 var DIR string
 
 type Problem struct {
-	Index       int
-	Title       string
-	Description string
-	Category    string
-	Input       string
-	Output      string
-	TimeLimit   int
-	MemoryLimit int
+	Index        int
+	Title        string
+	Description  string
+	Difficulty   int
+	Category     string
+	SampleInput  string
+	SampleOutput string
+	Hint         string
+	Input        string
+	Output       string
+	TimeLimit    int
+	MemoryLimit  int
 }
 
 const (
@@ -108,16 +112,6 @@ func page(content string) string {
 }
 
 func problemsHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.New("problems").Parse(page(`
-		{{ if .IsAdmin }}<a href="/add/">Create a Problem</a> {{ end }}
-    {{ if .IsLoggedIn }} <form method="POST" action="/logout"><input type="submit" value="Logout"></form> {{ end }}
-    {{ if not .IsLoggedIn }} <a href="/login">Log In here</a> {{ end }}
-		<ul>
-			{{range .ProblemList}}
-			<li>{{.Category}} - <a href="/view/{{.Index}}">{{.Title}}</a></li>
-			{{end}}
-		</ul>
-	`))
 	data := struct {
 		ProblemList []Problem
 		IsAdmin     bool
@@ -127,7 +121,7 @@ func problemsHandler(w http.ResponseWriter, r *http.Request) {
 		isAdmin(r),
 		isLoggedIn(r),
 	}
-	t.Execute(w, data)
+	renderPage(w, "viewproblems", data)
 }
 
 func addHandler(w http.ResponseWriter, r *http.Request) {
@@ -142,53 +136,41 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		difficulty, err := strconv.Atoi(r.FormValue("difficulty"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		p := &Problem{
-			Index:       -1,
-			Title:       r.FormValue("title"),
-			Description: r.FormValue("description"),
-			Category:    r.FormValue("category"),
-			Input:       r.FormValue("input"),
-			Output:      r.FormValue("output"),
-			TimeLimit:   time_limit,
-			MemoryLimit: memory_limit,
+			Index:        -1,
+			Title:        r.FormValue("title"),
+			Description:  r.FormValue("description"),
+			Category:     r.FormValue("category"),
+			Difficulty:   difficulty,
+			Hint:         r.FormValue("hint"),
+			Input:        r.FormValue("input"),
+			Output:       r.FormValue("output"),
+			SampleInput:  r.FormValue("sample_input"),
+			SampleOutput: r.FormValue("sample_output"),
+			TimeLimit:    time_limit,
+			MemoryLimit:  memory_limit,
 		}
 		problemQueue <- p
 		addProblem(*p)
 		http.Redirect(w, r, "/problems/", http.StatusFound)
 	} else {
-		t, _ := template.New("add").Parse(page(`
-			<form action="/add/" method="POST">
-				<label>Title: <input type="text" name="title"></label>
-				<label>Description: <input type="text" name="description"></label>
-        <label>Category: <input type="text" name="category"></label>
-        <label>Time Limit: <input type="text" name="time_limit"></label>
-        <label>Memory Limit: <input type="text" name="memory_limit"></label>
-				<label>Input: <textarea name="input"></textarea></label>
-				<label>Output: <textarea name="output"></textarea></label>
-				<input type="submit">
-			</form>
-		`))
-		t.Execute(w, nil)
+		renderPage(w, "addproblem", nil)
 	}
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	index, _ := strconv.Atoi(r.URL.Path[len("/view/"):])
-	t, _ := template.New("view").Parse(page(`
-		<h1>{{.Title}}</h1>
-    <h2>{{.Category}}<h2>
-		<p>{{.Description}}</p>
-		<form action="/submit/{{.Index}}" method="POST">
-			<textarea name="code"></textarea>
-			<input type="submit">
-		</form>
-	`))
 	problem, err := getProblem(index)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	t.Execute(w, problem)
+	renderPage(w, "viewproblem", problem)
 	// perhaps have a JS WARNING..
 }
 
@@ -217,14 +199,7 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func submissionsHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.New("submissions").Parse(page(`
-		<ul>
-			{{range .}}
-			<li>{{.ID}} - {{.ProblemIndex}} - {{.Username}} - {{.Verdict}}</li>
-			{{end}}
-		</ul>
-	`))
-	t.Execute(w, getSubmissions())
+	renderPage(w, "submissions", getSubmissions())
 }
 
 func main() {
@@ -455,7 +430,7 @@ func register(username, password string, admin bool) (int, error) {
 		return 0, err
 	}
 
-	result, err := tx.Exec("INSERT INTO user_account (username, hashed_password, admin, date_joined) VALUES (?, ?, ?, ?)",
+	result, err := tx.Exec("INSERT INTO user_account (username, hashed_password, admin, date_joined, experience) VALUES (?, ?, ?, ?, 0)",
 		username, hashedPassword, admin, time.Now())
 	if err != nil {
 		tx.Rollback()
@@ -486,8 +461,8 @@ func addProblem(problem Problem) {
 		return
 	}
 
-	result, err := tx.Exec("INSERT INTO problems (title, description, category, time_limit, memory_limit) VALUES (?, ?, ?, ?, ?)",
-		problem.Title, problem.Description, problem.Category, problem.TimeLimit, problem.MemoryLimit)
+	result, err := tx.Exec("INSERT INTO problems (title, description, difficulty, category, hint, time_limit, memory_limit, sample_input, sample_output) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		problem.Title, problem.Description, problem.Difficulty, problem.Category, problem.Hint, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput)
 	if err != nil {
 		tx.Rollback()
 		return
@@ -520,8 +495,8 @@ func addSubmission(submission Submission, userID int) (int, error) {
 	if _, err := getProblem(submission.ProblemIndex); err != nil {
 		return -1, errors.New("No such problem")
 	}
-	result, err := db.Exec("INSERT INTO submissions (problem_id, user_id, directory, verdict) VALUES (?, ?, ?, ?)",
-		submission.ProblemIndex, userID, submission.Directory, submission.Verdict)
+	result, err := db.Exec("INSERT INTO submissions (problem_id, user_id, directory, verdict, timestamp) VALUES (?, ?, ?, ?, ?)",
+		submission.ProblemIndex, userID, submission.Directory, submission.Verdict, time.Now())
 
 	if err != nil {
 		return -1, err
@@ -544,7 +519,8 @@ func getSubmissions() []Submission {
 	defer db.Close()
 
 	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict FROM problems, submissions, user_account " +
-		"WHERE problems.id = submissions.problem_id and user_account.id = submissions.user_id ")
+		"WHERE problems.id = submissions.problem_id and user_account.id = submissions.user_id " +
+		"ORDER BY timestamp ")
 
 	var submissions []Submission
 	for rows.Next() {
@@ -588,14 +564,14 @@ func getProblems() []Problem {
 		return nil
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT id, title, description, category, time_limit, memory_limit, input, output FROM problems, inputoutput " +
+	rows, err := db.Query("SELECT id, title, description, difficulty, category, time_limit, memory_limit, sample_input, sample_output, input, output FROM problems, inputoutput " +
 		"WHERE problems.id = inputoutput.problem_id ")
 
 	var problems []Problem
 	for rows.Next() {
 		var problem Problem
-		rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Category, &problem.TimeLimit,
-			&problem.MemoryLimit, &problem.Input, &problem.Output)
+		rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.Category, &problem.TimeLimit,
+			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output)
 		problems = append(problems, problem)
 	}
 
@@ -609,9 +585,10 @@ func getProblem(index int) (Problem, error) {
 		return problem, errors.New("DB Problem")
 	}
 	defer db.Close()
-	err = db.QueryRow("SELECT id, title, description, category, time_limit, memory_limit, input, output FROM problems, inputoutput "+
-		"WHERE problems.id = inputoutput.problem_id and problems.id = ?", index).Scan(&problem.Index, &problem.Title,
-		&problem.Description, &problem.Category, &problem.TimeLimit, &problem.MemoryLimit, &problem.Input, &problem.Output)
+	err = db.QueryRow("SELECT id, title, description, difficulty, category, time_limit, memory_limit, sample_input, sample_output, input, output FROM problems, inputoutput "+
+		"WHERE problems.id = inputoutput.problem_id and problems.id = ?", index).Scan(&problem.Index, &problem.Title, &problem.Description,
+		&problem.Difficulty, &problem.Category, &problem.TimeLimit, &problem.MemoryLimit, &problem.SampleInput,
+		&problem.SampleOutput, &problem.Input, &problem.Output)
 
 	if err != nil {
 		return problem, errors.New("No such problem")
@@ -633,7 +610,8 @@ func createDB() error {
 			username VARCHAR(50) UNIQUE NOT NULL,
 			hashed_password CHARACTER(60) NOT NULL,
 			admin BOOLEAN NOT NULL DEFAULT FALSE,
-      date_joined DATE NOT NULL 
+      date_joined DATE NOT NULL ,
+      experience INTEGER NOT NULL
 		)
 	`)
 	if err != nil {
@@ -647,8 +625,12 @@ func createDB() error {
 			title VARCHAR(100) NOT NULL,
       description VARCHAR(200) NOT NULL,
       category VARCHAR(200) NOT NULL,
+      difficulty INTEGER,
+      hint TEXT,
       time_limit INTEGER,
-      memory_limit INTEGER
+      memory_limit INTEGER,
+      sample_input TEXT,
+      sample_output TEXT
 		)
 	`)
 	if err != nil {
@@ -660,8 +642,8 @@ func createDB() error {
       problem_id INTEGER,
       input_number INTEGER,
     
-			input VARCHAR(1000) NOT NULL,
-      output VARCHAR(1000) NOT NULL,
+			input TEXT NOT NULL,
+      output TEXT NOT NULL,
       
       PRIMARY KEY(problem_id, input_number),
       FOREIGN KEY(problem_id) REFERENCES problems(id)
@@ -679,9 +661,37 @@ func createDB() error {
       
 			directory VARCHAR(100) NOT NULL,
       verdict VARCHAR(100) NOT NULL,
+      timestamp DATETIME NOT NULL,
+      runtime_error TEXT,
       
       FOREIGN KEY(user_id) REFERENCES user_account(id)
       FOREIGN KEY(problem_id) REFERENCES problems(id)
+		)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE badges (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      
+			title VARCHAR(100) NOT NULL,
+      description VARCHAR(100) NOT NULL
+		)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE received_badges (
+        user_id INTEGER,
+        badge_id INTEGER,
+       
+        PRIMARY KEY(user_id, badge_id),
+        FOREIGN KEY(user_id) REFERENCES user_account(id),
+        FOREIGN KEY(badge_id) REFERENCES badges(id)
 		)
 	`)
 	if err != nil {
@@ -740,6 +750,11 @@ func initTemplates() {
 		"showISODate":  func(date time.Time) string { return date.Format("2006-01-02") },
 		"minus":        func(a, b int) int { return a - b },
 		"add":          func(a, b int) int { return a + b },
+		"fixNewLines": func(s string) template.HTML {
+			s = template.HTMLEscapeString(s)
+			s = regexp.MustCompile("\r?\n").ReplaceAllString(s, "<br>")
+			return template.HTML(s)
+		},
 		"boldItalics": func(s string) template.HTML {
 			s = template.HTMLEscapeString(s)
 			imageTags := regexp.MustCompile(`&lt;img\s+src=&#34;(.*?)&#34;&gt;`)
