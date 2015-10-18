@@ -3,6 +3,7 @@ package main
 import (
 	"./dao"
 	"./judge"
+	"./leaderboards"
 	"./templating"
 	"./users"
 	"fmt"
@@ -41,6 +42,7 @@ func main() {
 	http.HandleFunc("/register", users.RegisterHandler)
 	http.HandleFunc("/login", users.LoginHandler)
 	http.HandleFunc("/logout", users.LogoutHandler)
+	http.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
 
 	http.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir("./styles"))))
 

@@ -1,0 +1,8 @@
+<title>Leaderboards</title>
+<a href="/">View Problems</a>
+<ul>
+  <li>ID - Username - Experience</li>
+{{ range . }}
+  <li>{{.ID}} - {{.Username}} - {{.Experience}}</li>
+{{ end }}
+</ul>
