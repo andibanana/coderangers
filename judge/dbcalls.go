@@ -57,8 +57,8 @@ func addSubmission(submission Submission, userID int) (int, error) {
 	if _, err := GetProblem(submission.ProblemIndex); err != nil {
 		return -1, errors.New("No such problem")
 	}
-	result, err := db.Exec("INSERT INTO submissions (problem_id, user_id, directory, verdict, timestamp) VALUES (?, ?, ?, ?, ?)",
-		submission.ProblemIndex, userID, submission.Directory, submission.Verdict, time.Now())
+	result, err := db.Exec("INSERT INTO submissions (problem_id, user_id, directory, verdict, timestamp, daily_challenge) VALUES (?, ?, ?, ?, ?, ?)",
+		submission.ProblemIndex, userID, submission.Directory, submission.Verdict, time.Now(), submission.DailyChallenge)
 
 	if err != nil {
 		return -1, err
@@ -107,6 +107,25 @@ func acceptedAlready(userID, problemID int) bool {
 	db.QueryRow("SELECT COUNT(*) FROM submissions, user_account "+
 		"WHERE user_account.id = submissions.user_id AND verdict = ?"+
 		"AND submissions.problem_id = ? AND user_id = ?", Accepted, problemID, userID).Scan(&count)
+
+	if count == 0 {
+		return false
+	}
+
+	return true
+}
+
+func acceptedAlreadyAndDailyChallenge(userID, problemID int) bool {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+
+	var count int
+	db.QueryRow("SELECT COUNT(*) FROM submissions, user_account "+
+		"WHERE user_account.id = submissions.user_id AND verdict = ?"+
+		"AND submissions.problem_id = ? AND user_id = ? AND daily_challenge = TRUE ", Accepted, problemID, userID).Scan(&count)
 
 	if count == 0 {
 		return false

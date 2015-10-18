@@ -91,6 +91,7 @@ func CreateDB() error {
       verdict VARCHAR(100) NOT NULL,
       timestamp DATETIME NOT NULL,
       runtime_error TEXT,
+      daily_challenge BOOLEAN,
       
       FOREIGN KEY(user_id) REFERENCES user_account(id)
       FOREIGN KEY(problem_id) REFERENCES problems(id)
@@ -149,6 +150,7 @@ func CreateDB() error {
         viewed_problems_count INTEGER,
         experience INTEGER,
         coins INTEGER,
+        daily_challenge INTEGER,
         
         FOREIGN KEY(user_id) REFERENCES user_account(id)
 		)

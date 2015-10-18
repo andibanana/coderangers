@@ -12,6 +12,7 @@ const (
 	Submitted      = "submitted_count"
 	Experience     = "experience"
 	Coins          = "coins"
+  DailyChallenge = "daily_challenge"
 )
 
 func updateViewedProblemCount(userID, count int) error {
@@ -44,7 +45,7 @@ func IncrementCount(userID int, toUpdate string) error {
 	}
 
 	var count int
-	tx.QueryRow("SELECT ? FROM user_data WHERE user_id = ?", toUpdate, userID).Scan(&count)
+	err = tx.QueryRow("SELECT "+toUpdate+" FROM user_data WHERE user_id = ?", userID).Scan(&count)
 
 	count += 1
 	_, err = tx.Exec("UPDATE user_data SET "+toUpdate+" = ? where user_id = ?", count, userID)
