@@ -5,6 +5,7 @@ import (
 	"./judge"
 	"./templating"
 	"./users"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -24,7 +25,7 @@ func page(content string) string {
 }
 
 func main() {
-	dao.CreateDB()
+	fmt.Println(dao.CreateDB())
 	users.Register("admin", "admin", true)
 	templating.InitTemplates()
 	wd, _ := os.Getwd()

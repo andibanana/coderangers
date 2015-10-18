@@ -1,6 +1,7 @@
 package judge
 
 import (
+	".././data"
 	"bytes"
 	"fmt"
 	"os/exec"
@@ -27,6 +28,7 @@ type Problem struct {
 
 type Submission struct {
 	Username     string
+	UserID       int
 	ID           int
 	ProblemIndex int
 	Directory    string
@@ -125,6 +127,9 @@ func (s *Submission) judge() {
 	}
 
 	s.Verdict = Accepted
+	if !acceptedAlready(s.UserID, s.ProblemIndex) {
+		data.IncrementCount(s.UserID, data.Accepted)
+	}
 	UpdateVerdict(s.ID, Accepted)
 }
 

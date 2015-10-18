@@ -2,6 +2,7 @@ package judge
 
 import (
 	".././dao"
+	".././data"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -69,6 +70,8 @@ func addSubmission(submission Submission, userID int) (int, error) {
 		return -1, err
 	}
 
+	data.IncrementCount(userID, data.Submitted)
+
 	return int(submissionID), nil
 }
 
@@ -81,7 +84,7 @@ func getSubmissions() []Submission {
 
 	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict FROM problems, submissions, user_account " +
 		"WHERE problems.id = submissions.problem_id and user_account.id = submissions.user_id " +
-		"ORDER BY timestamp ")
+		"ORDER BY timestamp DESC")
 
 	var submissions []Submission
 	for rows.Next() {
@@ -91,6 +94,25 @@ func getSubmissions() []Submission {
 	}
 
 	return submissions
+}
+
+func acceptedAlready(userID, problemID int) bool {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+
+	var count int
+	db.QueryRow("SELECT COUNT(*) FROM submissions, user_account "+
+		"WHERE user_account.id = submissions.user_id AND verdict = ?"+
+		"AND submissions.problem_id = ? AND user_id = ?", Accepted, problemID, userID).Scan(&count)
+
+	if count == 0 {
+		return false
+	}
+
+	return true
 }
 
 func UpdateVerdict(id int, verdict string) error {

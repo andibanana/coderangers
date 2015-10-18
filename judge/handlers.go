@@ -3,6 +3,7 @@ package judge
 import (
 	".././cookies"
 	".././dao"
+	".././data"
 	".././templating"
 	"io/ioutil"
 	"net/http"
@@ -69,6 +70,10 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	if cookies.IsLoggedIn(r) {
+		userID, _ := cookies.GetUserID(r)
+		data.AddViewedProblem(userID, index)
+	}
 	templating.RenderPage(w, "viewproblem", problem)
 	// perhaps have a JS WARNING..
 }
@@ -81,12 +86,13 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 	index, _ := strconv.Atoi(r.URL.Path[len("/submit/"):])
 	d, _ := ioutil.TempDir(DIR, "")
 	ioutil.WriteFile(filepath.Join(d, "Main.java"), []byte(r.FormValue("code")), 0600)
+	userID, _ := cookies.GetUserID(r)
 	s := &Submission{
+		UserID:       userID,
 		ProblemIndex: index,
 		Directory:    d,
 		Verdict:      Received,
 	}
-	userID, _ := cookies.GetUserID(r)
 	submissionID, err := addSubmission(*s, userID)
 	s.ID = submissionID
 	if err != nil {

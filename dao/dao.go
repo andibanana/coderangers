@@ -127,5 +127,35 @@ func CreateDB() error {
 		return err
 	}
 
+	_, err = db.Exec(`
+		CREATE TABLE viewed_problems (
+        user_id INTEGER,
+        problem_id INTEGER,
+       
+        PRIMARY KEY(user_id, problem_id),
+        FOREIGN KEY(user_id) REFERENCES user_account(id),
+        FOREIGN KEY(problem_id) REFERENCES problems(id)
+		)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE user_data (
+        user_id INTEGER PRIMARY KEY,
+        
+        submitted_count INTEGER,
+        accepted_count INTEGER,
+        viewed_problems_count INTEGER,
+       
+        FOREIGN KEY(user_id) REFERENCES user_account(id)
+		)
+	`)
+
+	if err != nil {
+		return err
+	}
+
 	return err
 }

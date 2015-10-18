@@ -47,6 +47,14 @@ func Register(username, password string, admin bool) (int, error) {
 	}
 
 	userID, err := result.LastInsertId()
+
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	_, err = tx.Exec("INSERT INTO user_data (user_id, submitted_count, accepted_count, viewed_problems_count) VALUES (?, ?, ?, ?)", userID, 0, 0, 0)
+
 	if err != nil {
 		tx.Rollback()
 		return 0, err
