@@ -10,6 +10,8 @@ const (
 	ViewedProblems = "viewed_problems_count"
 	Accepted       = "accepted_count"
 	Submitted      = "submitted_count"
+  Experience     = "experience"
+  Coins          = "coins"
 )
 
 func updateViewedProblemCount(userID, count int) error {
@@ -86,3 +88,4 @@ func AddExperienceAndCoins(userID, experience, coins int) error {
 
 	return nil
 }
+

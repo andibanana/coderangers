@@ -11,5 +11,11 @@
     <li>{{.Category}} - <a href="/view/{{.Index}}">{{.Title}}</a></li>
     {{end}}
   </ul>
+  {{ if .IsLoggedIn }}
+  <h1>Daily Challenge</h1>
+  <a href="/view/{{ .DailyChallenge.Index }}">
+  {{ .DailyChallenge.Title}} - {{ .DailyChallenge.Category}} - {{ .DailyChallenge.Difficulty }}
+  </a>
+  {{ end }}
 </body>
 </html>

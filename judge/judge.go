@@ -55,9 +55,12 @@ const (
 )
 
 const (
-	Hard   = 50
-	Medium = 30
-	Easy   = 10
+	HardXP   = 50
+	MediumXP = 30
+	EasyXP   = 10
+  Hard   = "Hard"
+	Medium = "Medium"
+	Easy   = "Easy"
 )
 
 type Error struct {
@@ -137,11 +140,11 @@ func (s *Submission) judge() {
 		data.IncrementCount(s.UserID, data.Accepted)
 		switch {
 		case 1 <= p.Difficulty && p.Difficulty <= 3:
-			data.AddExperienceAndCoins(s.UserID, Easy, Easy/10)
+			data.AddExperienceAndCoins(s.UserID, EasyXP, EasyXP/10)
 		case 4 <= p.Difficulty && p.Difficulty <= 8:
-			data.AddExperienceAndCoins(s.UserID, Medium, Medium/10)
+			data.AddExperienceAndCoins(s.UserID, MediumXP, MediumXP/10)
 		case 9 <= p.Difficulty && p.Difficulty <= 10:
-			data.AddExperienceAndCoins(s.UserID, Hard, Hard/10)
+			data.AddExperienceAndCoins(s.UserID, HardXP, HardXP/10)
 		}
 	}
 	UpdateVerdict(s.ID, Accepted)
@@ -189,4 +192,81 @@ func (s Submission) run(p Problem) (string, *Error) {
 	}
 
 	return stdout.String(), nil
+}
+
+func AddSamples() {
+    p := Problem{
+			Index:        -1,
+			Title:        "Hashmat the Brave Warrior",
+			Description:  `Hashmat is a brave warrior who with his group of
+                    young soldiers moves from one place to another to Fight against his opponents.
+                    Before Fighting he just calculates one thing, 
+                    the difference between his soldier number and the opponent's soldier number.
+                    From this difference he decides whether to Fight or not.
+                    Hashmat's soldier number is never greater than his opponent.`,
+			Category:     "Math",
+			Difficulty:   1,
+			Hint:         "Subtract",
+			Input:        "10 12\n10 14\n100 200\n4294967295 4294967294\n",
+			Output:       "2\n4\n100\n1\n",
+			SampleInput:  "10 12\n10 14\n100 200\n4294967295 4294967294\n",
+			SampleOutput: "2\n4\n100\n1\n",
+			TimeLimit:    5,
+			MemoryLimit:  200,
+		}
+  AddProblem(p)
+  p = Problem{
+			Index:        -1,
+			Title:        "Hashmat the Brave Warrior",
+			Description:  `Hashmat is a brave warrior who with his group of
+                    young soldiers moves from one place to another to Fight against his opponents.
+                    Before Fighting he just calculates one thing, 
+                    the difference between his soldier number and the opponent's soldier number.
+                    From this difference he decides whether to Fight or not.
+                    Hashmat's soldier number is never greater than his opponent.`,
+			Category:     "Math",
+			Difficulty:   5,
+			Hint:         "Subtract",
+			Input:        "10 12\n10 14\n100 200\n4294967295 4294967294\n",
+			Output:       "2\n4\n100\n1\n",
+			SampleInput:  "10 12\n10 14\n100 200\n4294967295 4294967294\n",
+			SampleOutput: "2\n4\n100\n1\n",
+			TimeLimit:    5,
+			MemoryLimit:  200,
+		}
+  AddProblem(p)
+  p = Problem{
+			Index:        -1,
+			Title:        "Hashmat the Brave Warrior",
+			Description:  `Hashmat is a brave warrior who with his group of
+                    young soldiers moves from one place to another to Fight against his opponents.
+                    Before Fighting he just calculates one thing, 
+                    the difference between his soldier number and the opponent's soldier number.
+                    From this difference he decides whether to Fight or not.
+                    Hashmat's soldier number is never greater than his opponent.`,
+			Category:     "Math",
+			Difficulty:   9,
+			Hint:         "Subtract",
+			Input:        "10 12\n10 14\n100 200\n4294967295 4294967294\n",
+			Output:       "2\n4\n100\n1\n",
+			SampleInput:  "10 12\n10 14\n100 200\n4294967295 4294967294\n",
+			SampleOutput: "2\n4\n100\n1\n",
+			TimeLimit:    5,
+			MemoryLimit:  200,
+		}
+   AddProblem(p)
+
+   AddDailyChallenge(time.Date(2015, time.October, 18, 0, 0, 0, 0, time.Local), Easy, 1)
+   AddDailyChallenge(time.Date(2015, time.October, 18, 0, 0, 0, 0, time.Local), Medium, 2)
+   AddDailyChallenge(time.Date(2015, time.October, 18, 0, 0, 0, 0, time.Local), Hard, 3)
+   AddDailyChallenge(time.Date(2015, time.October, 19, 0, 0, 0, 0, time.Local), Easy, 1)
+   AddDailyChallenge(time.Date(2015, time.October, 19, 0, 0, 0, 0, time.Local), Medium, 2)
+   AddDailyChallenge(time.Date(2015, time.October, 19, 0, 0, 0, 0, time.Local), Hard, 3)
+   AddDailyChallenge(time.Date(2015, time.October, 20, 0, 0, 0, 0, time.Local), Easy, 1)
+   AddDailyChallenge(time.Date(2015, time.October, 20, 0, 0, 0, 0, time.Local), Medium, 2)
+   AddDailyChallenge(time.Date(2015, time.October, 20, 0, 0, 0, 0, time.Local), Hard, 3)
+   AddDailyChallenge(time.Date(2015, time.October, 21, 0, 0, 0, 0, time.Local), Easy, 1)
+   AddDailyChallenge(time.Date(2015, time.October, 21, 0, 0, 0, 0, time.Local), Medium, 2)
+   AddDailyChallenge(time.Date(2015, time.October, 21, 0, 0, 0, 0, time.Local), Hard, 3)
+   
 }

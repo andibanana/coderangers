@@ -12,14 +12,21 @@ import (
 )
 
 func ProblemsHandler(w http.ResponseWriter, r *http.Request) {
+  userID, ok := cookies.GetUserID(r)
+  var dailyChallenge Problem
+  if ok {
+    dailyChallenge = getDailyChallenge(userID)
+  }
 	data := struct {
 		ProblemList []Problem
 		IsAdmin     bool
 		IsLoggedIn  bool
+    DailyChallenge Problem
 	}{
 		GetProblems(),
 		dao.IsAdmin(r),
 		cookies.IsLoggedIn(r),
+    dailyChallenge,
 	}
 	templating.RenderPage(w, "viewproblems", data)
 }

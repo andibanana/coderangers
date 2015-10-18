@@ -158,5 +158,21 @@ func CreateDB() error {
 		return err
 	}
 
+  _, err = db.Exec(`
+		CREATE TABLE daily_challenges (
+        day DATE,
+        difficulty VARCHAR(10),
+        
+        problem_id INTEGER,
+        
+        PRIMARY KEY(day, difficulty),
+        FOREIGN KEY(problem_id) REFERENCES problems(id)
+		)
+	`)
+
+	if err != nil {
+		return err
+	}
+  
 	return err
 }

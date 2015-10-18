@@ -165,7 +165,7 @@ func GetProblem(index int) (Problem, error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	var problem Problem
 	if err != nil {
-		return problem, errors.New("DB Problem")
+		return problem, err
 	}
 	defer db.Close()
 	err = db.QueryRow("SELECT id, title, description, difficulty, category, time_limit, memory_limit, sample_input, sample_output, input, output FROM problems, inputoutput "+
@@ -177,4 +177,41 @@ func GetProblem(index int) (Problem, error) {
 		return problem, errors.New("No such problem")
 	}
 	return problem, nil
+}
+
+func getDailyChallenge(userID int) (problem Problem) {
+  db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return problem
+	}
+  defer db.Close()
+  
+  experience, _ := data.GetUserData(userID, data.Experience)
+  var difficulty string
+  switch {
+    case experience <= 100:
+      difficulty = Easy
+    case experience <= 150:
+      difficulty = Medium
+    case experience <= 200:
+      difficulty = Hard
+  }
+  var problemID int
+  currentTime := time.Now()
+  day := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 0, 0, 0, 0, time.Local)
+  db.QueryRow("SELECT problem_id FROM daily_challenges WHERE day = ? and difficulty = ?", day, difficulty).Scan(&problemID)
+  problem, _ = GetProblem(problemID)
+  return problem
+}
+
+func AddDailyChallenge(time time.Time, difficulty string, problemID int) error{
+  db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	_, err = db.Exec("INSERT INTO daily_challenges (day, difficulty, problem_id) VALUES (?, ?, ?)",
+		time, difficulty, problemID)
+  return err  
 }
