@@ -39,8 +39,7 @@ func CreateDB() error {
 			username VARCHAR(50) UNIQUE NOT NULL,
 			hashed_password CHARACTER(60) NOT NULL,
 			admin BOOLEAN NOT NULL DEFAULT FALSE,
-      date_joined DATE NOT NULL ,
-      experience INTEGER NOT NULL
+      date_joined DATE NOT NULL
 		)
 	`)
 	if err != nil {
@@ -148,7 +147,9 @@ func CreateDB() error {
         submitted_count INTEGER,
         accepted_count INTEGER,
         viewed_problems_count INTEGER,
-       
+        experience INTEGER,
+        coins INTEGER,
+        
         FOREIGN KEY(user_id) REFERENCES user_account(id)
 		)
 	`)

@@ -39,7 +39,7 @@ func Register(username, password string, admin bool) (int, error) {
 		return 0, err
 	}
 
-	result, err := tx.Exec("INSERT INTO user_account (username, hashed_password, admin, date_joined, experience) VALUES (?, ?, ?, ?, 0)",
+	result, err := tx.Exec("INSERT INTO user_account (username, hashed_password, admin, date_joined) VALUES (?, ?, ?, ?)",
 		username, hashedPassword, admin, time.Now())
 	if err != nil {
 		tx.Rollback()
@@ -53,7 +53,7 @@ func Register(username, password string, admin bool) (int, error) {
 		return 0, err
 	}
 
-	_, err = tx.Exec("INSERT INTO user_data (user_id, submitted_count, accepted_count, viewed_problems_count) VALUES (?, ?, ?, ?)", userID, 0, 0, 0)
+	_, err = tx.Exec("INSERT INTO user_data (user_id, submitted_count, accepted_count, viewed_problems_count, experience) VALUES (?, ?, ?, ?, ?)", userID, 0, 0, 0, 0)
 
 	if err != nil {
 		tx.Rollback()

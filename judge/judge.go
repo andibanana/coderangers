@@ -54,6 +54,12 @@ const (
 	// CantBeJudged         = "can't be judged"
 )
 
+const (
+	Hard   = 50
+	Medium = 30
+	Easy   = 10
+)
+
 type Error struct {
 	Verdict string
 	Details string
@@ -129,6 +135,14 @@ func (s *Submission) judge() {
 	s.Verdict = Accepted
 	if !acceptedAlready(s.UserID, s.ProblemIndex) {
 		data.IncrementCount(s.UserID, data.Accepted)
+		switch {
+		case 1 <= p.Difficulty && p.Difficulty <= 3:
+			data.AddExperienceAndCoins(s.UserID, Easy, Easy/10)
+		case 4 <= p.Difficulty && p.Difficulty <= 8:
+			data.AddExperienceAndCoins(s.UserID, Medium, Medium/10)
+		case 9 <= p.Difficulty && p.Difficulty <= 10:
+			data.AddExperienceAndCoins(s.UserID, Hard, Hard/10)
+		}
 	}
 	UpdateVerdict(s.ID, Accepted)
 }

@@ -56,3 +56,33 @@ func IncrementCount(userID int, toUpdate string) error {
 
 	return nil
 }
+
+func AddExperienceAndCoins(userID, experience, coins int) error {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	var currentExperience, currentCoins int
+	tx.QueryRow("SELECT experience, coins FROM user_data WHERE user_id = ?", userID).Scan(&currentExperience, &currentCoins)
+
+	currentExperience += experience
+	currentCoins += coins
+
+	_, err = tx.Exec("UPDATE user_data SET experience = ?, coins = ? where user_id = ?", currentExperience, currentCoins, userID)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
+}
