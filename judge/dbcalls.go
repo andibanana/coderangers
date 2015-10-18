@@ -180,32 +180,32 @@ func GetProblem(index int) (Problem, error) {
 }
 
 func getDailyChallenge(userID int) (problem Problem) {
-  db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return problem
 	}
-  defer db.Close()
-  
-  experience, _ := data.GetUserData(userID, data.Experience)
-  var difficulty string
-  switch {
-    case experience <= 100:
-      difficulty = Easy
-    case experience <= 150:
-      difficulty = Medium
-    case experience <= 200:
-      difficulty = Hard
-  }
-  var problemID int
-  currentTime := time.Now()
-  day := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 0, 0, 0, 0, time.Local)
-  db.QueryRow("SELECT problem_id FROM daily_challenges WHERE day = ? and difficulty = ?", day, difficulty).Scan(&problemID)
-  problem, _ = GetProblem(problemID)
-  return problem
+	defer db.Close()
+
+	experience, _ := data.GetUserData(userID, data.Experience)
+	var difficulty string
+	switch {
+	case experience <= 100:
+		difficulty = Easy
+	case experience <= 150:
+		difficulty = Medium
+	case experience <= 200:
+		difficulty = Hard
+	}
+	var problemID int
+	currentTime := time.Now()
+	day := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 0, 0, 0, 0, time.Local)
+	db.QueryRow("SELECT problem_id FROM daily_challenges WHERE day = ? and difficulty = ?", day, difficulty).Scan(&problemID)
+	problem, _ = GetProblem(problemID)
+	return problem
 }
 
-func AddDailyChallenge(time time.Time, difficulty string, problemID int) error{
-  db, err := sql.Open("sqlite3", dao.DatabaseURL)
+func AddDailyChallenge(time time.Time, difficulty string, problemID int) error {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return err
 	}
@@ -213,5 +213,5 @@ func AddDailyChallenge(time time.Time, difficulty string, problemID int) error{
 
 	_, err = db.Exec("INSERT INTO daily_challenges (day, difficulty, problem_id) VALUES (?, ?, ?)",
 		time, difficulty, problemID)
-  return err  
+	return err
 }

@@ -158,7 +158,7 @@ func CreateDB() error {
 		return err
 	}
 
-  _, err = db.Exec(`
+	_, err = db.Exec(`
 		CREATE TABLE daily_challenges (
         day DATE,
         difficulty VARCHAR(10),
@@ -173,6 +173,6 @@ func CreateDB() error {
 	if err != nil {
 		return err
 	}
-  
+
 	return err
 }

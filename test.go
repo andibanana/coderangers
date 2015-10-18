@@ -27,13 +27,13 @@ func page(content string) string {
 
 func main() {
 	err := dao.CreateDB()
-	
-    fmt.Println(err)
-  if err == nil {
-    users.Register("admin", "admin", true)
-    judge.AddSamples()
-  }
-  templating.InitTemplates()
+
+	fmt.Println(err)
+	if err == nil {
+		users.Register("admin", "admin", true)
+		judge.AddSamples()
+	}
+	templating.InitTemplates()
 	wd, _ := os.Getwd()
 	judge.DIR = filepath.Join(wd, "submissions")
 	os.Mkdir(judge.DIR, 0777)
