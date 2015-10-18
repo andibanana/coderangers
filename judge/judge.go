@@ -27,13 +27,13 @@ type Problem struct {
 }
 
 type Submission struct {
-	Username     string
-	UserID       int
-	ID           int
-	ProblemIndex int
-	Directory    string
-	Verdict      string
-  DailyChallenge bool
+	Username       string
+	UserID         int
+	ID             int
+	ProblemIndex   int
+	Directory      string
+	Verdict        string
+	DailyChallenge bool
 }
 
 const (
@@ -139,11 +139,11 @@ func (s *Submission) judge() {
 	s.Verdict = Accepted
 	if !acceptedAlready(s.UserID, s.ProblemIndex) {
 		data.IncrementCount(s.UserID, data.Accepted)
-    multiplier := 1
-    if s.DailyChallenge {
-      multiplier = 2
-      data.IncrementCount(s.UserID, data.DailyChallenge)
-    } 
+		multiplier := 1
+		if s.DailyChallenge {
+			multiplier = 2
+			data.IncrementCount(s.UserID, data.DailyChallenge)
+		}
 		switch {
 		case 1 <= p.Difficulty && p.Difficulty <= 3:
 			data.AddExperienceAndCoins(s.UserID, EasyXP*multiplier, EasyXP/10*multiplier)
@@ -153,7 +153,7 @@ func (s *Submission) judge() {
 			data.AddExperienceAndCoins(s.UserID, HardXP*multiplier, HardXP/10*multiplier)
 		}
 	} else if s.DailyChallenge && !acceptedAlreadyAndDailyChallenge(s.UserID, s.ProblemIndex) {
-    data.IncrementCount(s.UserID, data.DailyChallenge)
+		data.IncrementCount(s.UserID, data.DailyChallenge)
 		switch {
 		case 1 <= p.Difficulty && p.Difficulty <= 3:
 			data.AddExperienceAndCoins(s.UserID, EasyXP, EasyXP/10)
@@ -162,7 +162,7 @@ func (s *Submission) judge() {
 		case 9 <= p.Difficulty && p.Difficulty <= 10:
 			data.AddExperienceAndCoins(s.UserID, HardXP, HardXP/10)
 		}
-  }
+	}
 	UpdateVerdict(s.ID, Accepted)
 }
 

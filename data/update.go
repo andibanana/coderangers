@@ -12,7 +12,7 @@ const (
 	Submitted      = "submitted_count"
 	Experience     = "experience"
 	Coins          = "coins"
-  DailyChallenge = "daily_challenge"
+	DailyChallenge = "daily_challenge"
 )
 
 func updateViewedProblemCount(userID, count int) error {

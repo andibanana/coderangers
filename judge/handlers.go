@@ -91,7 +91,7 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	index, _ := strconv.Atoi(r.URL.Path[len("/submit/"):])
-  _, err := GetProblem(index)
+	_, err := GetProblem(index)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -99,13 +99,13 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 	d, _ := ioutil.TempDir(DIR, "")
 	ioutil.WriteFile(filepath.Join(d, "Main.java"), []byte(r.FormValue("code")), 0600)
 	userID, _ := cookies.GetUserID(r)
-  dailyChallenge := getDailyChallenge(userID)
+	dailyChallenge := getDailyChallenge(userID)
 	s := &Submission{
-		UserID:       userID,
-		ProblemIndex: index,
-		Directory:    d,
-		Verdict:      Received,
-    DailyChallenge: dailyChallenge.Index == index,
+		UserID:         userID,
+		ProblemIndex:   index,
+		Directory:      d,
+		Verdict:        Received,
+		DailyChallenge: dailyChallenge.Index == index,
 	}
 	submissionID, err := addSubmission(*s, userID)
 	s.ID = submissionID
