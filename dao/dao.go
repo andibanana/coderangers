@@ -92,6 +92,7 @@ func CreateDB() error {
       timestamp DATETIME NOT NULL,
       runtime_error TEXT,
       daily_challenge BOOLEAN,
+      runtime NUMERIC,
       
       FOREIGN KEY(user_id) REFERENCES user_account(id)
       FOREIGN KEY(problem_id) REFERENCES problems(id)

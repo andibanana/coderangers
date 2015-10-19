@@ -47,6 +47,67 @@ func AddProblem(problem Problem) {
 	tx.Commit()
 }
 
+func editProblem(problem Problem) {
+
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	tx, err := db.Begin()
+	if err != nil {
+		return
+	}
+
+	_, err = tx.Exec("UPDATE problems SET title = ?, description = ?, difficulty = ?, category = ?, hint = ?, time_limit = ?, memory_limit = ?, sample_input = ?, sample_output = ? WHERE id = ?",
+		problem.Title, problem.Description, problem.Difficulty, problem.Category, problem.Hint, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput, problem.Index)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	_, err = tx.Exec("UPDATE inputoutput SET problem_id = ?, input_number = ?, input = ?, output = ? WHERE problem_id = ? AND input_number = ?",
+		problem.Input, problem.Output, problem.Index, 1)
+
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	tx.Commit()
+}
+
+func deleteProblem(problemID int) {
+
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	tx, err := db.Begin()
+	if err != nil {
+		return
+	}
+
+	_, err = tx.Exec("DELETE FROM problems WHERE id = ?", problemID)
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	_, err = tx.Exec("DELETE FROM inputoutput where problem_id = ? AND input_number = ?",
+		problemID, 1)
+
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	tx.Commit()
+}
+
 func addSubmission(submission Submission, userID int) (int, error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
@@ -82,14 +143,14 @@ func getSubmissions() []Submission {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict, user_account.id FROM problems, submissions, user_account " +
+	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict, user_account.id, runtime FROM problems, submissions, user_account " +
 		"WHERE problems.id = submissions.problem_id and user_account.id = submissions.user_id " +
 		"ORDER BY timestamp DESC")
 
 	var submissions []Submission
 	for rows.Next() {
 		var submission Submission
-		rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.Username, &submission.Verdict, &submission.UserID)
+		rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime)
 		submissions = append(submissions, submission)
 	}
 
@@ -156,6 +217,22 @@ func UpdateVerdict(id int, verdict string) error {
 	}
 
 	tx.Commit()
+
+	return nil
+}
+
+func UpdateRuntime(id int, runtime float64) error {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	_, err = db.Exec("UPDATE submissions SET runtime = ? WHERE id = ?", runtime, id)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -9,7 +9,7 @@
   {{ if .IsLoggedIn }} <a href="/profile">View Profile</a> {{ end }}
   <ul>
     {{range .ProblemList}}
-    <li>{{.Category}} - <a href="/view/{{.Index}}">{{.Title}}</a></li>
+    <li>{{.Category}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }} </li>
     {{end}}
   </ul>
   {{ if .IsLoggedIn }}

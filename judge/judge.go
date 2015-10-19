@@ -2,6 +2,7 @@ package judge
 
 import (
 	".././data"
+	".././helper"
 	"bytes"
 	"fmt"
 	"os/exec"
@@ -34,6 +35,7 @@ type Submission struct {
 	Directory      string
 	Verdict        string
 	DailyChallenge bool
+	Runtime        string
 }
 
 type VerdictData struct {
@@ -126,6 +128,7 @@ func (s *Submission) judge() {
 	t := time.Now()
 	output, err := s.run(p)
 	d := time.Now().Sub(t)
+	UpdateRuntime(s.ID, helper.Truncate(d.Seconds(), 3))
 	fmt.Println(d)
 	if err != nil {
 		s.Verdict = err.Verdict
@@ -222,12 +225,12 @@ func AddSamples() {
 	p := Problem{
 		Index: -1,
 		Title: "Hashmat the Brave Warrior",
-		Description: `Hashmat is a brave warrior who with his group of
-                    young soldiers moves from one place to another to Fight against his opponents.
-                    Before Fighting he just calculates one thing, 
-                    the difference between his soldier number and the opponent's soldier number.
-                    From this difference he decides whether to Fight or not.
-                    Hashmat's soldier number is never greater than his opponent.`,
+		Description: "Hashmat is a brave warrior who with his group of " +
+			"young soldiers moves from one place to another to Fight against his opponents. " +
+			"Before Fighting he just calculates one thing, " +
+			"the difference between his soldier number and the opponent's soldier number. " +
+			"From this difference he decides whether to Fight or not. " +
+			"Hashmat's soldier number is never greater than his opponent. ",
 		Category:     "Math",
 		Difficulty:   1,
 		Hint:         "Subtract",
@@ -242,12 +245,12 @@ func AddSamples() {
 	p = Problem{
 		Index: -1,
 		Title: "Hashmat the Brave Warrior",
-		Description: `Hashmat is a brave warrior who with his group of
-                    young soldiers moves from one place to another to Fight against his opponents.
-                    Before Fighting he just calculates one thing, 
-                    the difference between his soldier number and the opponent's soldier number.
-                    From this difference he decides whether to Fight or not.
-                    Hashmat's soldier number is never greater than his opponent.`,
+		Description: "Hashmat is a brave warrior who with his group of " +
+			"young soldiers moves from one place to another to Fight against his opponents. " +
+			"Before Fighting he just calculates one thing, " +
+			"the difference between his soldier number and the opponent's soldier number. " +
+			"From this difference he decides whether to Fight or not. " +
+			"Hashmat's soldier number is never greater than his opponent. ",
 		Category:     "Math",
 		Difficulty:   5,
 		Hint:         "Subtract",
@@ -262,12 +265,12 @@ func AddSamples() {
 	p = Problem{
 		Index: -1,
 		Title: "Hashmat the Brave Warrior",
-		Description: `Hashmat is a brave warrior who with his group of
-                    young soldiers moves from one place to another to Fight against his opponents.
-                    Before Fighting he just calculates one thing, 
-                    the difference between his soldier number and the opponent's soldier number.
-                    From this difference he decides whether to Fight or not.
-                    Hashmat's soldier number is never greater than his opponent.`,
+		Description: "Hashmat is a brave warrior who with his group of " +
+			"young soldiers moves from one place to another to Fight against his opponents. " +
+			"Before Fighting he just calculates one thing, " +
+			"the difference between his soldier number and the opponent's soldier number. " +
+			"From this difference he decides whether to Fight or not. " +
+			"Hashmat's soldier number is never greater than his opponent. ",
 		Category:     "Math",
 		Difficulty:   9,
 		Hint:         "Subtract",

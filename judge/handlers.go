@@ -31,8 +31,66 @@ func ProblemsHandler(w http.ResponseWriter, r *http.Request) {
 	templating.RenderPage(w, "viewproblems", data)
 }
 
+func EditHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		index, err := strconv.Atoi(r.URL.Path[len("/edit/"):])
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		problem, err := GetProblem(index)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		templating.RenderPage(w, "editproblem", problem)
+	case "POST":
+		time_limit, err := strconv.Atoi(r.FormValue("time_limit"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		memory_limit, err := strconv.Atoi(r.FormValue("memory_limit"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		difficulty, err := strconv.Atoi(r.FormValue("difficulty"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		index, err := strconv.Atoi(r.FormValue("problem_id"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		p := &Problem{
+			Index:        index,
+			Title:        r.FormValue("title"),
+			Description:  r.FormValue("description"),
+			Category:     r.FormValue("category"),
+			Difficulty:   difficulty,
+			Hint:         r.FormValue("hint"),
+			Input:        r.FormValue("input"),
+			Output:       r.FormValue("output"),
+			SampleInput:  r.FormValue("sample_input"),
+			SampleOutput: r.FormValue("sample_output"),
+			TimeLimit:    time_limit,
+			MemoryLimit:  memory_limit,
+		}
+		problemQueue <- p
+		editProblem(*p)
+		http.Redirect(w, r, "/view/"+r.FormValue("problem_id"), http.StatusFound)
+	}
+}
+
 func AddHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+	switch r.Method {
+	case "GET":
+		templating.RenderPage(w, "addproblem", nil)
+	case "POST":
 		time_limit, err := strconv.Atoi(r.FormValue("time_limit"))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -65,8 +123,19 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 		problemQueue <- p
 		AddProblem(*p)
 		http.Redirect(w, r, "/problems/", http.StatusFound)
-	} else {
-		templating.RenderPage(w, "addproblem", nil)
+	}
+}
+
+func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		problemID, err := strconv.Atoi(r.FormValue("problem_id"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		deleteProblem(problemID)
+		http.Redirect(w, r, "/problems/", http.StatusFound)
 	}
 }
 

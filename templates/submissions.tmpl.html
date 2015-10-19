@@ -2,6 +2,6 @@
 <a href="/">View Problems</a>
 <ul>
   {{range .}}
-  <li>{{.ID}} - <a href="/view/{{.ProblemIndex}}">{{.ProblemIndex}}</a> - <a href="/profile/{{.UserID}}">{{.Username}}</a> - {{.Verdict}}</li>
+  <li>{{.ID}} - <a href="/view/{{.ProblemIndex}}">{{.ProblemIndex}}</a> - <a href="/profile/{{.UserID}}">{{.Username}}</a> - {{.Verdict}} - {{.Runtime}}</li>
   {{end}}
 </ul>
