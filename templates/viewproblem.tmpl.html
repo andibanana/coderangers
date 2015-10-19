@@ -11,6 +11,10 @@
 </form>
 {{ end }}
 </h2>
+<h3>Submitted: {{.Submitted}}</h3>
+<h3>Accepted: {{.Accepted}}</h3>
+<h3>Rate: {{.Rate}}%</h3>
+
 <p>{{.Problem.Description}}</p>
 <h2>Sample Input</h2>
 <p>{{.Problem.SampleInput | fixNewLines}}</p>

@@ -71,7 +71,11 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ViewHandler(w http.ResponseWriter, r *http.Request) {
-	index, _ := strconv.Atoi(r.URL.Path[len("/view/"):])
+	index, err := strconv.Atoi(r.URL.Path[len("/view/"):])
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	problem, err := GetProblem(index)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -82,12 +86,23 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		userID, _ = cookies.GetUserID(r)
 		data.AddViewedProblem(userID, index)
 	}
+	submitted, accepted := getProblemStatistics(index)
+	rate := float64(accepted) / float64(submitted) * 100
+	if accepted == 0 {
+		rate = 0
+	}
 	data := struct {
 		Problem    Problem
 		HintBought bool
+		Submitted  int
+		Accepted   int
+		Rate       float64
 	}{
 		problem,
 		boughtHintAlready(userID, index),
+		submitted,
+		accepted,
+		rate,
 	}
 	templating.RenderPage(w, "viewproblem", data)
 	// perhaps have a JS WARNING..
