@@ -147,6 +147,7 @@ func CreateDB() error {
         
         submitted_count INTEGER,
         accepted_count INTEGER,
+        attempted_count INTEGER,
         viewed_problems_count INTEGER,
         experience INTEGER,
         coins INTEGER,

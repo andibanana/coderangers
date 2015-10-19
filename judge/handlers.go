@@ -131,6 +131,7 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		DailyChallenge: dailyChallenge.Index == index,
 	}
 	submissionID, err := addSubmission(*s, userID)
+	data.UpdateAttemptedCount(userID)
 	s.ID = submissionID
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

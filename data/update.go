@@ -32,6 +32,33 @@ func updateViewedProblemCount(userID, count int) error {
 	return nil
 }
 
+func UpdateAttemptedCount(userID int) error {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+
+	var count int
+	err = tx.QueryRow("SELECT COUNT(DISTINCT problem_id) FROM submissions WHERE user_id = ?", userID).Scan(&count)
+
+	_, err = tx.Exec("UPDATE user_data SET attempted_count = ? where user_id = ?", count, userID)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
+}
+
 func IncrementCount(userID int, toUpdate string) error {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
