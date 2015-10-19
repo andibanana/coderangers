@@ -17,6 +17,7 @@ func InitTemplates() {
 		"showISODate":  func(date time.Time) string { return date.Format("2006-01-02") },
 		"minus":        func(a, b int) int { return a - b },
 		"add":          func(a, b int) int { return a + b },
+		"xpToLevel":    func(xp int) int { return xp/100 + 1 },
 		"fixNewLines": func(s string) template.HTML {
 			s = template.HTMLEscapeString(s)
 			s = regexp.MustCompile("\r?\n").ReplaceAllString(s, "<br>")

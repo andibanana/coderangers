@@ -82,14 +82,14 @@ func getSubmissions() []Submission {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict FROM problems, submissions, user_account " +
+	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict, user_account.id FROM problems, submissions, user_account " +
 		"WHERE problems.id = submissions.problem_id and user_account.id = submissions.user_id " +
 		"ORDER BY timestamp DESC")
 
 	var submissions []Submission
 	for rows.Next() {
 		var submission Submission
-		rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.Username, &submission.Verdict)
+		rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.Username, &submission.Verdict, &submission.UserID)
 		submissions = append(submissions, submission)
 	}
 

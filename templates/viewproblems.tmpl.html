@@ -6,6 +6,7 @@
   {{ if not .IsLoggedIn }} <a href="/login">Log In here</a> {{ end }}
   <a href="/submissions">View Submissions</a>
   <a href="/leaderboards">View Leaderboards</a>
+  {{ if .IsLoggedIn }} <a href="/profile">View Profile</a> {{ end }}
   <ul>
     {{range .ProblemList}}
     <li>{{.Category}} - <a href="/view/{{.Index}}">{{.Title}}</a></li>
