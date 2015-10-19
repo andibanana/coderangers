@@ -36,6 +36,14 @@ type Submission struct {
 	DailyChallenge bool
 }
 
+type VerdictData struct {
+	Accepted          int
+	WrongAnswer       int
+	CompileError      int
+	RuntimeError      int
+	TimeLimitExceeded int
+}
+
 const (
 	Received  = "received"
 	Compiling = "compiling"

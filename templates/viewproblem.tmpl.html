@@ -12,8 +12,16 @@
 {{ end }}
 </h2>
 <h3>Submitted: {{.Submitted}}</h3>
-<h3>Accepted: {{.Accepted}}</h3>
+<h3>Accepted: {{.VerdictData.Accepted}}</h3>
 <h3>Rate: {{.Rate}}%</h3>
+
+<h3>Chart Data</h3>
+<h4>Accepted: {{.VerdictData.Accepted}}</h4>
+<h4>Wrong Answer: {{.VerdictData.WrongAnswer}}</h4>
+<h4>Compile Error: {{.VerdictData.CompileError}}</h4>
+<h4>Runtime Error: {{.VerdictData.RuntimeError}}</h4>
+<h4>Time Limit Exceeded: {{.VerdictData.TimeLimitExceeded}}</h4>
+
 
 <p>{{.Problem.Description}}</p>
 <h2>Sample Input</h2>

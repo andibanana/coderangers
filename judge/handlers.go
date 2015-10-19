@@ -86,23 +86,23 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		userID, _ = cookies.GetUserID(r)
 		data.AddViewedProblem(userID, index)
 	}
-	submitted, accepted := getProblemStatistics(index)
-	rate := float64(accepted) / float64(submitted) * 100
-	if accepted == 0 {
+	submitted, verdictData := getProblemStatistics(index)
+	rate := float64(verdictData.Accepted) / float64(submitted) * 100
+	if verdictData.Accepted == 0 {
 		rate = 0
 	}
 	data := struct {
-		Problem    Problem
-		HintBought bool
-		Submitted  int
-		Accepted   int
-		Rate       float64
+		Problem     Problem
+		HintBought  bool
+		Submitted   int
+		Rate        float64
+		VerdictData VerdictData
 	}{
 		problem,
 		boughtHintAlready(userID, index),
 		submitted,
-		accepted,
 		rate,
+		verdictData,
 	}
 	templating.RenderPage(w, "viewproblem", data)
 	// perhaps have a JS WARNING..
