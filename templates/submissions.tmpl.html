@@ -1,7 +1,38 @@
 <title>Submissions</title>
-<a href="/">View Problems</a>
-<ul>
-  {{range .}}
-  <li>{{.ID}} - <a href="/view/{{.ProblemIndex}}">{{.ProblemIndex}}</a> - <a href="/profile/{{.UserID}}">{{.Username}}</a> - {{.Verdict}} - {{.Runtime}}</li>
-  {{end}}
-</ul>
+<link rel="stylesheet" type="text/css" href="/styles/style.css">
+<body>
+	<div class="container">
+
+    <div class="sideBar">
+      <div class="menuItemsWrapper">
+        <img class="codeRangersLogoSmall" src="/images/logoWhite.png">
+
+        <div class="sideBarOptionsWrapper">
+          <span class = "sideBarItem"><a href="/" class="sideBarItem">Home</a></span>
+          <span class = "sideBarItem"><a href="/profile" class="sideBarItem">Personal Records</a></span>
+          <br>
+          <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">My Submissions</a></span>
+          <span class = "sideBarItem"><a href="/" class="sideBarItem">Browse Problems</a></span>
+          <span class = "sideBarItem"><a href="/" class="sideBarItem">Quests</a></span>
+          <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
+          <br>
+          <!--<span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span>-->
+          <form method="POST" action="/logout"><input type="submit" value="Logout"></form> <!--ask how to stick this into a link!! -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="containerContent">
+    	<h1>Submissions</h1>
+		<ul>
+		  {{range .}}
+		  <li>{{.ID}} - <a href="/view/{{.ProblemIndex}}">{{.ProblemIndex}}</a> - <a href="/profile/{{.UserID}}">{{.Username}}</a> - {{.Verdict}} - {{.Runtime}}</li>
+		  {{end}}
+		</ul>
+
+	</div>
+
+
+
+</body>

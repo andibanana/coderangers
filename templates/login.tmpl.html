@@ -1,17 +1,31 @@
 <!doctype html>
 <html>
   <title>Login Page</title>
+  <link rel="stylesheet" type="text/css" href="/styles/style.css">
 <body>
   <!-- <h1>Login</h1> -->
-  <form action="/login" method="POST">
-  <!-- TODO: use <label>s, remove <br>s -->
-    Username<br>
-    <input type="text" name="username" class="textBox" required><br><br>
-    Password<br>
-    <input type="password" name="password" class="textBox" required><br><br>
-    <input type="submit" value="Login" class="loginBtn">
-  </form><br>
+  <div class="container">
 
-  <span class="signUpText"><a href="/register">Don't have an account?<br>Sign up here.</a></span>
+  <div class="loginIcon">
+    <img class="codeRangersLogoBig" src="/images/logoBlack.png">
+  </div>
+
+    <div class="loginBar">
+      <div class="loginWrapper">
+        <form action="/login" method="POST">
+        <!-- TODO: use <label>s, remove <br>s -->
+          Username<br>
+          <input type="text" name="username" placeholder="Username" class="textBox" required><br><br>
+          Password<br>
+          <input type="password" name="password" placeholder="Password" class="textBox" required><br><br>
+          <input type="submit" value="Login" class="orangeBtn">
+        </form><br>
+
+      <span class="signUpText"><a href="/register">Don't have an account?<br>Sign up here.</a></span>
+      </div>
+  </div>
+
+</div>
+
 </body>
 </html>

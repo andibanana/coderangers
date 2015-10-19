@@ -1,12 +1,50 @@
 <!DOCTYPE HTML>
 <html>
+	<link rel="stylesheet" type="text/css" href="/styles/style.css">
 <body>
-<h1>{{.Username}}</h1>
-Level: {{xpToLevel .Experience}}
-Experience: {{.Experience}}
-Coins: {{.Coins}}
-Problems Solved: {{.Accepted}}
-Problems Attempted: {{.Attempted}}
-Submitted Solutions: {{.Submitted}}
+
+	<div class="container">
+
+	    <div class="sideBar">
+	      <div class="menuItemsWrapper">
+	        <img class="codeRangersLogoSmall" src="/images/logoWhite.png">
+
+	        <div class="sideBarOptionsWrapper">
+	          <span class = "sideBarItem"><a href="/" class="sideBarItem">Home</a></span>
+	          <span class = "sideBarItem"><a href="/profile" class="sideBarItem">Personal Records</a></span>
+	          <br>
+	          <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">My Submissions</a></span>
+	          <span class = "sideBarItem"><a href="/" class="sideBarItem">Browse Problems</a></span>
+	          <span class = "sideBarItem"><a href="/" class="sideBarItem">Quests</a></span>
+	          <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
+	          <br>
+	          <!--<span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span>-->
+	          <form method="POST" action="/logout"><input type="submit" value="Logout"></form> <!--ask how to stick this into a link!! -->
+
+	        </div>
+	      </div>
+	    </div>
+
+
+    	<div class="profileInfo1">
+		
+			<img class="rankIcon" src="/images/rank7.png">
+			<span class="levelText">Level: {{xpToLevel .Experience}}</span><br>
+			Experience: {{.Experience}} <br>
+			Coins: {{.Coins}} <br>
+			Problems Solved: {{.Accepted}} <br>
+			Problems Attempted: {{.Attempted}} <br>
+			Submitted Solutions: {{.Submitted}} <br>
+
+		</div>
+
+		<div class="profileInfo2">
+
+			<h1>{{.Username}}</h1>
+
+		</div>
+
+		
+	</div>
 </body>
 </html>
