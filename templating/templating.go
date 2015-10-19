@@ -36,6 +36,7 @@ func InitTemplates() {
 }
 
 func RenderPage(w http.ResponseWriter, template string, data interface{}) {
+	InitTemplates() // temporary for convenience
 	err := templates.ExecuteTemplate(w, template+".tmpl.html", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
