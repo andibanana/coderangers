@@ -77,11 +77,19 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	var userID int
 	if cookies.IsLoggedIn(r) {
-		userID, _ := cookies.GetUserID(r)
+		userID, _ = cookies.GetUserID(r)
 		data.AddViewedProblem(userID, index)
 	}
-	templating.RenderPage(w, "viewproblem", problem)
+	data := struct {
+		Problem    Problem
+		HintBought bool
+	}{
+		problem,
+		boughtHintAlready(userID, index),
+	}
+	templating.RenderPage(w, "viewproblem", data)
 	// perhaps have a JS WARNING..
 }
 
@@ -119,4 +127,31 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 
 func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 	templating.RenderPage(w, "submissions", getSubmissions())
+}
+
+func BuyHintHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		if !cookies.IsLoggedIn(r) {
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		}
+		problemID, err := strconv.Atoi(r.FormValue("p"))
+		if err != nil {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
+		userID, _ := cookies.GetUserID(r)
+		if !boughtHintAlready(userID, problemID) {
+			if !buyHint(userID, problemID) {
+				http.Error(w, "Not enough coins", http.StatusBadRequest)
+				return
+			}
+		}
+		http.Redirect(w, r, "/view/"+strconv.Itoa(problemID), http.StatusSeeOther)
+		return
+
+	default:
+		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+	}
 }

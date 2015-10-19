@@ -187,10 +187,10 @@ func GetProblem(index int) (Problem, error) {
 		return problem, err
 	}
 	defer db.Close()
-	err = db.QueryRow("SELECT id, title, description, difficulty, category, time_limit, memory_limit, sample_input, sample_output, input, output FROM problems, inputoutput "+
+	err = db.QueryRow("SELECT id, title, description, difficulty, category, time_limit, memory_limit, sample_input, sample_output, input, output, hint FROM problems, inputoutput "+
 		"WHERE problems.id = inputoutput.problem_id and problems.id = ?", index).Scan(&problem.Index, &problem.Title, &problem.Description,
 		&problem.Difficulty, &problem.Category, &problem.TimeLimit, &problem.MemoryLimit, &problem.SampleInput,
-		&problem.SampleOutput, &problem.Input, &problem.Output)
+		&problem.SampleOutput, &problem.Input, &problem.Output, &problem.Hint)
 
 	if err != nil {
 		return problem, errors.New("No such problem")
@@ -233,4 +233,62 @@ func AddDailyChallenge(time time.Time, difficulty string, problemID int) error {
 	_, err = db.Exec("INSERT INTO daily_challenges (day, difficulty, problem_id) VALUES (?, ?, ?)",
 		time, difficulty, problemID)
 	return err
+}
+
+func buyHint(userID, problemID int) bool {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+
+	tx, err := db.Begin()
+	if err != nil {
+		tx.Rollback()
+		return false
+	}
+
+	var count int
+	tx.QueryRow("SELECT COUNT(*) FROM user_account, problems, bought_hints WHERE user_account.id = ? AND problems.id = ?"+
+		"AND user_account.id = bought_hints.user_id AND problems.id = bought_hints.problem_id", userID, problemID).Scan(&count)
+
+	if count != 0 {
+		tx.Rollback()
+		return false
+	}
+
+	var coins int
+	tx.QueryRow("SELECT coins FROM user_data WHERE user_id = ?", userID).Scan(&coins)
+
+	if coins < 2 {
+		tx.Rollback()
+		return false
+	}
+	coins -= 3
+	tx.Exec("UPDATE user_data SET coins = ? WHERE user_id = ?", coins, userID)
+	tx.Exec("INSERT INTO bought_hints (user_id, problem_id) VALUES (?, ?)", userID, problemID)
+
+	if err != nil {
+		tx.Rollback()
+		return false
+	}
+	tx.Commit()
+	return true
+}
+
+func boughtHintAlready(userID, problemID int) bool {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+
+	var count int
+	db.QueryRow("SELECT COUNT(*) FROM user_account, problems, bought_hints WHERE user_account.id = ? AND problems.id = ?"+
+		"AND user_account.id = bought_hints.user_id AND problems.id = bought_hints.problem_id", userID, problemID).Scan(&count)
+	if count == 0 {
+		return false
+	}
+
+	return true
 }

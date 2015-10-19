@@ -1,13 +1,22 @@
-<title>{{.Title}}</title>
-<h1>{{.Title}}</h1>
-<h2>{{.Category}}</h2>
-<h2>{{.Difficulty}}</h2>
-<p>{{.Description}}</p>
+<title>{{.Problem.Title}}</title>
+<h1>{{.Problem.Title}}</h1>
+<h2>{{.Problem.Category}}</h2>
+<h2>{{.Problem.Difficulty}}</h2>
+<h2>Hint: {{ if .HintBought }}
+{{.Problem.Hint}}
+{{ else }}
+<form action="/buy_hint" method="POST">
+  <input type="hidden" name="p" value="{{.Problem.Index}}">
+  <input type="submit" value="Buy Hint">
+</form>
+{{ end }}
+</h2>
+<p>{{.Problem.Description}}</p>
 <h2>Sample Input</h2>
-<p>{{.SampleInput | fixNewLines}}</p>
+<p>{{.Problem.SampleInput | fixNewLines}}</p>
 <h2>Sample Output</h2>
-<p>{{.SampleOutput | fixNewLines}}</p>
-<form action="/submit/{{.Index}}" method="POST">
+<p>{{.Problem.SampleOutput | fixNewLines}}</p>
+<form action="/submit/{{.Problem.Index}}" method="POST">
   <textarea name="code"></textarea>
   <input type="submit">
 </form>
