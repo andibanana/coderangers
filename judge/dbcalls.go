@@ -205,7 +205,7 @@ func getDailyChallenge(userID int) (problem Problem) {
 	}
 	defer db.Close()
 
-	experience, _ := data.GetUserData(userID, data.Experience)
+	experience, _ := data.GetSpecificUserData(userID, data.Experience)
 	var difficulty string
 	switch {
 	case experience <= 100:

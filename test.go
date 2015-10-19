@@ -49,6 +49,8 @@ func main() {
 	http.HandleFunc("/logout", users.LogoutHandler)
 	http.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
 	http.HandleFunc("/buy_hint", judge.BuyHintHandler)
+	http.HandleFunc("/profile", users.ViewProfileHandler)
+	http.HandleFunc("/profile/", users.ViewUserProfileHandler)
 
 	http.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir("./styles"))))
 
