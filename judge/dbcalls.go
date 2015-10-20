@@ -202,21 +202,13 @@ func UpdateVerdict(id int, verdict string) error {
 	}
 	defer db.Close()
 
-	tx, err := db.Begin()
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	_, err = tx.Exec("UPDATE submissions SET verdict = ? WHERE id = ?", verdict, id)
+	_, err = db.Exec("UPDATE submissions SET verdict = ? WHERE id = ?", verdict, id)
 
 	if err != nil {
-		fmt.Println(err)
-		tx.Rollback()
+		fmt.Println("UPDATE VERDICT: ", err)
+		fmt.Println(verdict)
 		return err
 	}
-
-	tx.Commit()
 
 	return nil
 }
