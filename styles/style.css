@@ -218,17 +218,17 @@ a.sideBarItem:hover, a.sideBarItem:active{
 	color: #FFFFFF;
 }
 
-.sideBarItem, a:visited{
+.sideBarItem a:visited{
 	text-decoration: none;
 	color: #FFFFFF;
 }
 
-.sideBarItem, a:hover{
+.sideBarItem a:hover{
 	text-decoration: none;
 	color: #D0D0D0;
 }
 
-.sideBarItem, a:active{
+.sideBarItem a:active{
 	text-decoration: none;
 	color: #FFFFFF;
 }
@@ -302,11 +302,6 @@ a.sideBarItem:hover, a.sideBarItem:active{
 }
 
 .dailyChallengeWrapper{
-	display: -ms-flexbox;
-	display: -webkit-box;
-	display: -moz-box;
-	display: -ms-box;
-	display: box;
 	background: #DBDBDB;
 
 	display: flex;
@@ -314,11 +309,6 @@ a.sideBarItem:hover, a.sideBarItem:active{
 
 	-webkit-justify-content: flex-start;
 	justify-content: flex-start;
-
-	-ms-flex-direction: row;
-	-webkit-box-orient:horizontal;
-	-moz-box-orient:horizontal;
-	box-orient: horizontal;
 
 	margin-top: 10px;
 	padding-top: 20px;
@@ -396,3 +386,32 @@ h1{
 	margin-bottom: 0px;
 }
 
+table{
+	border-collapse: collapse;
+	font-size: 20px;
+	margin-top:20px;
+}
+
+tr:nth-child(odd) {
+  background-color: #E5E3DC;
+}
+
+tr:nth-child(1) {
+  background-color: #CDCCC6;
+  font-weight: bold;
+  line-height: 35px;
+}
+
+td{
+  padding-right: 30px;
+  padding-left: 30px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+td:nth-child(1){
+  padding-right: 30px;
+  padding-left: 20px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}

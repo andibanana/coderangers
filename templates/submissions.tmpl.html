@@ -25,11 +25,26 @@
 
     <div class="containerContent">
     	<h1>Submissions</h1>
-		<ul>
-		  {{range .Submissions}}
-		  <li>{{.ID}} - <a href="/view/{{.ProblemIndex}}">{{.ProblemIndex}}</a> - <a href="/profile/{{.UserID}}">{{.Username}}</a> - {{.Verdict}} - {{.Runtime}}</li>
-		  {{end}}
-		</ul>
+
+      <table>
+        <tr>
+          <td>ID</td>
+          <td>Problem Index</td>
+          <td>Username</td>
+          <td>Verdict</td>
+          <td>Runtime</td>
+        </tr>
+		
+    		  {{range .Submissions}}
+            <tr>
+        		  <td>{{.ID}}</td>
+              <td><a href="/view/{{.ProblemIndex}}">{{.ProblemIndex}}</a></td>
+              <td><a href="/profile/{{.UserID}}">{{.Username}}</a></td>
+              <td>{{.Verdict}}</td>
+              <td>{{.Runtime}}</td>
+            </tr>
+      		{{end}}
+        </table>
 
 	</div>
 

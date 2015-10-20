@@ -28,14 +28,47 @@
 
     	<div class="containerContent">
 		
-			<h1>Leaderboard</h1>
-			<ul>
-			  <li>ID - Username - Experience</li>
-			{{ range . }}
-			  <li>{{.ID}} - {{.Username}} - {{.Experience}}</li>
-			{{ end }}
-			</ul>
+		<h1>Leaderboard</h1>
+			<table>
+				<tr>
+					<td>ID</td>
+					<td>Username</td>
+					<td>XP</td>
+				</tr>
+
+				{{ range . }}
+				<tr>
+				  <td>{{.ID}}</td> <td>{{.Username}}</td> <td>{{.Experience}}</td>
+				</tr>
+				{{ end }}
+			</table>
 
 		</div>
 
 </body>
+
+
+
+<table border="1" style="width:1024px;">
+      {{range .Messages}}
+        <tr>
+          <td>
+          <a href="/view/{{.UserID}}">{{.FirstName}}</a><br>
+          <a href="/view/{{.UserID}}">{{.Username}}</a><br>
+          Date Joined: {{.DateJoined | showDateTime }}
+          </td>
+          <td>
+          Date Created: {{.DateCreated | showDateTime}} {{if (or $.IsAdmin (eq .UserID $.UserID))}}<a href="/edit-message/{{.MessageID}}">Edit</a> 
+          <form style="display:inline;" action="/delete" method="POST">
+          <input type="hidden" value="{{.MessageID}}" name="messageID">
+          <input type="hidden" value="{{.UserID}}" name="user_id">
+          <input type="submit" value="Delete" class="notAButton">
+          </form>{{end}}<br>
+          {{.Message | boldItalics}}<br>
+          {{ if .Edited}}
+          Date Edited: {{.DateEdited | showDateTime}}<br>
+          {{ end }}
+          </td>
+        </tr>
+      {{end}}
+      </table>
