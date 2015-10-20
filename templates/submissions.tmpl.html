@@ -16,8 +16,8 @@
           <span class = "sideBarItem"><a href="/" class="sideBarItem">Quests</a></span>
           <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
           <br>
-          <!--<span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span>-->
-          <form method="POST" action="/logout"><input type="submit" value="Logout"></form> <!--ask how to stick this into a link!! -->
+          <!-- <span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span> -->
+          {{if .IsLoggedIn}}<form method="POST" action="/logout"><input type="submit" value="Logout"></form>{{end}} <!--ask how to stick this into a link!! -->
 
         </div>
       </div>
@@ -26,7 +26,7 @@
     <div class="containerContent">
     	<h1>Submissions</h1>
 		<ul>
-		  {{range .}}
+		  {{range .Submissions}}
 		  <li>{{.ID}} - <a href="/view/{{.ProblemIndex}}">{{.ProblemIndex}}</a> - <a href="/profile/{{.UserID}}">{{.Username}}</a> - {{.Verdict}} - {{.Runtime}}</li>
 		  {{end}}
 		</ul>

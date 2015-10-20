@@ -211,7 +211,14 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
-	templating.RenderPage(w, "submissions", getSubmissions())
+	data := struct {
+		Submissions []Submission
+		IsLoggedIn  bool
+	}{
+		getSubmissions(),
+		cookies.IsLoggedIn(r),
+	}
+	templating.RenderPage(w, "submissions", data)
 }
 
 func BuyHintHandler(w http.ResponseWriter, r *http.Request) {
