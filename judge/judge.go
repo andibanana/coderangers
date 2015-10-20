@@ -244,43 +244,59 @@ func AddSamples() {
 	AddProblem(p)
 	p = Problem{
 		Index: -1,
-		Title: "Hashmat the Brave Warrior",
-		Description: "Hashmat is a brave warrior who with his group of " +
-			"young soldiers moves from one place to another to Fight against his opponents. " +
-			"Before Fighting he just calculates one thing, " +
-			"the difference between his soldier number and the opponent's soldier number. " +
-			"From this difference he decides whether to Fight or not. " +
-			"Hashmat's soldier number is never greater than his opponent. ",
-		Category:     "Math",
+		Title: "Relational Operator",
+		Description: "Some operators checks about the relationship between " +
+			"two values and these operators are called relational operators. " +
+			"Given two numerical values your job is just to and out the relationship " +
+			"between them that is (i) First one is greater than the second (ii) " +
+			"First one is less than the second or (iii) First and second one is equal." +
+			"For each line of input produce one line of output. " +
+			"This line contains any one of the relational operators '>', '<' or '=', " +
+			"which indicates the relation that is appropriate for the given two numbers.",
+		Category:     "Ad Hoc",
 		Difficulty:   5,
-		Hint:         "Subtract",
-		Input:        "10 12\n10 14\n100 200\n4294967295 4294967294\n",
-		Output:       "2\n4\n100\n1\n",
-		SampleInput:  "10 12\n10 14\n100 200\n4294967295 4294967294\n",
-		SampleOutput: "2\n4\n100\n1\n",
+		Hint:         "if else > = <",
+		Input:        "3\n10 20\n20 10\n10 10\n",
+		Output:       "<\n>\n=\n",
+		SampleInput:  "3\n10 20\n20 10\n10 10\n",
+		SampleOutput: "<\n>\n=\n",
 		TimeLimit:    5,
 		MemoryLimit:  200,
 	}
 	AddProblem(p)
 	p = Problem{
 		Index: -1,
-		Title: "Hashmat the Brave Warrior",
-		Description: "Hashmat is a brave warrior who with his group of " +
-			"young soldiers moves from one place to another to Fight against his opponents. " +
-			"Before Fighting he just calculates one thing, " +
-			"the difference between his soldier number and the opponent's soldier number. " +
-			"From this difference he decides whether to Fight or not. " +
-			"Hashmat's soldier number is never greater than his opponent. ",
+		Title: "Big Mod",
+		Description: "Calculate R : B^P mod M\n" +
+			"for large values of B, P, and M using an efficient algorithm. (That's right, this problem has a time dependency !!!.)\n" +
+			"Three integer values (in the order B, P, M) will be read one number per line. " +
+			"B and P are integers in the range 0 to 2147483647 inclusive. M is an integer in the range 1 to 46340 inclusive. ",
 		Category:     "Math",
 		Difficulty:   9,
-		Hint:         "Subtract",
-		Input:        "10 12\n10 14\n100 200\n4294967295 4294967294\n",
-		Output:       "2\n4\n100\n1\n",
-		SampleInput:  "10 12\n10 14\n100 200\n4294967295 4294967294\n",
-		SampleOutput: "2\n4\n100\n1\n",
+		Hint:         "modBow BigInt",
+		Input:        "3\n18132\n17\n\n17\n1765\n3\n\n2374859\n3029382\n36123\n",
+		Output:       "13\n2\n13195\n",
+		SampleInput:  "3\n18132\n17\n\n17\n1765\n3\n\n2374859\n3029382\n36123\n",
+		SampleOutput: "13\n2\n13195\n",
 		TimeLimit:    5,
 		MemoryLimit:  200,
 	}
+	AddProblem(p)
+	p.Title = "Clock Hands"
+	AddProblem(p)
+	p.Title = "Y3K Problem"
+	AddProblem(p)
+	p.Title = "Cancer or Scorpio"
+	AddProblem(p)
+	p.Title = "Amazing"
+	AddProblem(p)
+	p.Title = "All Integer Average"
+	AddProblem(p)
+	p.Title = "Mobile Casanova"
+	AddProblem(p)
+	p.Title = "Horror Dash"
+	AddProblem(p)
+	p.Title = "Hangman Judge"
 	AddProblem(p)
 
 	AddDailyChallenge(time.Date(2015, time.October, 18, 0, 0, 0, 0, time.Local), Easy, 1)
