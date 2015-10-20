@@ -31,10 +31,10 @@ func main() {
 	fmt.Println(err)
 	if err == nil {
 		users.Register("admin", "admin", true)
-		users.Register("FCsean", "FCsean", true)
-		users.Register("gopherzapper_", "gopherzapper_", true)
-		users.Register("DarkMega12", "DarkMega12", true)
-		users.Register("gmg", "gmg", true)
+		users.RegisterAndFakeData("FCsean", "FCsean", false, 500, 50)
+		users.RegisterAndFakeData("gopherzapper_", "gopherzapper_", false, 12300, 1230)
+		users.RegisterAndFakeData("DarkMega12", "DarkMega12", false, 100000, 10000)
+		users.RegisterAndFakeData("gmg", "gmg", false, 3230, 323)
 		judge.AddSamples()
 	}
 	templating.InitTemplates()
