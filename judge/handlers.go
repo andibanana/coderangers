@@ -3,8 +3,8 @@ package judge
 import (
 	".././cookies"
 	".././dao"
-	".././data"
 	".././templating"
+	".././users"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -12,21 +12,14 @@ import (
 )
 
 func ProblemsHandler(w http.ResponseWriter, r *http.Request) {
-	userID, ok := cookies.GetUserID(r)
-	var dailyChallenge Problem
-	if ok {
-		dailyChallenge = getDailyChallenge(userID)
-	}
 	data := struct {
-		ProblemList    []Problem
-		IsAdmin        bool
-		IsLoggedIn     bool
-		DailyChallenge Problem
+		ProblemList []Problem
+		IsAdmin     bool
+		IsLoggedIn  bool
 	}{
 		GetProblems(),
 		dao.IsAdmin(r),
 		cookies.IsLoggedIn(r),
-		dailyChallenge,
 	}
 	templating.RenderPage(w, "viewproblems", data)
 }
@@ -72,7 +65,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			Description:  r.FormValue("description"),
 			Category:     r.FormValue("category"),
 			Difficulty:   difficulty,
-			Hint:         r.FormValue("hint"),
+			UvaID:        r.FormValue("uva_id"),
 			Input:        r.FormValue("input"),
 			Output:       r.FormValue("output"),
 			SampleInput:  r.FormValue("sample_input"),
@@ -112,7 +105,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			Description:  r.FormValue("description"),
 			Category:     r.FormValue("category"),
 			Difficulty:   difficulty,
-			Hint:         r.FormValue("hint"),
+			UvaID:        r.FormValue("uva_id"),
 			Input:        r.FormValue("input"),
 			Output:       r.FormValue("output"),
 			SampleInput:  r.FormValue("sample_input"),
@@ -153,7 +146,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	var userID int
 	if cookies.IsLoggedIn(r) {
 		userID, _ = cookies.GetUserID(r)
-		data.AddViewedProblem(userID, index)
+		users.AddViewedProblem(userID, index)
 	}
 	submitted, verdictData := getProblemStatistics(index)
 	rate := float64(verdictData.Accepted) / float64(submitted) * 100
@@ -162,13 +155,11 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	data := struct {
 		Problem     Problem
-		HintBought  bool
 		Submitted   int
 		Rate        float64
 		VerdictData VerdictData
 	}{
 		problem,
-		boughtHintAlready(userID, index),
 		submitted,
 		rate,
 		verdictData,
@@ -191,22 +182,20 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 	d, _ := ioutil.TempDir(DIR, "")
 	ioutil.WriteFile(filepath.Join(d, "Main.java"), []byte(r.FormValue("code")), 0600)
 	userID, _ := cookies.GetUserID(r)
-	dailyChallenge := getDailyChallenge(userID)
 	s := &Submission{
-		UserID:         userID,
-		ProblemIndex:   index,
-		Directory:      d,
-		Verdict:        Received,
-		DailyChallenge: dailyChallenge.Index == index,
+		UserID:       userID,
+		ProblemIndex: index,
+		Directory:    d,
+		Verdict:      Received,
 	}
 	submissionID, err := addSubmission(*s, userID)
-	data.UpdateAttemptedCount(userID)
+	users.UpdateAttemptedCount(userID)
 	s.ID = submissionID
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	submissionQueue <- s
+	go addToSubmissionQueue(s)
 	http.Redirect(w, r, "/submissions/", http.StatusFound)
 }
 
@@ -221,28 +210,33 @@ func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 	templating.RenderPage(w, "submissions", data)
 }
 
-func BuyHintHandler(w http.ResponseWriter, r *http.Request) {
+func SkillHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case "POST":
-		if !cookies.IsLoggedIn(r) {
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		}
-		problemID, err := strconv.Atoi(r.FormValue("p"))
-		if err != nil {
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-		userID, _ := cookies.GetUserID(r)
-		if !boughtHintAlready(userID, problemID) {
-			if !buyHint(userID, problemID) {
-				http.Error(w, "Not enough coins", http.StatusBadRequest)
-				return
-			}
-		}
-		http.Redirect(w, r, "/view/"+strconv.Itoa(problemID), http.StatusSeeOther)
-		return
+	case "GET":
+		templating.RenderPage(w, "skill", nil)
+	default:
+		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+	}
+}
 
+func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		templating.RenderPage(w, "skill-tree", nil)
+	default:
+		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+	}
+}
+
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		data := struct {
+			IsLoggedIn bool
+		}{
+			cookies.IsLoggedIn(r),
+		}
+		templating.RenderPage(w, "home", data)
 	default:
 		templating.ErrorPage(w, http.StatusMethodNotAllowed)
 	}

@@ -3,7 +3,7 @@ package main
 import (
 	"./dao"
 	"./judge"
-	"./leaderboards"
+	// "./leaderboards"
 	"./templating"
 	"./users"
 	"fmt"
@@ -27,14 +27,14 @@ func page(content string) string {
 
 func main() {
 	err := dao.CreateDB()
-
 	fmt.Println(err)
+
 	if err == nil {
-		users.Register("admin", "admin", true)
-		users.RegisterAndFakeData("FCsean", "FCsean", false, 500, 50)
-		users.RegisterAndFakeData("gopherzapper_", "gopherzapper_", false, 12300, 1230)
-		users.RegisterAndFakeData("DarkMega12", "DarkMega12", false, 100000, 10000)
-		users.RegisterAndFakeData("gmg", "gmg", false, 3230, 323)
+		users.Register("admin", "admin", "frzsk@yahoo.com", true)
+		// users.RegisterAndFakeData("FCsean", "FCsean", false, 500, 50)
+		// users.RegisterAndFakeData("gopherzapper_", "gopherzapper_", false, 12300, 1230)
+		// users.RegisterAndFakeData("DarkMega12", "DarkMega12", false, 100000, 10000)
+		//users.RegisterAndFakeData("gmg", "gmg", false, 3230, 323)
 		judge.AddSamples()
 	}
 	templating.InitTemplates()
@@ -42,7 +42,7 @@ func main() {
 	judge.DIR = filepath.Join(wd, "submissions")
 	os.Mkdir(judge.DIR, 0777)
 	judge.InitQueues()
-	http.HandleFunc("/", judge.ProblemsHandler)
+	http.HandleFunc("/", judge.HomeHandler)
 	http.HandleFunc("/problems/", judge.ProblemsHandler)
 	http.HandleFunc("/add/", judge.AddHandler)
 	http.HandleFunc("/edit/", judge.EditHandler)
@@ -53,14 +53,13 @@ func main() {
 	http.HandleFunc("/register", users.RegisterHandler)
 	http.HandleFunc("/login", users.LoginHandler)
 	http.HandleFunc("/logout", users.LogoutHandler)
-	http.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
-	http.HandleFunc("/buy_hint", judge.BuyHintHandler)
-	http.HandleFunc("/profile", users.ViewProfileHandler)
-	http.HandleFunc("/profile/", users.ViewUserProfileHandler)
-
+	// http.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
+	// http.HandleFunc("/profile", users.ViewProfileHandler)
+	// http.HandleFunc("/profile/", users.ViewUserProfileHandler)
+	// http.HandleFunc("/skill/", judge.SkillHandler)
+	// http.HandleFunc("/skill-tree/", judge.SkillTreeHandler)
 	http.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir("./styles"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./images"))))
-	http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts"))))
-
+	// http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts"))))
 	http.ListenAndServe(":80", nil)
 }

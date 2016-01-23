@@ -1,11 +1,15 @@
 package judge
 
 import (
-	".././data"
 	".././helper"
+	".././users"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -20,7 +24,7 @@ type Problem struct {
 	Category     string
 	SampleInput  string
 	SampleOutput string
-	Hint         string
+	UvaID        string
 	Input        string
 	Output       string
 	TimeLimit    int
@@ -28,14 +32,14 @@ type Problem struct {
 }
 
 type Submission struct {
-	Username       string
-	UserID         int
-	ID             int
-	ProblemIndex   int
-	Directory      string
-	Verdict        string
-	DailyChallenge bool
-	Runtime        string
+	Username        string
+	UserID          int
+	ID              int
+	ProblemIndex    int
+	Directory       string
+	Verdict         string
+	UvaSubmissionID int
+	Runtime         float64
 }
 
 type VerdictData struct {
@@ -47,22 +51,38 @@ type VerdictData struct {
 }
 
 const (
-	Received  = "received"
-	Compiling = "compiling"
-	Running   = "running"
-	Judging   = "judging"
+	Received            = "received"
+	Compiling           = "compiling"
+	Running             = "running"
+	Judging             = "judging"
+	Inqueue             = "inqueue"
+	Accepted            = "accepted"
+	PresentationError   = "presentation error"
+	WrongAnswer         = "wrong answer"
+	CompileError        = "compile error"
+	RuntimeError        = "runtime error"
+	TimeLimitExceeded   = "time limit exceeded"
+	MemoryLimitExceeded = "memory limit exceeded"
+	OutputLimitExceeded = "output limit exceeded"
+	SubmissionError     = "submission error"
+	RestrictedFunction  = "restricted function"
+	CantBeJudged        = "can't be judged"
+)
 
-	Accepted = "accepted"
-	// PresentationError    = "presentation error"
-	WrongAnswer       = "wrong answer"
-	CompileError      = "compile error"
-	RuntimeError      = "runtime error"
-	TimeLimitExceeded = "time limit exceeded"
-	// MemoryLimitExceeded  = "memory limit exceeded"
-	// OutputLimitExceeded  = "output limit exceeded"
-	// SubmissionError      = "submission error"
-	// RestrictedFunction   = "restricted function"
-	// CantBeJudged         = "can't be judged"
+type UvaSubmissions struct {
+	Name  string  `json:"name"`
+	Uname string  `json:"uname"`
+	Subs  [][]int `json:"subs"`
+}
+
+type UserSubmissions struct {
+	Submissions UvaSubmissions `json:"821610"`
+}
+
+const (
+	UvaNodeDirectory = `C:\Users\Sean\Desktop\uva-node`
+	UvaUsername      = "CodeRanger2"
+	UvaUserID        = "821610"
 )
 
 const (
@@ -88,6 +108,7 @@ var (
 	problemQueue    chan *Problem
 	submissionList  []*Submission
 	submissionQueue chan *Submission
+	uvaQueue        chan *Submission
 )
 
 func InitQueues() {
@@ -103,9 +124,124 @@ func InitQueues() {
 	go func() {
 		for s := range submissionQueue {
 			submissionList = append(submissionList, s)
-			go s.judge()
+			s.uvaJudge()
 		}
 	}()
+
+	uvaQueue = make(chan *Submission)
+	go func() {
+		for s := range uvaQueue {
+			go s.checkVerdict()
+		}
+	}()
+}
+
+func (s *Submission) checkVerdict() {
+	// fmt.Println("checking")
+	prob, err := GetProblem(s.ProblemIndex)
+	// fmt.Println("http://uhunt.felix-halim.net/api/subs-nums/" + UvaUserID + "/" + prob.UvaID + "/" + strconv.Itoa(s.UvaSubmissionID - 1))
+	resp, err := http.Get("http://uhunt.felix-halim.net/api/subs-nums/" + UvaUserID + "/" + prob.UvaID + "/" + strconv.Itoa(s.UvaSubmissionID-1))
+	if err != nil {
+		uvaQueue <- s
+	} else {
+		defer resp.Body.Close()
+		userSubmissions := new(UserSubmissions)
+		json.NewDecoder(resp.Body).Decode(userSubmissions)
+		submissions := userSubmissions.Submissions
+		for i := 0; i < len(submissions.Subs); i++ {
+			if submissions.Subs[i][0] == s.UvaSubmissionID {
+				if submissions.Subs[i][2] == 10 {
+					go addToSubmissionQueue(s)
+				} else if submissions.Subs[i][2] == 20 || submissions.Subs[i][2] == 0 {
+					time.Sleep(2 * time.Second)
+					uvaQueue <- s
+				} else {
+					var verdict string
+					switch submissions.Subs[i][2] {
+					case 30:
+						verdict = CompileError
+					case 35:
+						verdict = RestrictedFunction
+					case 40:
+						verdict = RuntimeError
+					case 45:
+						verdict = OutputLimitExceeded
+					case 50:
+						verdict = TimeLimitExceeded
+					case 60:
+						verdict = MemoryLimitExceeded
+					case 70:
+						verdict = WrongAnswer
+					case 80:
+						verdict = PresentationError
+					case 90:
+						verdict = Accepted
+					}
+					s.Verdict = verdict
+					s.Runtime = float64(submissions.Subs[i][3]) / 1000.00
+					UpdateVerdict(s.ID, verdict)
+					UpdateRuntime(s.ID, s.Runtime)
+				}
+			}
+		}
+	}
+}
+
+func (s *Submission) uvaJudge() {
+	var stdout bytes.Buffer
+	p, _ := GetProblem(s.ProblemIndex)
+	// fmt.Println("judging")
+	cmd := exec.Command("npm", "start")
+	cmd.Dir = UvaNodeDirectory
+	cmd.Stdout = &stdout
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer stdin.Close()
+	cmd.Start()
+	io.WriteString(stdin, "use uva "+UvaUsername+"\n")
+	str := "send " + p.UvaID + " " + s.Directory + `\Main.java` + "\n"
+	io.WriteString(stdin, str)
+	for !(strings.Contains(stdout.String(), "Send ok") || strings.Contains(stdout.String(), "send failed")) {
+		//fmt.Println("out: ", stdout.String())
+		time.Sleep(2 * time.Second)
+	}
+
+	if strings.Contains(stdout.String(), "send failed") {
+		submissionQueue <- s
+		return
+	}
+
+	io.WriteString(stdin, "exit\n")
+	cmd.Wait()
+	time.Sleep(6 * time.Second)
+	notgotten := true
+	for notgotten {
+		resp, err := http.Get("http://uhunt.felix-halim.net/api/subs-user-last/" + UvaUserID + "/1")
+
+		if err == nil {
+			defer resp.Body.Close()
+			submissions := new(UvaSubmissions)
+			err = json.NewDecoder(resp.Body).Decode(submissions)
+			submissionID := submissions.Subs[0][0]
+			if usedSubmissionID(submissionID) {
+				continue
+			}
+			updateUvaSubmissionID(s.ID, submissionID)
+			UpdateVerdict(s.ID, Inqueue)
+			s.UvaSubmissionID = submissionID
+			//check if submissionID in db already. if it is try loop again.
+			// fmt.Println(submissionID)
+			uvaQueue <- s
+			notgotten = false
+		}
+	}
+	//fmt.Println(stdout.String())
+}
+
+func addToSubmissionQueue(s *Submission) {
+	submissionQueue <- s
 }
 
 func (s *Submission) judge() {
@@ -149,30 +285,7 @@ func (s *Submission) judge() {
 
 	s.Verdict = Accepted
 	if !acceptedAlready(s.UserID, s.ProblemIndex) {
-		data.IncrementCount(s.UserID, data.Accepted)
-		multiplier := 1
-		if s.DailyChallenge {
-			multiplier = 2
-			data.IncrementCount(s.UserID, data.DailyChallenge)
-		}
-		switch {
-		case 1 <= p.Difficulty && p.Difficulty <= 3:
-			data.AddExperienceAndCoins(s.UserID, EasyXP*multiplier, EasyXP/10*multiplier)
-		case 4 <= p.Difficulty && p.Difficulty <= 8:
-			data.AddExperienceAndCoins(s.UserID, MediumXP*multiplier, MediumXP/10*multiplier)
-		case 9 <= p.Difficulty && p.Difficulty <= 10:
-			data.AddExperienceAndCoins(s.UserID, HardXP*multiplier, HardXP/10*multiplier)
-		}
-	} else if s.DailyChallenge && !acceptedAlreadyAndDailyChallenge(s.UserID, s.ProblemIndex) {
-		data.IncrementCount(s.UserID, data.DailyChallenge)
-		switch {
-		case 1 <= p.Difficulty && p.Difficulty <= 3:
-			data.AddExperienceAndCoins(s.UserID, EasyXP, EasyXP/10)
-		case 4 <= p.Difficulty && p.Difficulty <= 8:
-			data.AddExperienceAndCoins(s.UserID, MediumXP, MediumXP/10)
-		case 9 <= p.Difficulty && p.Difficulty <= 10:
-			data.AddExperienceAndCoins(s.UserID, HardXP, HardXP/10)
-		}
+		users.IncrementCount(s.UserID, users.Accepted)
 	}
 	UpdateVerdict(s.ID, Accepted)
 }
@@ -233,7 +346,7 @@ func AddSamples() {
 			"Hashmat's soldier number is never greater than his opponent. ",
 		Category:     "Math",
 		Difficulty:   1,
-		Hint:         "Subtract",
+		UvaID:        "10055",
 		Input:        "10 12\n10 14\n100 200\n4294967295 4294967294\n",
 		Output:       "2\n4\n100\n1\n",
 		SampleInput:  "10 12\n10 14\n100 200\n4294967295 4294967294\n",
@@ -255,7 +368,7 @@ func AddSamples() {
 			"which indicates the relation that is appropriate for the given two numbers.",
 		Category:     "Ad Hoc",
 		Difficulty:   5,
-		Hint:         "if else > = <",
+		UvaID:        "11172",
 		Input:        "3\n10 20\n20 10\n10 10\n",
 		Output:       "<\n>\n=\n",
 		SampleInput:  "3\n10 20\n20 10\n10 10\n",
@@ -273,7 +386,7 @@ func AddSamples() {
 			"B and P are integers in the range 0 to 2147483647 inclusive. M is an integer in the range 1 to 46340 inclusive. ",
 		Category:     "Math",
 		Difficulty:   9,
-		Hint:         "modBow BigInt",
+		UvaID:        "374",
 		Input:        "3\n18132\n17\n\n17\n1765\n3\n\n2374859\n3029382\n36123\n",
 		Output:       "13\n2\n13195\n",
 		SampleInput:  "3\n18132\n17\n\n17\n1765\n3\n\n2374859\n3029382\n36123\n",
@@ -298,18 +411,5 @@ func AddSamples() {
 	AddProblem(p)
 	p.Title = "Hangman Judge"
 	AddProblem(p)
-
-	AddDailyChallenge(time.Date(2015, time.October, 18, 0, 0, 0, 0, time.Local), Easy, 1)
-	AddDailyChallenge(time.Date(2015, time.October, 18, 0, 0, 0, 0, time.Local), Medium, 2)
-	AddDailyChallenge(time.Date(2015, time.October, 18, 0, 0, 0, 0, time.Local), Hard, 3)
-	AddDailyChallenge(time.Date(2015, time.October, 19, 0, 0, 0, 0, time.Local), Easy, 1)
-	AddDailyChallenge(time.Date(2015, time.October, 19, 0, 0, 0, 0, time.Local), Medium, 2)
-	AddDailyChallenge(time.Date(2015, time.October, 19, 0, 0, 0, 0, time.Local), Hard, 3)
-	AddDailyChallenge(time.Date(2015, time.October, 20, 0, 0, 0, 0, time.Local), Easy, 1)
-	AddDailyChallenge(time.Date(2015, time.October, 20, 0, 0, 0, 0, time.Local), Medium, 2)
-	AddDailyChallenge(time.Date(2015, time.October, 20, 0, 0, 0, 0, time.Local), Hard, 3)
-	AddDailyChallenge(time.Date(2015, time.October, 21, 0, 0, 0, 0, time.Local), Easy, 1)
-	AddDailyChallenge(time.Date(2015, time.October, 21, 0, 0, 0, 0, time.Local), Medium, 2)
-	AddDailyChallenge(time.Date(2015, time.October, 21, 0, 0, 0, 0, time.Local), Hard, 3)
 
 }

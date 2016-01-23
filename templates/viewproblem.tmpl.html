@@ -15,7 +15,7 @@
           <br>
           <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">My Submissions</a></span>
           <span class = "sideBarItem"><a href="/" class="sideBarItem">Browse Problems</a></span>
-          <span class = "sideBarItem"><a href="/" class="sideBarItem">Quests</a></span>
+          <span class = "sideBarItem"><a href="/quests" class="sideBarItem">Quests</a></span>
           <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
           <br>
           <!--<span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span>-->
@@ -28,30 +28,22 @@
     <div class="containerContent">
 
 		<h1>{{.Problem.Title}}</h1>
-		<h2>{{.Problem.Category}}</h2>
-		<h2>{{.Problem.Difficulty}}</h2>
-		<h2>Hint: {{ if .HintBought }}
-		{{.Problem.Hint}}
-		{{ else }}
-		<form action="/buy_hint" method="POST">
-		  <input type="hidden" name="p" value="{{.Problem.Index}}">
-		  <input type="submit" value="Buy Hint">
-		</form>
-		{{ end }}
-		</h2>
-		<h3>Submitted: {{.Submitted}}</h3>
+		<p>Category: {{.Problem.Category}}</p>
+		<p>Difficulty: {{.Problem.Difficulty}}</p>
+		
+<!-- 		<h3>Submitted: {{.Submitted}}</h3>
 		<h3>Accepted: {{.VerdictData.Accepted}}</h3>
-		<h3>Rate: {{.Rate}}%</h3>
+		<h3>Rate: {{.Rate}}%</h3> -->
 
-		<h3>Chart Data</h3>
+		<!-- <h3>Chart Data</h3>
 		<h4>Accepted: {{.VerdictData.Accepted}}</h4>
 		<h4>Wrong Answer: {{.VerdictData.WrongAnswer}}</h4>
 		<h4>Compile Error: {{.VerdictData.CompileError}}</h4>
 		<h4>Runtime Error: {{.VerdictData.RuntimeError}}</h4>
-		<h4>Time Limit Exceeded: {{.VerdictData.TimeLimitExceeded}}</h4>
+		<h4>Time Limit Exceeded: {{.VerdictData.TimeLimitExceeded}}</h4> -->
 
 
-		<p>{{.Problem.Description}}</p>
+		<p style="width:800px">{{.Problem.Description}}</p>
 		<h2>Sample Input</h2>
 		<p>{{.Problem.SampleInput | fixNewLines}}</p>
 		<h2>Sample Output</h2>

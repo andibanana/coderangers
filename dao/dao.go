@@ -38,6 +38,7 @@ func CreateDB() error {
 					
 			username VARCHAR(50) UNIQUE NOT NULL,
 			hashed_password CHARACTER(60) NOT NULL,
+      email VARCHAR(50) UNIQUE NOT NULL,
 			admin BOOLEAN NOT NULL DEFAULT FALSE,
       date_joined DATE NOT NULL
 		)
@@ -53,8 +54,8 @@ func CreateDB() error {
 			title VARCHAR(100) NOT NULL,
       description VARCHAR(200) NOT NULL,
       category VARCHAR(200) NOT NULL,
+      uva_id VARCHAR(100) NOT NULL,
       difficulty INTEGER,
-      hint TEXT,
       time_limit INTEGER,
       memory_limit INTEGER,
       sample_input TEXT,
@@ -80,18 +81,17 @@ func CreateDB() error {
 	if err != nil {
 		return err
 	}
-
 	_, err = db.Exec(`
 		CREATE TABLE submissions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       problem_id INTEGER,
       user_id INTEGER,
       
+      uva_submission_id INTEGER,
 			directory VARCHAR(100) NOT NULL,
       verdict VARCHAR(100) NOT NULL,
       timestamp DATETIME NOT NULL,
       runtime_error TEXT,
-      daily_challenge BOOLEAN,
       runtime NUMERIC,
       
       FOREIGN KEY(user_id) REFERENCES user_account(id)
@@ -151,41 +151,8 @@ func CreateDB() error {
         attempted_count INTEGER,
         viewed_problems_count INTEGER,
         experience INTEGER,
-        coins INTEGER,
-        daily_challenge INTEGER,
         
         FOREIGN KEY(user_id) REFERENCES user_account(id)
-		)
-	`)
-
-	if err != nil {
-		return err
-	}
-
-	_, err = db.Exec(`
-		CREATE TABLE daily_challenges (
-        day DATE,
-        difficulty VARCHAR(10),
-        
-        problem_id INTEGER,
-        
-        PRIMARY KEY(day, difficulty),
-        FOREIGN KEY(problem_id) REFERENCES problems(id)
-		)
-	`)
-
-	if err != nil {
-		return err
-	}
-
-	_, err = db.Exec(`
-		CREATE TABLE bought_hints (
-        user_id INTEGER,
-        problem_id INTEGER,
-        
-        PRIMARY KEY(user_id, problem_id),
-        FOREIGN KEY(user_id) REFERENCES user_account(id),
-        FOREIGN KEY(problem_id) REFERENCES problems(id)
 		)
 	`)
 

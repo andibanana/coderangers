@@ -25,7 +25,7 @@ func Login(username, password string) (userID int, ok bool) {
 	return userID, err == nil
 }
 
-func Register(username, password string, admin bool) (int, error) {
+func Register(username, password, email string, admin bool) (int, error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return 0, err
@@ -39,8 +39,8 @@ func Register(username, password string, admin bool) (int, error) {
 		return 0, err
 	}
 
-	result, err := tx.Exec("INSERT INTO user_account (username, hashed_password, admin, date_joined) VALUES (?, ?, ?, ?)",
-		username, hashedPassword, admin, time.Now())
+	result, err := tx.Exec("INSERT INTO user_account (username, hashed_password, email, admin, date_joined) VALUES (?, ?, ?, ?, ?)",
+		username, hashedPassword, email, admin, time.Now())
 	if err != nil {
 		tx.Rollback()
 		return 0, err
@@ -53,7 +53,8 @@ func Register(username, password string, admin bool) (int, error) {
 		return 0, err
 	}
 
-	_, err = tx.Exec("INSERT INTO user_data (user_id, submitted_count, accepted_count, attempted_count, viewed_problems_count, experience, daily_challenge, coins) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", userID, 0, 0, 0, 0, 0, 0, 0)
+	_, err = tx.Exec(`INSERT INTO user_data (user_id, submitted_count, accepted_count, attempted_count, viewed_problems_count, experience) 
+                    VALUES (?, ?, ?, ?, ?, ?)`, userID, 0, 0, 0, 0, 0)
 
 	if err != nil {
 		tx.Rollback()

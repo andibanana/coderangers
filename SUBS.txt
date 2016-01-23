@@ -1,0 +1,24 @@
+The subs array length is the same as the number of submissions of the user. Each element is one submission with values:
+
+    Submission ID
+    Problem ID
+    Verdict ID
+    Runtime
+    Submission Time (unix timestamp)
+    Language ID (1=ANSI C, 2=Java, 3=C++, 4=Pascal, 5=C++11)
+    Submission Rank 
+
+Verdict ID can be one of the following values:
+
+    10 : Submission error
+    15 : Can't be judged
+    20 : In queue
+    30 : Compile error
+    35 : Restricted function
+    40 : Runtime error
+    45 : Output limit
+    50 : Time limit
+    60 : Memory limit
+    70 : Wrong answer
+    80 : PresentationE
+    90 : Accepted 

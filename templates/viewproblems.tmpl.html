@@ -15,8 +15,8 @@
           <br>
           <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">My Submissions</a></span>
           {{ if .IsAdmin }}<span class = "sideBarItem"><a href="/submissions" class="sideBarItem">Create Problem</a></span>{{ end }}
-          <span class = "sideBarItem"><a href="/" class="sideBarItem">Browse Problems</a></span>
-          <span class = "sideBarItem"><a href="/" class="sideBarItem">Quests</a></span>
+          <span class = "sideBarItem"><a href="/problems" class="sideBarItem">Browse Problems</a></span>
+          <span class = "sideBarItem"><a href="/quests" class="sideBarItem">Quests</a></span>
           <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
           <br>
           {{ end }}
@@ -30,6 +30,11 @@
     </div>
 
     <div class="containerContent">
+      <ul>
+        {{range .ProblemList}}
+        <li>{{.Category}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }} </li>
+        {{end}}
+      </ul>
       <!--
       {{ if .IsAdmin }}<a href="/add/">Create a Problem</a> {{ end }}
       {{ if .IsLoggedIn }} <form method="POST" action="/logout"><input type="submit" value="Logout"></form> {{ end }}
@@ -38,32 +43,7 @@
       <a href="/leaderboards">View Leaderboards</a>
       {{ if .IsLoggedIn }} <a href="/profile">View Profile</a> {{ end }}
       -->
-      <div class="containerWelcome">
-        <img class="characterIcon" src="/images/scientist.png">
-        <div class="containerContent">
-          <h1>Welcome Back!</h1>
-          Have you tried todays daily challange? Rewards are bigger for that problem if you complete it today!
-        </div>
-      </div>
-
-      {{ if .IsLoggedIn }}
-
-      <h1>Daily Challenge</h1>
-      Completing a daily challenge unlocks more XP than normal.<br>
-      <div class="dailyChallengeWrapper">
-        <a href="/view/{{ .DailyChallenge.Index }}">{{ .DailyChallenge.Title}} - {{ .DailyChallenge.Category}} - {{ .DailyChallenge.Difficulty }}
-        </a>
-      </div>
-
-      {{ end }}
-
-      <h1>Not up for it? Try these</h1>
-      <ul>
-        {{range .ProblemList}}
-        <li>{{.Category}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }} </li>
-        {{end}}
-      </ul>
-    </div>
+      <!-- <a href="/view/1"><img src="/images/browse.png"></a> -->
 
 
   </div>

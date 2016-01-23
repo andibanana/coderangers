@@ -3,7 +3,7 @@ package users
 import (
 	".././cookies"
 	".././dao"
-	".././data"
+	//".././data"
 	".././templating"
 	"fmt"
 	"net/http"
@@ -21,7 +21,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		username := r.FormValue("username")
 		password := r.FormValue("password")
-
+		email := r.FormValue("email")
 		accessLevel := r.FormValue("access_level")
 		if accessLevel != "" && !dao.IsAdmin(r) {
 			fmt.Fprintf(w, `
@@ -33,7 +33,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		admin := accessLevel == "admin"
 
-		userID, err := Register(username, password, admin)
+		userID, err := Register(username, password, email, admin)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -93,7 +93,7 @@ func ViewProfileHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userID, _ := cookies.GetUserID(r)
-		userData, _ := data.GetUserData(userID)
+		userData, _ := GetUserData(userID)
 		templating.RenderPage(w, "viewprofile", userData)
 	default:
 		templating.ErrorPage(w, http.StatusMethodNotAllowed)
@@ -108,7 +108,7 @@ func ViewUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
-		userData, err := data.GetUserData(userID)
+		userData, err := GetUserData(userID)
 		if err != nil {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
