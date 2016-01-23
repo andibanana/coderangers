@@ -109,6 +109,9 @@ var (
 	submissionList  []*Submission
 	submissionQueue chan *Submission
 	uvaQueue        chan *Submission
+	cmd             *exec.Cmd
+	stdin           io.WriteCloser
+	stdout          bytes.Buffer
 )
 
 func InitQueues() {
@@ -134,6 +137,12 @@ func InitQueues() {
 			go s.checkVerdict()
 		}
 	}()
+	cmd := exec.Command("npm", "start")
+	cmd.Dir = UvaNodeDirectory
+	cmd.Stdout = &stdout
+	stdin, _ = cmd.StdinPipe()
+
+	cmd.Start()
 }
 
 func (s *Submission) checkVerdict() {
@@ -188,18 +197,10 @@ func (s *Submission) checkVerdict() {
 }
 
 func (s *Submission) uvaJudge() {
-	var stdout bytes.Buffer
+
 	p, _ := GetProblem(s.ProblemIndex)
 	// fmt.Println("judging")
-	cmd := exec.Command("npm", "start")
-	cmd.Dir = UvaNodeDirectory
-	cmd.Stdout = &stdout
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer stdin.Close()
-	cmd.Start()
+
 	io.WriteString(stdin, "use uva "+UvaUsername+"\n")
 	str := "send " + p.UvaID + " " + s.Directory + `\Main.java` + "\n"
 	io.WriteString(stdin, str)
@@ -213,8 +214,9 @@ func (s *Submission) uvaJudge() {
 		return
 	}
 
-	io.WriteString(stdin, "exit\n")
-	cmd.Wait()
+	stdout.Reset()
+	//io.WriteString(stdin, "exit\n")
+
 	time.Sleep(6 * time.Second)
 	notgotten := true
 	for notgotten {
@@ -237,7 +239,7 @@ func (s *Submission) uvaJudge() {
 			notgotten = false
 		}
 	}
-	//fmt.Println(stdout.String())
+
 }
 
 func addToSubmissionQueue(s *Submission) {
