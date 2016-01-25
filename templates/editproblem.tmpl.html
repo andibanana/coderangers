@@ -3,13 +3,13 @@
     display:block;
   }
 </style>
-<form action="/add/" method="POST">
+<form action="/edit/" method="POST">
   <input type="hidden" name="problem_id" value="{{.Index}}">
   <label>Title: <input type="text" name="title" value="{{.Title}}"></label>
   <label>Description: <textarea name="description">{{.Description}}</textarea></label>
   <label>Category: <input type="text" name="category" value="{{.Category}}"></label>
   <label>Difficulty: <input type="text" name="difficulty" value="{{.Difficulty}}"></label>
-  <label>Hint: <input type="text" name="uva_id" value="{{.Hint}}"></label>
+  <label>Uva ID: <input type="text" name="uva_id" value="{{.UvaID}}"></label>
   <label>Time Limit: <input type="text" name="time_limit" value="{{.TimeLimit}}"></label>
   <label>Memory Limit: <input type="text" name="memory_limit" value="{{.MemoryLimit}}"></label>
   <label>Sample Input: <textarea name="sample_input">{{.SampleInput}}</textarea></label>

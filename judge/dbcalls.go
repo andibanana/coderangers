@@ -48,35 +48,36 @@ func AddProblem(problem Problem) {
 	tx.Commit()
 }
 
-func editProblem(problem Problem) {
+func editProblem(problem Problem) error {
 
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
-		return
+		return err
 	}
 	defer db.Close()
 
 	tx, err := db.Begin()
 	if err != nil {
-		return
+		return err
 	}
 
 	_, err = tx.Exec("UPDATE problems SET title = ?, description = ?, difficulty = ?, category = ?, uva_id = ?, time_limit = ?, memory_limit = ?, sample_input = ?, sample_output = ? WHERE id = ?",
 		problem.Title, problem.Description, problem.Difficulty, problem.Category, problem.UvaID, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput, problem.Index)
 	if err != nil {
 		tx.Rollback()
-		return
+		return err
 	}
 
-	_, err = tx.Exec("UPDATE inputoutput SET problem_id = ?, input_number = ?, input = ?, output = ? WHERE problem_id = ? AND input_number = ?",
+	_, err = tx.Exec("UPDATE inputoutput SET input = ?, output = ? WHERE problem_id = ? AND input_number = ?",
 		problem.Input, problem.Output, problem.Index, 1)
 
 	if err != nil {
 		tx.Rollback()
-		return
+		return err
 	}
 
 	tx.Commit()
+	return nil
 }
 
 func deleteProblem(problemID int) {

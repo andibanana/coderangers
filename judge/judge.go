@@ -131,6 +131,7 @@ func InitQueues() {
 			if err != nil {
 				fmt.Println("ERR!!!!: ", err)
 			}
+			fmt.Println(p.UvaID)
 			if p.UvaID == "" {
 				go s.judge()
 			} else {
@@ -257,7 +258,7 @@ func (s *Submission) judge() {
 	p, _ := GetProblem(s.ProblemIndex)
 
 	s.Verdict = Compiling
-	UpdateVerdict(s.ID, Compiling)
+	// UpdateVerdict(s.ID, Compiling)
 
 	err = s.compile()
 	if err != nil {
@@ -272,15 +273,15 @@ func (s *Submission) judge() {
 	output, err := s.run(p)
 	d := time.Now().Sub(t)
 	UpdateRuntime(s.ID, helper.Truncate(d.Seconds(), 3))
-	fmt.Println(d)
+	// fmt.Println(d)
 	if err != nil {
 		s.Verdict = err.Verdict
 		UpdateVerdict(s.ID, err.Verdict)
 		return
 	}
 
-	s.Verdict = Judging
-	UpdateVerdict(s.ID, Judging)
+	// s.Verdict = Judging
+	// UpdateVerdict(s.ID, Judging)
 
 	if strings.Replace(output, "\r\n", "\n", -1) != strings.Replace(p.Output, "\r\n", "\n", -1) {
 		// whitespace checks..? floats? etc.
