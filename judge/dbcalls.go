@@ -35,13 +35,14 @@ func AddProblem(problem Problem) {
 		tx.Rollback()
 		return
 	}
+	if problem.UvaID != "" {
+		_, err = tx.Exec("INSERT INTO inputoutput (problem_id, input_number, input, output) VALUES (?, ?, ?, ?)",
+			problemID, 1, problem.Input, problem.Output)
 
-	_, err = tx.Exec("INSERT INTO inputoutput (problem_id, input_number, input, output) VALUES (?, ?, ?, ?)",
-		problemID, 1, problem.Input, problem.Output)
-
-	if err != nil {
-		tx.Rollback()
-		return
+		if err != nil {
+			tx.Rollback()
+			return
+		}
 	}
 
 	tx.Commit()

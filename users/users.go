@@ -129,7 +129,7 @@ func IncrementCount(userID int, toUpdate string) error {
 	err = tx.QueryRow("SELECT "+toUpdate+" FROM user_data WHERE user_id = ?", userID).Scan(&count)
 
 	count += 1
-	_, err = tx.Exec("UPDATE user_data SET "+toUpdate+" = ? where user_id = ?", count, userID)
+	_, err = tx.Exec("UPDATE user_data SET "+toUpdate+" = "+toUpdate+" + 1 WHERE user_id = ?", count, userID)
 
 	if err != nil {
 		tx.Rollback()

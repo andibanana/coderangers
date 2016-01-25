@@ -127,7 +127,15 @@ func InitQueues() {
 	go func() {
 		for s := range submissionQueue {
 			submissionList = append(submissionList, s)
-			s.uvaJudge()
+			p, err := GetProblem(s.ProblemIndex)
+			if err != nil {
+				fmt.Println("ERR!!!!: ", err)
+			}
+			if p.UvaID == "" {
+				go s.judge()
+			} else {
+				s.uvaJudge()
+			}
 		}
 	}()
 
@@ -185,6 +193,9 @@ func (s *Submission) checkVerdict() {
 						verdict = PresentationError
 					case 90:
 						verdict = Accepted
+						if !acceptedAlready(s.UserID, s.ProblemIndex) {
+							users.IncrementCount(s.UserID, users.Accepted)
+						}
 					}
 					s.Verdict = verdict
 					s.Runtime = float64(submissions.Subs[i][3]) / 1000.00
@@ -197,15 +208,12 @@ func (s *Submission) checkVerdict() {
 }
 
 func (s *Submission) uvaJudge() {
-
 	p, _ := GetProblem(s.ProblemIndex)
-	// fmt.Println("judging")
 
 	io.WriteString(stdin, "use uva "+UvaUsername+"\n")
 	str := "send " + p.UvaID + " " + s.Directory + `\Main.java` + "\n"
 	io.WriteString(stdin, str)
 	for !(strings.Contains(stdout.String(), "Send ok") || strings.Contains(stdout.String(), "send failed")) {
-		//fmt.Println("out: ", stdout.String())
 		time.Sleep(2 * time.Second)
 	}
 
@@ -214,8 +222,7 @@ func (s *Submission) uvaJudge() {
 		return
 	}
 
-	stdout.Reset()
-	//io.WriteString(stdin, "exit\n")
+	stdout.Reset() // cleans out the stdout of the cmd to be used for another judging.
 
 	time.Sleep(6 * time.Second)
 	notgotten := true
@@ -227,14 +234,12 @@ func (s *Submission) uvaJudge() {
 			submissions := new(UvaSubmissions)
 			err = json.NewDecoder(resp.Body).Decode(submissions)
 			submissionID := submissions.Subs[0][0]
-			if usedSubmissionID(submissionID) {
+			if usedSubmissionID(submissionID) { // if the submission is used already that means uhunt is not updated yet. try again.
 				continue
 			}
 			updateUvaSubmissionID(s.ID, submissionID)
 			UpdateVerdict(s.ID, Inqueue)
 			s.UvaSubmissionID = submissionID
-			//check if submissionID in db already. if it is try loop again.
-			// fmt.Println(submissionID)
 			uvaQueue <- s
 			notgotten = false
 		}
