@@ -17,19 +17,17 @@ import (
 var DIR string
 
 type Judge interface {
-  judge(s Submission);
+	judge(s Submission)
 }
 
 type UvaJudge struct {
-  
 }
 
 type CodeRangerJudge struct {
-
 }
 
 var uvaJudge = new(UvaJudge)
-var codeRangerJudge = new (CodeRangerJudge)
+var codeRangerJudge = new(CodeRangerJudge)
 
 type Problem struct {
 	Index        int
@@ -146,7 +144,7 @@ func InitQueues() {
 			if err != nil {
 				fmt.Println("ERR!!!!: ", err)
 			}
-			
+
 			if p.UvaID == "" {
 				go codeRangerJudge.judge(s)
 			} else {
