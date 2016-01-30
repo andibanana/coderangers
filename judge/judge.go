@@ -16,6 +16,21 @@ import (
 
 var DIR string
 
+type Judge interface {
+  judge(s Submission);
+}
+
+type UvaJudge struct {
+  
+}
+
+type CodeRangerJudge struct {
+
+}
+
+var uvaJudge = new(UvaJudge)
+var codeRangerJudge = new (CodeRangerJudge)
+
 type Problem struct {
 	Index        int
 	Title        string
@@ -131,11 +146,11 @@ func InitQueues() {
 			if err != nil {
 				fmt.Println("ERR!!!!: ", err)
 			}
-			fmt.Println(p.UvaID)
+			
 			if p.UvaID == "" {
-				go s.judge()
+				go codeRangerJudge.judge(s)
 			} else {
-				s.uvaJudge()
+				uvaJudge.judge(s)
 			}
 		}
 	}()
@@ -143,7 +158,7 @@ func InitQueues() {
 	uvaQueue = make(chan *Submission)
 	go func() {
 		for s := range uvaQueue {
-			go s.checkVerdict()
+			go uvaJudge.checkVerdict(s)
 		}
 	}()
 	cmd := exec.Command("npm", "start")
@@ -154,7 +169,7 @@ func InitQueues() {
 	cmd.Start()
 }
 
-func (s *Submission) checkVerdict() {
+func (UvaJudge) checkVerdict(s *Submission) {
 	// fmt.Println("checking")
 	prob, err := GetProblem(s.ProblemIndex)
 	// fmt.Println("http://uhunt.felix-halim.net/api/subs-nums/" + UvaUserID + "/" + prob.UvaID + "/" + strconv.Itoa(s.UvaSubmissionID - 1))
@@ -208,7 +223,7 @@ func (s *Submission) checkVerdict() {
 	}
 }
 
-func (s *Submission) uvaJudge() {
+func (UvaJudge) judge(s *Submission) {
 	p, _ := GetProblem(s.ProblemIndex)
 
 	io.WriteString(stdin, "use uva "+UvaUsername+"\n")
@@ -252,7 +267,7 @@ func addToSubmissionQueue(s *Submission) {
 	submissionQueue <- s
 }
 
-func (s *Submission) judge() {
+func (CodeRangerJudge) judge(s *Submission) {
 	var err *Error
 
 	p, _ := GetProblem(s.ProblemIndex)
