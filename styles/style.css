@@ -132,43 +132,25 @@ a{
 }
 
 .container{
-	height: 100%;
-	width: 100%;
-	display: -ms-flexbox;
-	display: -webkit-box;
-	display: -moz-box;
-	display: -ms-box;
-	display: box;
-
-	-ms-flex-direction: row;
-	-webkit-box-orient:horizontal;
-	-moz-box-orient:horizontal;
-	box-orient: horizontal;
-
-	-webkit-justify-content: flex-end;
-   justify-content: flex-end;
+   display: flex;
+   height: auto;
+   min-height: 100%;
+   width: auto;
+   min-width: 100%;
 }
 
 .codeRangersLogoBig{
-	width: 50%;
+	width: 400px;
 	height: auto;
-	margin-left: 30px;
-	margin-top: 15px;
+	margin-left: auto;
+	margin-right: auto;
 
 	object-fit: contain;
 }
 
 .loginIcon {
- -ms-flex: 1;
- -webkit-box-flex: 1;
- -moz-box-flex: 1;
- -ms-box-flex: 1;
- box-flex: 1;
-
- display: flex;
-
- -webkit-justify-content: center; /* Safari */
-  justify-content: center;
+	margin: auto;
+	align-items: right;
 }
 
 .loginWrapper{
@@ -179,31 +161,16 @@ a{
 }
 
 .loginBar {
-  background: #1C1C1C;
-  width: 30%;
-
--ms-flex: 1 100px;
--webkit-box-flex:  0;
--moz-box-flex:  0;
--ms-box-flex:  0;
-box-flex:  0;  
-
--webkit-justify-content: flex-end;
-   justify-content: flex-end;
+	background: #1C1C1C;
+	width: 400px;
 }
-
-
-
 
 .sideBar {
   background: #1C1C1C;
-  width: 15%;
-
--ms-flex: 1 100px;
--webkit-box-flex:  0;
--moz-box-flex:  0;
--ms-box-flex:  0;
-box-flex:  0;  
+  width: 200px;
+  min-width: 200px;
+  height: auto;
+  min-height: 100%;
 }
 
 .sideBarItem{
@@ -253,6 +220,7 @@ a.sideBarItem:hover, a.sideBarItem:active{
 
 
 .containerContent{
+	/*
 	height: 100%;
 	width: 100%;
 	display: -ms-flexbox;
@@ -274,7 +242,18 @@ a.sideBarItem:hover, a.sideBarItem:active{
 
 	-webkit-justify-content: flex-end;
    justify-content: flex-end;
+
+   */
+
+   	height: auto;
+	width: auto;
+	color: #333333;
+
+	word-wrap: break-word;
+
+	margin-left: 20px;
 }
+
 
 .containerWelcome{
 	display: -ms-flexbox;
@@ -320,8 +299,8 @@ a.sideBarItem:hover, a.sideBarItem:active{
 }
 
 .codeBox{
-	width: 70%;
-	height: 70%;
+	width: 800px;
+	height: 400px;
 }
 
 .rankIcon{
