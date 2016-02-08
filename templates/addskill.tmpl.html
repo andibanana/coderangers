@@ -1,0 +1,18 @@
+<style>
+  label{
+    display:block;
+  }
+</style>
+<form action="/add-skill" method="POST">
+  <label>ID: <input type="text" name="id"></label>
+  <label>Title: <input type="text" name="title"></label>
+  <label>Description: <input type="text" name="description"></label>
+  <label>Number of problems to unlock: <input type="text" name="number_of_problems_to_unlock"></label>
+  <label>Prerequisites (ID comma separated): <input type="text" name="prerequisites"></label>
+  List of skills: <br>
+  {{range .}}
+    {{.ID}} - {{.Title}} - {{.Description}} <br>
+  {{end}}
+  <input type="submit">
+</form>
+<a href="/">Back to home</a>

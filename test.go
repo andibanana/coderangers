@@ -3,6 +3,7 @@ package main
 import (
 	"./dao"
 	"./judge"
+	"./skills"
 	// "./leaderboards"
 	"./templating"
 	"./users"
@@ -36,6 +37,7 @@ func main() {
 		// users.RegisterAndFakeData("DarkMega12", "DarkMega12", false, 100000, 10000)
 		//users.RegisterAndFakeData("gmg", "gmg", false, 3230, 323)
 		judge.AddSamples()
+		skills.AddSamples()
 	}
 	templating.InitTemplates()
 	wd, _ := os.Getwd()
@@ -53,6 +55,9 @@ func main() {
 	http.HandleFunc("/register", users.RegisterHandler)
 	http.HandleFunc("/login", users.LoginHandler)
 	http.HandleFunc("/logout", users.LogoutHandler)
+	http.HandleFunc("/add-skill", skills.AddSkillHandler)
+	http.HandleFunc("/edit-skill/", skills.EditSkillHandler)
+
 	// http.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
 	// http.HandleFunc("/profile", users.ViewProfileHandler)
 	// http.HandleFunc("/profile/", users.ViewUserProfileHandler)

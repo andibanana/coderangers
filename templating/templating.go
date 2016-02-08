@@ -32,6 +32,16 @@ func InitTemplates() {
 			s = regexp.MustCompile("\r?\n").ReplaceAllString(s, "<br>")
 			return template.HTML(s)
 		},
+		"arrayToString": func(s []string) (str string) {
+			for i, st := range s {
+				if i != len(s)-1 {
+					str += st + ","
+				} else {
+					str += st
+				}
+			}
+			return
+		},
 	}).ParseGlob("./templates/*.tmpl.html"))
 }
 

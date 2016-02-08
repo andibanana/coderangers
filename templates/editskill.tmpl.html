@@ -1,0 +1,18 @@
+<style>
+  label{
+    display:block;
+  }
+</style>
+<form action="/edit-skill/{{.Skill.ID}}" method="POST">
+  <label>ID: <input type="text" name="id" value="{{.Skill.ID}}"></label>
+  <label>Title: <input type="text" name="title" value="{{.Skill.Title}}"></label>
+  <label>Description: <input type="text" name="description" value="{{.Skill.Description}}"></label>
+  <label>Number of problems to unlock: <input type="text" name="number_of_problems_to_unlock" value="{{.Skill.NumberOfProblemsToUnlock}}"></label>
+  <label>Prerequisites (ID comma separated): <input type="text" name="prerequisites" value="{{.Skill.Prerequisites | arrayToString}}"></label>
+  List of skills: <br>
+  {{range .Skills}}
+    {{.ID}} - {{.Title}} - {{.Description}} <br>
+  {{end}}
+  <input type="submit">
+</form>
+<a href="/">Back to home</a>

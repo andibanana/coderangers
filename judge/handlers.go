@@ -3,6 +3,7 @@ package judge
 import (
 	".././cookies"
 	".././dao"
+	".././skills"
 	".././templating"
 	".././users"
 	"io/ioutil"
@@ -63,7 +64,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			Index:        index,
 			Title:        r.FormValue("title"),
 			Description:  r.FormValue("description"),
-			Category:     r.FormValue("category"),
+			SkillID:      r.FormValue("skill"),
 			Difficulty:   difficulty,
 			UvaID:        r.FormValue("uva_id"),
 			Input:        r.FormValue("input"),
@@ -82,7 +83,12 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 func AddHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		templating.RenderPage(w, "addproblem", nil)
+		skills, err := skills.GetAllSkills()
+		if err != nil {
+			templating.ErrorPage(w, 404)
+			return
+		}
+		templating.RenderPage(w, "addproblem", skills)
 	case "POST":
 		time_limit, err := strconv.Atoi(r.FormValue("time_limit"))
 		if err != nil {
@@ -103,7 +109,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			Index:        -1,
 			Title:        r.FormValue("title"),
 			Description:  r.FormValue("description"),
-			Category:     r.FormValue("category"),
+			SkillID:      r.FormValue("skill"),
 			Difficulty:   difficulty,
 			UvaID:        r.FormValue("uva_id"),
 			Input:        r.FormValue("input"),

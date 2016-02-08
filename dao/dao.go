@@ -53,13 +53,41 @@ func CreateDB() error {
 			
 			title VARCHAR(100) NOT NULL,
       description VARCHAR(200) NOT NULL,
-      category VARCHAR(200) NOT NULL,
+      skill_id STRING NOT NULL,
       uva_id VARCHAR(100) NOT NULL,
       difficulty INTEGER,
       time_limit INTEGER,
       memory_limit INTEGER,
       sample_input TEXT,
-      sample_output TEXT
+      sample_output TEXT,
+      
+      FOREIGN KEY(skill_id) REFERENCES skills(id)
+		)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE skills (
+      id STRING PRIMARY KEY,
+      
+			title VARCHAR(100) NOT NULL,
+      description VARCHAR(200) NOT NULL,
+      number_of_problems_to_unlock INTEGER NOT NULL
+		)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE prerequisites (
+      skill_id STRING NOT NULL,
+      prerequisite_id STRING NOT NULL,
+      
+      FOREIGN KEY(skill_id) REFERENCES skills(id)
+      FOREIGN KEY(prerequisite_id) REFERENCES skills(id)
 		)
 	`)
 	if err != nil {

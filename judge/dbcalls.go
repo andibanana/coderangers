@@ -23,8 +23,8 @@ func AddProblem(problem Problem) {
 		return
 	}
 
-	result, err := tx.Exec("INSERT INTO problems (title, description, difficulty, category, uva_id, time_limit, memory_limit, sample_input, sample_output) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		problem.Title, problem.Description, problem.Difficulty, problem.Category, problem.UvaID, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput)
+	result, err := tx.Exec("INSERT INTO problems (title, description, difficulty, skill_id, uva_id, time_limit, memory_limit, sample_input, sample_output) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		problem.Title, problem.Description, problem.Difficulty, problem.SkillID, problem.UvaID, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput)
 	if err != nil {
 		tx.Rollback()
 		return
@@ -61,8 +61,8 @@ func editProblem(problem Problem) error {
 		return err
 	}
 
-	_, err = tx.Exec("UPDATE problems SET title = ?, description = ?, difficulty = ?, category = ?, uva_id = ?, time_limit = ?, memory_limit = ?, sample_input = ?, sample_output = ? WHERE id = ?",
-		problem.Title, problem.Description, problem.Difficulty, problem.Category, problem.UvaID, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput, problem.Index)
+	_, err = tx.Exec("UPDATE problems SET title = ?, description = ?, difficulty = ?, skill_id = ?, uva_id = ?, time_limit = ?, memory_limit = ?, sample_input = ?, sample_output = ? WHERE id = ?",
+		problem.Title, problem.Description, problem.Difficulty, problem.SkillID, problem.UvaID, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput, problem.Index)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -262,14 +262,14 @@ func GetProblems() []Problem {
 		return nil
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT id, title, description, difficulty, category, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems")
+	rows, err := db.Query("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems")
 	//, inputoutput " +
 	//"WHERE problems.id = inputoutput.problem_id ")
-	fmt.Println(err)
+	// fmt.Println(err)
 	var problems []Problem
 	for rows.Next() {
 		var problem Problem
-		rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.Category, &problem.TimeLimit,
+		rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
 			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.UvaID)
 		problems = append(problems, problem)
 	}
@@ -284,9 +284,9 @@ func GetProblem(index int) (Problem, error) {
 		return problem, err
 	}
 	defer db.Close()
-	err = db.QueryRow("SELECT id, title, description, difficulty, category, time_limit, memory_limit, sample_input, sample_output, input, output, uva_id FROM problems, inputoutput "+
+	err = db.QueryRow("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, input, output, uva_id FROM problems, inputoutput "+
 		"WHERE problems.id = inputoutput.problem_id and problems.id = ?", index).Scan(&problem.Index, &problem.Title, &problem.Description,
-		&problem.Difficulty, &problem.Category, &problem.TimeLimit, &problem.MemoryLimit, &problem.SampleInput,
+		&problem.Difficulty, &problem.SkillID, &problem.TimeLimit, &problem.MemoryLimit, &problem.SampleInput,
 		&problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID)
 
 	if err != nil {

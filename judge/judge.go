@@ -34,7 +34,7 @@ type Problem struct {
 	Title        string
 	Description  string
 	Difficulty   int
-	Category     string
+	SkillID      string
 	SampleInput  string
 	SampleOutput string
 	UvaID        string
@@ -365,7 +365,7 @@ func AddSamples() {
 			"the difference between his soldier number and the opponent's soldier number. " +
 			"From this difference he decides whether to Fight or not. " +
 			"Hashmat's soldier number is never greater than his opponent. ",
-		Category:     "Math",
+		SkillID:      "Math",
 		Difficulty:   1,
 		UvaID:        "10055",
 		Input:        "10 12\n10 14\n100 200\n4294967295 4294967294\n",
@@ -387,7 +387,7 @@ func AddSamples() {
 			"For each line of input produce one line of output. " +
 			"This line contains any one of the relational operators '>', '<' or '=', " +
 			"which indicates the relation that is appropriate for the given two numbers.",
-		Category:     "Ad Hoc",
+		SkillID:      "Ad Hoc",
 		Difficulty:   5,
 		UvaID:        "11172",
 		Input:        "3\n10 20\n20 10\n10 10\n",
@@ -405,7 +405,7 @@ func AddSamples() {
 			"for large values of B, P, and M using an efficient algorithm. (That's right, this problem has a time dependency !!!.)\n" +
 			"Three integer values (in the order B, P, M) will be read one number per line. " +
 			"B and P are integers in the range 0 to 2147483647 inclusive. M is an integer in the range 1 to 46340 inclusive. ",
-		Category:     "Math",
+		SkillID:      "Math",
 		Difficulty:   9,
 		UvaID:        "374",
 		Input:        "3\n18132\n17\n\n17\n1765\n3\n\n2374859\n3029382\n36123\n",
