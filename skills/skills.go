@@ -184,3 +184,36 @@ func getSkill(id string) (skill Skill, err error) {
 	skill.Prerequisites = prerequisites
 	return skill, nil
 }
+
+func getUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+	unlockedSkills = make(map[string]bool)
+	rows, err := db.Query(`SELECT id, prerequisite_id, achieved_id FROM
+                    (SELECT id, prerequisite_id FROM skills LEFT JOIN prerequisites ON id = skill_id) AS prerequisite_table
+                    LEFT JOIN
+                    (SELECT id AS achieved_id FROM skills, (SELECT skill_id, COUNT(DISTINCT problem_id) as solved FROM submissions, problems 
+                    WHERE user_id = ? AND problem_id = problems.id AND verdict = "accepted" GROUP BY skill_id) AS unique_solved 
+                    WHERE skills.id = unique_solved.skill_id AND unique_solved.solved >= skills.number_of_problems_to_unlock) AS achieved_table
+                    ON prerequisite_id = achieved_id;`, userID)
+	if err != nil {
+		return
+	}
+
+	var skillID string
+	var prerequisiteID string
+	var achievedID string
+	for rows.Next() {
+		rows.Scan(&skillID, &prerequisiteID, &achievedID)
+		if _, ok := unlockedSkills[skillID]; !ok {
+			unlockedSkills[skillID] = true
+		}
+		if prerequisiteID != achievedID {
+			unlockedSkills[skillID] = false
+		}
+	}
+	return
+}

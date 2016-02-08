@@ -365,7 +365,7 @@ func AddSamples() {
 			"the difference between his soldier number and the opponent's soldier number. " +
 			"From this difference he decides whether to Fight or not. " +
 			"Hashmat's soldier number is never greater than his opponent. ",
-		SkillID:      "Math",
+		SkillID:      "1",
 		Difficulty:   1,
 		UvaID:        "10055",
 		Input:        "10 12\n10 14\n100 200\n4294967295 4294967294\n",
@@ -387,7 +387,7 @@ func AddSamples() {
 			"For each line of input produce one line of output. " +
 			"This line contains any one of the relational operators '>', '<' or '=', " +
 			"which indicates the relation that is appropriate for the given two numbers.",
-		SkillID:      "Ad Hoc",
+		SkillID:      "2",
 		Difficulty:   5,
 		UvaID:        "11172",
 		Input:        "3\n10 20\n20 10\n10 10\n",
@@ -400,7 +400,7 @@ func AddSamples() {
 	AddProblem(p)
 	p = Problem{
 		Index: -1,
-		Title: "Big Mod",
+		Title: "1",
 		Description: "Calculate R : B^P mod M\n" +
 			"for large values of B, P, and M using an efficient algorithm. (That's right, this problem has a time dependency !!!.)\n" +
 			"Three integer values (in the order B, P, M) will be read one number per line. " +

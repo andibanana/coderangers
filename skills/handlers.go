@@ -9,6 +9,31 @@ import (
 	"strings"
 )
 
+func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		IsLoggedIn := cookies.IsLoggedIn(r)
+		if !IsLoggedIn {
+			templating.ErrorPage(w, 404)
+			return
+		}
+		userID, _ := cookies.GetUserID(r)
+		unlockedSkills, err := getUnlockedSkills(userID)
+		if err != nil {
+			templating.ErrorPage(w, 404)
+			return
+		}
+		data := struct {
+			UnlockedSkills map[string]bool
+			IsLoggedIn     bool
+		}{
+			unlockedSkills,
+			IsLoggedIn,
+		}
+		templating.RenderPage(w, "skill-tree", data)
+	}
+}
+
 func AddSkillHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":

@@ -62,9 +62,10 @@ func main() {
 	// http.HandleFunc("/profile", users.ViewProfileHandler)
 	// http.HandleFunc("/profile/", users.ViewUserProfileHandler)
 	// http.HandleFunc("/skill/", judge.SkillHandler)
-	// http.HandleFunc("/skill-tree/", judge.SkillTreeHandler)
+	http.HandleFunc("/skill-tree/", skills.SkillTreeHandler)
 	http.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir("./styles"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./images"))))
 	// http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts"))))
+
 	http.ListenAndServe(":80", nil)
 }
