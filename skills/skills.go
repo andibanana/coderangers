@@ -218,7 +218,11 @@ func getSkill(id string) (skill Skill, err error) {
 		rows.Scan(&prereq)
 		prerequisites = append(prerequisites, prereq)
 	}
-	skill.Prerequisites = prerequisites
+	if len(prerequisites) > 0 {
+		skill.Prerequisites = prerequisites
+	} else {
+		skill.Prerequisites = nil
+	}
 	return skill, nil
 }
 

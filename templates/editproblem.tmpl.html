@@ -12,6 +12,7 @@
   <label>Uva ID: <input type="text" name="uva_id" value="{{.UvaID}}"></label>
   <label>Time Limit: <input type="text" name="time_limit" value="{{.TimeLimit}}"></label>
   <label>Memory Limit: <input type="text" name="memory_limit" value="{{.MemoryLimit}}"></label>
+  <label>Tags: <input type="text" name="tags" value="{{.Tags | arrayToString}}"></label>
   <label>Sample Input: <textarea name="sample_input">{{.SampleInput}}</textarea></label>
   <label>Sample Output: <textarea name="sample_output">{{.SampleOutput}}</textarea></label>
   <label>Input: <textarea name="input">{{.Input}}</textarea></label>

@@ -46,6 +46,21 @@ func AddProblem(problem Problem) {
 		}
 	}
 
+	tags := "INSERT INTO tags (problem_id, tag) VALUES "
+	for i := 0; i < len(problem.Tags); i++ {
+		if i == len(problem.Tags)-1 {
+			tags += " (" + fmt.Sprint(problemID) + ", " + problem.Tags[i] + "); "
+		} else {
+			tags += " (" + fmt.Sprint(problemID) + ", " + problem.Tags[i] + "), "
+		}
+	}
+	if problem.Tags != nil {
+		_, err = tx.Exec(tags)
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+	}
 	tx.Commit()
 }
 
@@ -75,6 +90,29 @@ func editProblem(problem Problem) error {
 	if err != nil {
 		tx.Rollback()
 		return err
+	}
+
+	_, err = tx.Exec("DELETE FROM tags WHERE problem_id = ?", problem.Index)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tags := "INSERT INTO tags (problem_id, tag) VALUES "
+	for i := 0; i < len(problem.Tags); i++ {
+		if i == len(problem.Tags)-1 {
+			tags += " (" + fmt.Sprint(problem.Index) + ", " + problem.Tags[i] + "); "
+		} else {
+			tags += " (" + fmt.Sprint(problem.Index) + ", " + problem.Tags[i] + "), "
+		}
+	}
+	if problem.Tags != nil {
+		_, err = tx.Exec(tags)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
 	tx.Commit()
@@ -293,6 +331,23 @@ func GetProblem(index int) (Problem, error) {
 	if err != nil {
 		return problem, errors.New("No such problem")
 	}
+
+	rows, err := db.Query("SELECT tag FROM tags WHERE problem_id = ?", index)
+
+	if err != nil {
+		return problem, err
+	}
+	var tags []string
+	var tag string
+	for rows.Next() {
+		rows.Scan(&tag)
+		tags = append(tags, tag)
+	}
+	if len(tags) > 0 {
+		problem.Tags = tags
+	} else {
+		problem.Tags = nil
+	}
 	return problem, nil
 }
 
@@ -308,7 +363,7 @@ func getSkill(index int) (skills.Skill, error) {
 		&skill.ID, &skill.Title, &skill.Description, &skill.NumberOfProblemsToUnlock)
 
 	if err != nil {
-		return skill, errors.New("No such problem")
+		return skill, errors.New("No such skill")
 	}
 
 	return skill, nil

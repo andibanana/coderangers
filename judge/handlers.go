@@ -10,7 +10,17 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
+
+func stringToArray(input string) []string {
+	cleaned := strings.Replace(input, " ", "", -1)
+	arrInput := strings.Split(cleaned, ",")
+	if arrInput[0] == "" {
+		arrInput = nil
+	}
+	return arrInput
+}
 
 func ProblemsHandler(w http.ResponseWriter, r *http.Request) {
 	data := struct {
@@ -73,6 +83,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			SampleOutput: r.FormValue("sample_output"),
 			TimeLimit:    time_limit,
 			MemoryLimit:  memory_limit,
+			Tags:         stringToArray(r.FormValue("tags")),
 		}
 		problemQueue <- p
 		editProblem(*p)
@@ -105,6 +116,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		tags := stringToArray(r.FormValue("tags"))
 		p := &Problem{
 			Index:        -1,
 			Title:        r.FormValue("title"),
@@ -118,6 +130,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			SampleOutput: r.FormValue("sample_output"),
 			TimeLimit:    time_limit,
 			MemoryLimit:  memory_limit,
+			Tags:         tags,
 		}
 		problemQueue <- p
 		AddProblem(*p)

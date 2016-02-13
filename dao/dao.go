@@ -69,6 +69,18 @@ func CreateDB() error {
 	}
 
 	_, err = db.Exec(`
+		CREATE TABLE tags (
+      problem_id INTEGER NOT NULL,
+      tag STRING NOT NULL,
+      
+      FOREIGN KEY(problem_id) REFERENCES problems(id)
+		)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
 		CREATE TABLE skills (
       id STRING PRIMARY KEY,
       

@@ -42,7 +42,7 @@ type Problem struct {
 	Output       string
 	TimeLimit    int
 	MemoryLimit  int
-	Tags         string
+	Tags         []string
 }
 
 type Submission struct {
@@ -401,12 +401,12 @@ func AddSamples() {
 	AddProblem(p)
 	p = Problem{
 		Index: -1,
-		Title: "1",
+		Title: "Big Mod",
 		Description: "Calculate R : B^P mod M\n" +
 			"for large values of B, P, and M using an efficient algorithm. (That's right, this problem has a time dependency !!!.)\n" +
 			"Three integer values (in the order B, P, M) will be read one number per line. " +
 			"B and P are integers in the range 0 to 2147483647 inclusive. M is an integer in the range 1 to 46340 inclusive. ",
-		SkillID:      "Math",
+		SkillID:      "1",
 		Difficulty:   9,
 		UvaID:        "374",
 		Input:        "3\n18132\n17\n\n17\n1765\n3\n\n2374859\n3029382\n36123\n",
