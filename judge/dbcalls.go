@@ -2,6 +2,7 @@ package judge
 
 import (
 	".././dao"
+	".././skills"
 	".././users"
 	"database/sql"
 	"errors"
@@ -293,4 +294,22 @@ func GetProblem(index int) (Problem, error) {
 		return problem, errors.New("No such problem")
 	}
 	return problem, nil
+}
+
+func getSkill(index int) (skills.Skill, error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	var skill skills.Skill
+	if err != nil {
+		return skill, err
+	}
+	defer db.Close()
+	err = db.QueryRow("SELECT skills.id, skills.title, skills.description, number_of_problems_to_unlock FROM skills,"+
+		" problems WHERE skill_id = skills.id AND problems.id = ?", index).Scan(
+		&skill.ID, &skill.Title, &skill.Description, &skill.NumberOfProblemsToUnlock)
+
+	if err != nil {
+		return skill, errors.New("No such problem")
+	}
+
+	return skill, nil
 }

@@ -42,6 +42,7 @@ type Problem struct {
 	Output       string
 	TimeLimit    int
 	MemoryLimit  int
+	Tags         string
 }
 
 type Submission struct {

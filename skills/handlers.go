@@ -9,6 +9,33 @@ import (
 	"strings"
 )
 
+func SkillHandler(w http.ResponseWriter, r *http.Request) {
+	skill := r.URL.Path[len("/skill/"):]
+	skills, err := getSkill(skill)
+	if err != nil {
+		templating.ErrorPage(w, 404)
+		return
+	}
+	problemsInSkill, err := getProblemsInSkill(skill)
+	if err != nil {
+		templating.ErrorPage(w, 404)
+		return
+	}
+
+	data := struct {
+		ProblemList []Problem
+		Skill       Skill
+		IsAdmin     bool
+		IsLoggedIn  bool
+	}{
+		problemsInSkill,
+		skills,
+		dao.IsAdmin(r),
+		cookies.IsLoggedIn(r),
+	}
+	templating.RenderPage(w, "skill", data)
+}
+
 func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
@@ -18,7 +45,7 @@ func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userID, _ := cookies.GetUserID(r)
-		unlockedSkills, err := getUnlockedSkills(userID)
+		unlockedSkills, err := GetUnlockedSkills(userID)
 		if err != nil {
 			templating.ErrorPage(w, 404)
 			return

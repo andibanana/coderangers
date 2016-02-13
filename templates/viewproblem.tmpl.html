@@ -28,7 +28,7 @@
     <div class="containerContent">
 
 		<h1>{{.Problem.Title}}</h1>
-		<p>Skill: {{.Problem.SkillID}}</p>
+		<p>Skill: {{.Skill.Title}}</p>
 		<p>Difficulty: {{.Problem.Difficulty}}</p>
 		
 <!-- 		<h3>Submitted: {{.Submitted}}</h3>
@@ -48,9 +48,9 @@
 		<p>{{.Problem.SampleInput | fixNewLines}}</p>
 		<h2>Sample Output</h2>
 		<p>{{.Problem.SampleOutput | fixNewLines}}</p>
-		<form action="/submit/{{.Problem.Index}}" method="POST">
-		  <textarea name="code" class="codeBox"></textarea> <br>
-		<input type="submit" class="orangeBtn">
+		<form action="/submit/{{.Problem.Index}}" method="POST" {{if .Locked}} disabled {{end}}>
+		  <textarea name="code" class="codeBox" {{if .Locked}} disabled {{end}}></textarea> <br>
+		<input type="submit" class="orangeBtn" {{if .Locked}} disabled {{end}}>
 		</form>
 	</div>
  </div>

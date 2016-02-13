@@ -15,6 +15,21 @@ type Skill struct {
 	Prerequisites            []string
 }
 
+type Problem struct {
+	Index        int
+	Title        string
+	Description  string
+	Difficulty   int
+	SkillID      string
+	SampleInput  string
+	SampleOutput string
+	UvaID        string
+	Input        string
+	Output       string
+	TimeLimit    int
+	MemoryLimit  int
+}
+
 func AddSamples() {
 	s := Skill{
 		ID:                       "1",
@@ -159,6 +174,28 @@ func GetAllSkills() (skills []Skill, err error) {
 	return skills, nil
 }
 
+func getProblemsInSkill(skillID string) (problems []Problem, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
+                        sample_output, input, output, uva_id 
+                        FROM problems, skills, inputoutput WHERE problems.id = inputoutput.problem_id AND skill_id = skills.id AND skill_id = ?`, skillID)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var problem Problem
+		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
+			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID)
+		problems = append(problems, problem)
+	}
+	return
+}
+
 func getSkill(id string) (skill Skill, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
@@ -185,7 +222,7 @@ func getSkill(id string) (skill Skill, err error) {
 	return skill, nil
 }
 
-func getUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
+func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return

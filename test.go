@@ -61,7 +61,7 @@ func main() {
 	// http.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
 	// http.HandleFunc("/profile", users.ViewProfileHandler)
 	// http.HandleFunc("/profile/", users.ViewUserProfileHandler)
-	// http.HandleFunc("/skill/", judge.SkillHandler)
+	http.HandleFunc("/skill/", skills.SkillHandler)
 	http.HandleFunc("/skill-tree/", skills.SkillTreeHandler)
 	http.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir("./styles"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./images"))))

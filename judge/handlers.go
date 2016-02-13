@@ -159,16 +159,26 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	if verdictData.Accepted == 0 {
 		rate = 0
 	}
+	skill, err := getSkill(index)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	unlockedSkills, err := skills.GetUnlockedSkills(userID)
 	data := struct {
 		Problem     Problem
 		Submitted   int
 		Rate        float64
 		VerdictData VerdictData
+		Skill       skills.Skill
+		Locked      bool
 	}{
 		problem,
 		submitted,
 		rate,
 		verdictData,
+		skill,
+		!unlockedSkills[skill.ID],
 	}
 	templating.RenderPage(w, "viewproblem", data)
 	// perhaps have a JS WARNING..
@@ -180,14 +190,19 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	index, _ := strconv.Atoi(r.URL.Path[len("/submit/"):])
-	_, err := GetProblem(index)
+	problem, err := GetProblem(index)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	userID, _ := cookies.GetUserID(r)
+	unlockedSkills, err := skills.GetUnlockedSkills(userID)
+	if !unlockedSkills[problem.SkillID] {
+		templating.ErrorPage(w, 401)
+		return
+	}
 	d, _ := ioutil.TempDir(DIR, "")
 	ioutil.WriteFile(filepath.Join(d, "Main.java"), []byte(r.FormValue("code")), 0600)
-	userID, _ := cookies.GetUserID(r)
 	s := &Submission{
 		UserID:       userID,
 		ProblemIndex: index,

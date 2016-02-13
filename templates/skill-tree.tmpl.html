@@ -27,7 +27,7 @@
     <div class="containerContent">
     <ul>
     {{range $key, $value := .UnlockedSkills}}
-      <li>{{$key}} - {{$value}}</li>
+      {{if $value}}<li>{{$key}}</li>{{end}}
     {{end}}
     </div>
     </ul>
