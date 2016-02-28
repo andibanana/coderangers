@@ -375,6 +375,7 @@ func AddSamples() {
 		SampleOutput: "2\n4\n100\n1\n",
 		TimeLimit:    5,
 		MemoryLimit:  200,
+		Tags:         []string{"Subtract", "Math"},
 	}
 	AddProblem(p)
 	p = Problem{
@@ -397,6 +398,7 @@ func AddSamples() {
 		SampleOutput: "<\n>\n=\n",
 		TimeLimit:    5,
 		MemoryLimit:  200,
+		Tags:         []string{"Relational", "Math"},
 	}
 	AddProblem(p)
 	p = Problem{
@@ -415,9 +417,11 @@ func AddSamples() {
 		SampleOutput: "13\n2\n13195\n",
 		TimeLimit:    5,
 		MemoryLimit:  200,
+		Tags:         []string{"Modulo", "Math"},
 	}
 	AddProblem(p)
 	p.Title = "Clock Hands"
+	p.Tags = nil
 	AddProblem(p)
 	p.Title = "Y3K Problem"
 	AddProblem(p)

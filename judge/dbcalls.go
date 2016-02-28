@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func AddProblem(problem Problem) {
+func AddProblem(problem Problem) (err error) {
 
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
@@ -49,9 +49,9 @@ func AddProblem(problem Problem) {
 	tags := "INSERT INTO tags (problem_id, tag) VALUES "
 	for i := 0; i < len(problem.Tags); i++ {
 		if i == len(problem.Tags)-1 {
-			tags += " (" + fmt.Sprint(problemID) + ", " + problem.Tags[i] + "); "
+			tags += " (" + fmt.Sprint(problemID) + `, "` + problem.Tags[i] + `"); `
 		} else {
-			tags += " (" + fmt.Sprint(problemID) + ", " + problem.Tags[i] + "), "
+			tags += " (" + fmt.Sprint(problemID) + `, "` + problem.Tags[i] + `"), `
 		}
 	}
 	if problem.Tags != nil {
@@ -62,6 +62,7 @@ func AddProblem(problem Problem) {
 		}
 	}
 	tx.Commit()
+	return
 }
 
 func editProblem(problem Problem) error {
@@ -305,6 +306,10 @@ func GetProblems() []Problem {
 	//, inputoutput " +
 	//"WHERE problems.id = inputoutput.problem_id ")
 	// fmt.Println(err)
+	if err != nil {
+		return nil
+	}
+
 	var problems []Problem
 	for rows.Next() {
 		var problem Problem
@@ -314,6 +319,44 @@ func GetProblems() []Problem {
 	}
 
 	return problems
+}
+
+func GetRelatedProblems(userID, problemID int) (problems []Problem, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+	rows, err := db.Query(`
+    SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems WHERE id IN (
+
+      SELECT DISTINCT problem_id FROM tags WHERE problem_id != ? AND tag IN 
+      (SELECT DISTINCT tag FROM problems, tags WHERE problem_id = id AND id = ?)
+
+      EXCEPT
+
+      SELECT DISTINCT problem_id 
+      FROM submissions 
+      WHERE verdict = ? AND user_id = ?
+    );`, problemID, problemID, Accepted, userID)
+	if err != nil {
+		return
+	}
+
+	unlocked, err := skills.GetUnlockedSkills(userID)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var problem Problem
+		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
+			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.UvaID)
+		if unlocked[problem.SkillID] {
+			problems = append(problems, problem)
+		}
+	}
+
+	return
 }
 
 func GetProblem(index int) (Problem, error) {
