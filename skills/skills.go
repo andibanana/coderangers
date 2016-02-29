@@ -7,6 +7,25 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+const (
+	Received            = "received"
+	Compiling           = "compiling"
+	Running             = "running"
+	Judging             = "judging"
+	Inqueue             = "inqueue"
+	Accepted            = "accepted"
+	PresentationError   = "presentation error"
+	WrongAnswer         = "wrong answer"
+	CompileError        = "compile error"
+	RuntimeError        = "runtime error"
+	TimeLimitExceeded   = "time limit exceeded"
+	MemoryLimitExceeded = "memory limit exceeded"
+	OutputLimitExceeded = "output limit exceeded"
+	SubmissionError     = "submission error"
+	RestrictedFunction  = "restricted function"
+	CantBeJudged        = "can't be judged"
+)
+
 type Skill struct {
 	ID                       string
 	Title                    string
@@ -28,6 +47,7 @@ type Problem struct {
 	Output       string
 	TimeLimit    int
 	MemoryLimit  int
+	Solved       bool
 }
 
 func AddSamples() {
@@ -191,6 +211,32 @@ func getProblemsInSkill(skillID string) (problems []Problem, err error) {
 		var problem Problem
 		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
 			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID)
+		problems = append(problems, problem)
+	}
+	return
+}
+
+func getProblemsInSkillForUser(skillID string, userID int) (problems []Problem, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
+                        sample_output, input, output, uva_id, verdict is not null  
+                        FROM problems, skills, inputoutput 
+                        LEFT JOIN (SELECT * FROM submissions WHERE verdict = ? AND user_id = ?) AS submissions ON (problems.id = submissions.problem_id) 
+                        WHERE problems.id = inputoutput.problem_id AND skill_id = skills.id AND skill_id = ?       
+                        `, Accepted, userID, skillID)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var problem Problem
+		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
+			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID, &problem.Solved)
+
 		problems = append(problems, problem)
 	}
 	return

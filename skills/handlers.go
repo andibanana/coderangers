@@ -4,6 +4,7 @@ import (
 	".././cookies"
 	".././dao"
 	".././templating"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,8 +17,16 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		templating.ErrorPage(w, 404)
 		return
 	}
-	problemsInSkill, err := getProblemsInSkill(skill)
+	loggedIn := cookies.IsLoggedIn(r)
+	var problemsInSkill []Problem
+	if loggedIn {
+		userID, _ := cookies.GetUserID(r)
+		problemsInSkill, err = getProblemsInSkillForUser(skill, userID)
+	} else {
+		problemsInSkill, err = getProblemsInSkill(skill)
+	}
 	if err != nil {
+		fmt.Println(err)
 		templating.ErrorPage(w, 404)
 		return
 	}
@@ -31,7 +40,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		problemsInSkill,
 		skills,
 		dao.IsAdmin(r),
-		cookies.IsLoggedIn(r),
+		loggedIn,
 	}
 	templating.RenderPage(w, "skill", data)
 }
