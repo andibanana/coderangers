@@ -242,11 +242,13 @@ func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Submissions []Submission
 		IsLoggedIn  bool
+		IsAdmin     bool
 	}{
 		getSubmissions(),
 		cookies.IsLoggedIn(r),
+		dao.IsAdmin(r),
 	}
-	templating.RenderPage(w, "submissions", data)
+	templating.RenderPageWithBase(w, "submissions", data)
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
