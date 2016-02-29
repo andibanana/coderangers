@@ -1,39 +1,10 @@
-<!DOCTYPE HTML>
-<html>
-	<link rel="stylesheet" type="text/css" href="/styles/style.css">
-<body>
+{{define "title"}}Home{{end}}
+{{define "content"}}
 
-	<div class="container">
-
-	    <div class="sideBar">
-	      <div class="menuItemsWrapper">
-	        <img class="codeRangersLogoSmall" src="/images/logoWhite.png">
-
-	        <div class="sideBarOptionsWrapper">
-            <span class = "sideBarItem"><a href="/" class="sideBarItem">Home</a></span>
-            {{ if .IsLoggedIn }}<span class = "sideBarItem"><a href="/profile" class="sideBarItem">Personal Records</a></span>
-            <br>
-            <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">My Submissions</a></span>
-            <!-- <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">Create Problem</a></span> -->
-            <span class = "sideBarItem"><a href="/add-skill" class="sideBarItem">Add Skill</a></span>
-            <span class = "sideBarItem"><a href="/problems" class="sideBarItem">Browse Problems</a></span>
-            <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
-            <br>
-            {{ end }}
-            <!--<span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span>-->
-            {{ if .IsLoggedIn }} <form method="POST" action="/logout"><input type="submit" value="Logout"></form> {{ end }} <!--ask how to stick this into a link!! -->
-
-
-            <span class = "sideBarItem">{{ if not .IsLoggedIn }} <a href="/login" class="sideBarItem">Log In</a> {{ end }}</span>
-	        </div>
-	      </div>
-	    </div>
 {{ if .IsLoggedIn }}
 <a href="/skill-tree"><img style="width:51%;" src="/images/home.png"></a>
 {{ else }}
 <a href="/skill-tree"><img style="width:51%;" src="/images/home.png"></a>
 {{ end }}
 		
-	</div>
-</body>
-</html>
+{{end}}

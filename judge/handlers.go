@@ -32,7 +32,7 @@ func ProblemsHandler(w http.ResponseWriter, r *http.Request) {
 		dao.IsAdmin(r),
 		cookies.IsLoggedIn(r),
 	}
-	templating.RenderPage(w, "viewproblems", data)
+	templating.RenderPageWithBase(w, "viewproblems", data)
 }
 
 func EditHandler(w http.ResponseWriter, r *http.Request) {
@@ -185,6 +185,8 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		VerdictData VerdictData
 		Skill       skills.Skill
 		Locked      bool
+		IsAdmin     bool
+		IsLoggedIn  bool
 	}{
 		problem,
 		submitted,
@@ -192,8 +194,11 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		verdictData,
 		skill,
 		!unlockedSkills[skill.ID],
+		dao.IsAdmin(r),
+		cookies.IsLoggedIn(r),
 	}
-	templating.RenderPage(w, "viewproblem", data)
+
+	templating.RenderPageWithBase(w, "viewproblem", data)
 	// perhaps have a JS WARNING..
 }
 
@@ -244,33 +249,17 @@ func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 	templating.RenderPage(w, "submissions", data)
 }
 
-func SkillHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		templating.RenderPage(w, "skill", nil)
-	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
-	}
-}
-
-func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		templating.RenderPage(w, "skill-tree", nil)
-	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
-	}
-}
-
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		data := struct {
 			IsLoggedIn bool
+			IsAdmin    bool
 		}{
 			cookies.IsLoggedIn(r),
+			dao.IsAdmin(r),
 		}
-		templating.RenderPage(w, "home", data)
+		templating.RenderPageWithBase(w, "home", data)
 	default:
 		templating.ErrorPage(w, http.StatusMethodNotAllowed)
 	}

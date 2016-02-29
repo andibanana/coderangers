@@ -45,7 +45,7 @@ func main() {
 	os.Mkdir(judge.DIR, 0777)
 	judge.InitQueues()
 	http.HandleFunc("/", judge.HomeHandler)
-	http.HandleFunc("/problems/", judge.ProblemsHandler)
+	http.HandleFunc("/problems", judge.ProblemsHandler)
 	http.HandleFunc("/add-problem", judge.AddHandler)
 	http.HandleFunc("/edit/", judge.EditHandler)
 	http.HandleFunc("/delete", judge.DeleteHandler)

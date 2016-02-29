@@ -1,32 +1,5 @@
-<!DOCTYPE HTML>
-<html>
-  <link rel="stylesheet" type="text/css" href="/styles/style.css">
-<body>
-
-  <div class="container">
-
-    <div class="sideBar">
-      <div class="menuItemsWrapper">
-        <img class="codeRangersLogoSmall" src="/images/logoWhite.png">
-
-        <div class="sideBarOptionsWrapper">
-          <span class = "sideBarItem"><a href="/" class="sideBarItem">Home</a></span>
-          {{ if .IsLoggedIn }}<span class = "sideBarItem"><a href="/profile" class="sideBarItem">Personal Records</a></span>
-          <br>
-          <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">My Submissions</a></span>
-          {{ if .IsAdmin }}<span class = "sideBarItem"><a href="/submissions" class="sideBarItem">Create Problem</a></span>{{ end }}
-          <span class = "sideBarItem"><a href="/problems" class="sideBarItem">Browse Problems</a></span>
-          <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
-          <br>
-          {{ end }}
-          <!--<span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span>-->
-          {{ if .IsLoggedIn }} <form method="POST" action="/logout"><input type="submit" value="Logout"></form> {{ end }} <!--ask how to stick this into a link!! -->
-
-
-          <span class = "sideBarItem">{{ if not .IsLoggedIn }} <a href="/login" class="sideBarItem">Log In</a> {{ end }}</span>
-        </div>
-      </div>
-    </div>
+{{define "title"}}Problems{{end}}
+{{define "content"}}
 
     <div class="containerContent">
       <ul>
@@ -34,17 +7,6 @@
         <li>{{.SkillID}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }} </li>
         {{end}}
       </ul>
-      <!--
-      {{ if .IsAdmin }}<a href="/add/">Create a Problem</a> {{ end }}
-      {{ if .IsLoggedIn }} <form method="POST" action="/logout"><input type="submit" value="Logout"></form> {{ end }}
-      {{ if not .IsLoggedIn }} <a href="/login">Log In here</a> {{ end }}
-      <a href="/submissions">View Submissions</a>
-      <a href="/leaderboards">View Leaderboards</a>
-      {{ if .IsLoggedIn }} <a href="/profile">View Profile</a> {{ end }}
-      -->
-      <!-- <a href="/view/1"><img src="/images/browse.png"></a> -->
+    </div>
 
-
-  </div>
-</body>
-</html>
+{{end}}
