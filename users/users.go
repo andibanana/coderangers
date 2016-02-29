@@ -46,6 +46,19 @@ func GetUserData(userID int) (data UserData, err error) {
 		"FROM user_data, user_account WHERE user_id = id AND user_id = ?", userID).Scan(&data.Username,
 		&data.Experience, &data.Submitted, &data.Accepted, &data.Attempted)
 
+	err = db.QueryRow(`SELECT SUM(difficulty) FROM
+                    (SELECT DISTINCT problem_id, difficulty FROM submissions, problems 
+                    WHERE problems.id = submissions.problem_id AND user_id = ? AND verdict = ?);`, userID).Scan(&data.Experience)
+
+	err = db.QueryRow(`SELECT COUNT(*) FROM submissions
+                    WHERE user_id = ?;`, userID).Scan(&data.Submitted)
+
+	err = db.QueryRow(`SELECT COUNT(DISTINCT problem_id) FROM submissions
+                    WHERE user_id = ?;`, userID).Scan(&data.Attempted)
+
+	err = db.QueryRow(`SELECT COUNT(DISTINCT problem_id) FROM submissions
+                    WHERE verdict = ? AND user_id = ?;`, "accepted", userID).Scan(&data.Accepted)
+
 	return
 }
 

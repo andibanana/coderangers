@@ -94,7 +94,16 @@ func ViewProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		userID, _ := cookies.GetUserID(r)
 		userData, _ := GetUserData(userID)
-		templating.RenderPage(w, "viewprofile", userData)
+		data := struct {
+			UserData   UserData
+			IsAdmin    bool
+			IsLoggedIn bool
+		}{
+			userData,
+			dao.IsAdmin(r),
+			cookies.IsLoggedIn(r),
+		}
+		templating.RenderPageWithBase(w, "viewprofile", data)
 	default:
 		templating.ErrorPage(w, http.StatusMethodNotAllowed)
 	}
@@ -113,7 +122,16 @@ func ViewUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
-		templating.RenderPage(w, "viewprofile", userData)
+		data := struct {
+			UserData   UserData
+			IsAdmin    bool
+			IsLoggedIn bool
+		}{
+			userData,
+			dao.IsAdmin(r),
+			cookies.IsLoggedIn(r),
+		}
+		templating.RenderPageWithBase(w, "viewprofile", data)
 	default:
 		templating.ErrorPage(w, http.StatusMethodNotAllowed)
 	}

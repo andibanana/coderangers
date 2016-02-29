@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+<link rel="stylesheet" type="text/css" href="/styles/style.css">
+
+<title>{{template "title" .}}</title>
+<body>
+
+	<div class="container">
+
+	    <div class="sideBar">
+	      <div class="menuItemsWrapper">
+	        <img class="codeRangersLogoSmall" src="/images/logoWhite.png">
+
+	        <div class="sideBarOptionsWrapper">
+            <span class = "sideBarItem"><a href="/" class="sideBarItem">Home</a></span>
+            {{ if .IsLoggedIn }}<span class = "sideBarItem"><a href="/profile" class="sideBarItem">Personal Records</a></span>
+            <br>
+            <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">My Submissions</a></span>
+            {{ if .IsAdmin }}
+            <span class = "sideBarItem"><a href="/add-problem" class="sideBarItem">Create Problem</a></span>
+            <span class = "sideBarItem"><a href="/add-skill" class="sideBarItem">Add Skill</a></span>
+            {{ end }}
+            <span class = "sideBarItem"><a href="/problems" class="sideBarItem">Browse Problems</a></span>
+            <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
+            <br>
+            {{ end }}
+            <!--<span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span>-->
+            {{ if .IsLoggedIn }} <form method="POST" action="/logout"><input type="submit" value="Logout"></form> {{ end }} <!--ask how to stick this into a link!! -->
+
+
+            <span class = "sideBarItem">{{ if not .IsLoggedIn }} <a href="/login" class="sideBarItem">Log In</a> {{ end }}</span>
+	        </div>
+	      </div>
+	    </div>
+      {{template "content" .}}
+	</div>
+</body>
+</html>

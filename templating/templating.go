@@ -9,9 +9,10 @@ import (
 )
 
 var templates *template.Template
+var fmap template.FuncMap
 
 func InitTemplates() {
-	templates = template.Must(template.New("").Funcs(template.FuncMap{
+	fmap = template.FuncMap{
 		"showDate":     func(date time.Time) string { return date.Format("Jan 2, 2006") },
 		"showDateTime": func(date time.Time) string { return date.Format(time.RFC850) },
 		"showISODate":  func(date time.Time) string { return date.Format("2006-01-02") },
@@ -42,7 +43,8 @@ func InitTemplates() {
 			}
 			return
 		},
-	}).ParseGlob("./templates/*.tmpl.html"))
+	}
+	templates = template.Must(template.New("").Funcs(fmap).ParseGlob("./templates/*.tmpl.html"))
 }
 
 func RenderPage(w http.ResponseWriter, template string, data interface{}) {
@@ -50,6 +52,22 @@ func RenderPage(w http.ResponseWriter, template string, data interface{}) {
 	err := templates.ExecuteTemplate(w, template+".tmpl.html", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func RenderPageWithBase(w http.ResponseWriter, templ string, data interface{}) {
+	InitTemplates() // temporary for convenience
+	t := template.New("")
+	t = t.Funcs(fmap)
+	t, err := t.ParseFiles("./templates/base.tmpl.html", "./templates/"+templ+".tmpl.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = t.ExecuteTemplate(w, "base.tmpl.html", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
