@@ -42,7 +42,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		dao.IsAdmin(r),
 		loggedIn,
 	}
-	templating.RenderPage(w, "skill", data)
+	templating.RenderPageWithBase(w, "skill", data)
 }
 
 func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
@@ -62,11 +62,13 @@ func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
 		data := struct {
 			UnlockedSkills map[string]bool
 			IsLoggedIn     bool
+			IsAdmin        bool
 		}{
 			unlockedSkills,
 			IsLoggedIn,
+			dao.IsAdmin(r),
 		}
-		templating.RenderPage(w, "skill-tree", data)
+		templating.RenderPageWithBase(w, "skill-tree", data)
 	}
 }
 

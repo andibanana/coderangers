@@ -1,40 +1,16 @@
-<!DOCTYPE HTML>
-<html>
-	<link rel="stylesheet" type="text/css" href="/styles/style.css">
-<body>
+{{define "title"}}{{.Skill.Title}}{{end}}
+{{define "content"}}
 
-	<div class="container">
+  <div class="containerContent">
+  {{.Skill.ID}}
+  {{.Skill.Title}}
+  {{.Skill.Description}}
 
-	    <div class="sideBar">
-	      <div class="menuItemsWrapper">
-	        <img class="codeRangersLogoSmall" src="/images/logoWhite.png">
-
-	        <div class="sideBarOptionsWrapper">
-	          <span class = "sideBarItem"><a href="/" class="sideBarItem">Home</a></span>
-	          <span class = "sideBarItem"><a href="/profile" class="sideBarItem">Personal Records</a></span>
-	          <br>
-	          <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">My Submissions</a></span>
-	          <span class = "sideBarItem"><a href="/" class="sideBarItem">Browse Problems</a></span>
-	          <span class = "sideBarItem"><a href="/" class="sideBarItem">Quests</a></span>
-	          <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
-	          <br>
-	          <!--<span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span>-->
-	          <form method="POST" action="/logout"><input type="submit" value="Logout"></form> <!--ask how to stick this into a link!! -->
-
-	        </div>
-	      </div>
-	    </div>
-    <div class="containerContent">
-    {{.Skill.ID}}
-    {{.Skill.Title}}
-    {{.Skill.Description}}
-
-    <ul>
-      {{range .ProblemList}}
-      <li>{{if $.IsLoggedIn}}{{.Solved}}{{end}} - {{.SkillID}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }}  </li>
-      {{end}}
-    </ul>
-    </div>
-	</div>
-</body>
-</html>
+  <ul>
+    {{range .ProblemList}}
+    <li>{{if $.IsLoggedIn}}{{.Solved}}{{end}} - {{.SkillID}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }}  </li>
+    {{end}}
+  </ul>
+  </div>
+  
+{{end}}
