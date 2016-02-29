@@ -226,7 +226,7 @@ func getProblemsInSkillForUser(skillID string, userID int) (problems []Problem, 
 	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
                         sample_output, input, output, uva_id, verdict is not null  
                         FROM problems, skills, inputoutput 
-                        LEFT JOIN (SELECT * FROM submissions WHERE verdict = ? AND user_id = ?) AS submissions ON (problems.id = submissions.problem_id) 
+                        LEFT JOIN (SELECT DISTINCT problem_id, verdict FROM submissions WHERE verdict = ? AND user_id = ?) AS submissions ON (problems.id = submissions.problem_id) 
                         WHERE problems.id = inputoutput.problem_id AND skill_id = skills.id AND skill_id = ?       
                         `, Accepted, userID, skillID)
 	if err != nil {
