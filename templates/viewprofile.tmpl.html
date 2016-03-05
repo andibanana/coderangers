@@ -3,13 +3,22 @@
 {{define "content"}}
 <div class="profileInfo1">
 
-<img class="rankIcon" src="/images/rank7.png">
-<h1>{{.UserData.Username}}</h1>
-<span class="levelText">Level: {{xpToLevel .UserData.Experience}}</span><br>
-Experience: {{.UserData.Experience}} <br>
-Problems Solved: {{.UserData.Accepted}} <br>
-Problems Attempted: {{.UserData.Attempted}} <br>
-Submitted Solutions: {{.UserData.Submitted}} <br>
+  <img class="rankIcon" src="/images/rank7.png">
+  <h1>{{.UserData.Username}}</h1>
+  <span class="levelText">Level: {{xpToLevel .UserData.Experience}}</span><br>
+  Experience: {{.UserData.Experience}} <br>
+  Problems Solved: {{.UserData.Accepted}} <br>
+  Problems Attempted: {{.UserData.Attempted}} <br>
+  Submitted Solutions: {{.UserData.Submitted}} <br>
+  <span>
+    {{range .Achievements}}
+    <div style="display:inline-block;">
+      {{.Title}}<br>
+      <img src="/images/{{.Image}}"><br>
+    </div>
+    {{end}}
+    
+  </span>
 
 </div>
 {{end}}

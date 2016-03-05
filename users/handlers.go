@@ -1,9 +1,9 @@
 package users
 
 import (
+	".././achievements"
 	".././cookies"
 	".././dao"
-	//".././data"
 	".././templating"
 	"fmt"
 	"net/http"
@@ -94,14 +94,21 @@ func ViewProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		userID, _ := cookies.GetUserID(r)
 		userData, _ := GetUserData(userID)
+		badges, err := achievements.GetAchievements(userID)
+		if err != nil {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
 		data := struct {
-			UserData   UserData
-			IsAdmin    bool
-			IsLoggedIn bool
+			UserData     UserData
+			IsAdmin      bool
+			IsLoggedIn   bool
+			Achievements []achievements.Achievement
 		}{
 			userData,
 			dao.IsAdmin(r),
 			cookies.IsLoggedIn(r),
+			badges,
 		}
 		templating.RenderPageWithBase(w, "viewprofile", data)
 	default:
@@ -122,14 +129,21 @@ func ViewUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
+		badges, err := achievements.GetAchievements(userID)
+		if err != nil {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
 		data := struct {
-			UserData   UserData
-			IsAdmin    bool
-			IsLoggedIn bool
+			UserData     UserData
+			IsAdmin      bool
+			IsLoggedIn   bool
+			Achievements []achievements.Achievement
 		}{
 			userData,
 			dao.IsAdmin(r),
 			cookies.IsLoggedIn(r),
+			badges,
 		}
 		templating.RenderPageWithBase(w, "viewprofile", data)
 	default:
