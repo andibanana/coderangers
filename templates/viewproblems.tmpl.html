@@ -1,12 +1,42 @@
 {{define "title"}}Problems{{end}}
 {{define "content"}}
 
-    <div class="containerContent">
+<!-- 
+     <div class="containerContent">
       <ul>
         {{range .ProblemList}}
         <li>{{.SkillID}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }} </li>
         {{end}}
       </ul>
     </div>
+ -->
+<div class="containerContent">
+
+	<h1>Browse Problems</h1>
+
+    <table>
+        <tr>
+          <td>Skill ID</td>
+          <td>Problem</td>
+          {{ if $.IsAdmin}}
+          <td>Edit</td>
+          <td>Delete</td>
+          {{end}}
+        </tr>
+
+        {{range .ProblemList}}
+        <tr>
+    	  <td>{{.SkillID}}</td>
+          <td><a href="/view/{{.Index}}">{{.Title}}</a></td>
+
+          {{ if $.IsAdmin }}
+          <td><a href="/edit/{{.Index}}">Edit Problem</a></td>
+          <td><form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form></td>
+          {{end}}
+
+        </tr>
+        {{end}}
+    </table>
+</div>
 
 {{end}}
