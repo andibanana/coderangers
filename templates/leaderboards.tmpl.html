@@ -1,74 +1,22 @@
-<title>Leaderboards</title>
-<link rel="stylesheet" type="text/css" href="/styles/style.css">
+{{define "title"}}Leaderboards{{end}}
+{{define "content"}}
 
-<body>
-
-	<div class="container">
-
-	    <div class="sideBar">
-	      <div class="menuItemsWrapper">
-	        <img class="codeRangersLogoSmall" src="/images/logoWhite.png">
-
-	        <div class="sideBarOptionsWrapper">
-	          <span class = "sideBarItem"><a href="/" class="sideBarItem">Home</a></span>
-	          <span class = "sideBarItem"><a href="/profile" class="sideBarItem">Personal Records</a></span>
-	          <br>
-	          <span class = "sideBarItem"><a href="/submissions" class="sideBarItem">My Submissions</a></span>
-	          <span class = "sideBarItem"><a href="/" class="sideBarItem">Browse Problems</a></span>
-	          <span class = "sideBarItem"><a href="/" class="sideBarItem">Quests</a></span>
-	          <span class = "sideBarItem"><a href="/leaderboards" class="sideBarItem">Leaderboards</a></span>
-	          <br>
-	          <!--<span class = "sideBarItem"><a href="/" class="sideBarItem" method="POST" action="/logout" value="logout">Logout</a></span>-->
-	          <form method="POST" action="/logout"><input type="submit" value="Logout"></form> <!--ask how to stick this into a link!! -->
-
-	        </div>
-	      </div>
-	    </div>
-
-
-    	<div class="containerContent">
+<div class="containerContent">
 		
-		<h1>Leaderboard</h1>
-			<table>
-				<tr>
-					<td>ID</td>
-					<td>Username</td>
-					<td>XP</td>
-				</tr>
+  <h1>Leaderboard</h1>
+    <table>
+      <tr>
+        <td>ID</td>
+        <td>Username</td>
+        <td>XP</td>
+      </tr>
 
-				{{ range . }}
-				<tr>
-				  <td>{{.ID}}</td> <td>{{.Username}}</td> <td>{{.Experience}}</td>
-				</tr>
-				{{ end }}
-			</table>
+      {{ range .Leaderboards }}
+      <tr>
+        <td>{{.ID}}</td> <td>{{.Username}}</td> <td>{{.Experience}}</td>
+      </tr>
+      {{ end }}
+    </table>
 
-		</div>
-
-</body>
-
-
-
-<table border="1" style="width:1024px;">
-      {{range .Messages}}
-        <tr>
-          <td>
-          <a href="/view/{{.UserID}}">{{.FirstName}}</a><br>
-          <a href="/view/{{.UserID}}">{{.Username}}</a><br>
-          Date Joined: {{.DateJoined | showDateTime }}
-          </td>
-          <td>
-          Date Created: {{.DateCreated | showDateTime}} {{if (or $.IsAdmin (eq .UserID $.UserID))}}<a href="/edit-message/{{.MessageID}}">Edit</a> 
-          <form style="display:inline;" action="/delete" method="POST">
-          <input type="hidden" value="{{.MessageID}}" name="messageID">
-          <input type="hidden" value="{{.UserID}}" name="user_id">
-          <input type="submit" value="Delete" class="notAButton">
-          </form>{{end}}<br>
-          {{.Message | boldItalics}}<br>
-          {{ if .Edited}}
-          Date Edited: {{.DateEdited | showDateTime}}<br>
-          {{ end }}
-          </td>
-        </tr>
-      {{end}}
-      </table>
+</div>
+{{end}}
