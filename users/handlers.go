@@ -93,10 +93,14 @@ func ViewProfileHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userID, _ := cookies.GetUserID(r)
-		userData, _ := GetUserData(userID)
+		userData, err := GetUserData(userID)
+		if err != nil {
+			templating.ErrorPage(w, http.StatusMethodNotAllowed)
+			return
+		}
 		badges, err := achievements.GetAchievements(userID)
 		if err != nil {
-			http.Redirect(w, r, "/", http.StatusFound)
+			templating.ErrorPage(w, http.StatusMethodNotAllowed)
 			return
 		}
 		data := struct {
@@ -126,12 +130,12 @@ func ViewUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		userData, err := GetUserData(userID)
 		if err != nil {
-			http.Redirect(w, r, "/", http.StatusFound)
+			templating.ErrorPage(w, http.StatusMethodNotAllowed)
 			return
 		}
 		badges, err := achievements.GetAchievements(userID)
 		if err != nil {
-			http.Redirect(w, r, "/", http.StatusFound)
+			templating.ErrorPage(w, http.StatusMethodNotAllowed)
 			return
 		}
 		data := struct {
