@@ -3,6 +3,7 @@ package judge
 import (
 	".././cookies"
 	".././dao"
+	".././problems"
 	".././skills"
 	".././templating"
 	".././users"
@@ -24,7 +25,7 @@ func stringToArray(input string) []string {
 
 func ProblemsHandler(w http.ResponseWriter, r *http.Request) {
 	data := struct {
-		ProblemList []Problem
+		ProblemList []problems.Problem
 		IsAdmin     bool
 		IsLoggedIn  bool
 	}{
@@ -70,7 +71,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		p := &Problem{
+		p := &problems.Problem{
 			Index:        index,
 			Title:        r.FormValue("title"),
 			Description:  r.FormValue("description"),
@@ -117,7 +118,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		tags := stringToArray(r.FormValue("tags"))
-		p := &Problem{
+		p := &problems.Problem{
 			Index:        -1,
 			Title:        r.FormValue("title"),
 			Description:  r.FormValue("description"),
@@ -179,7 +180,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	unlockedSkills, err := skills.GetUnlockedSkills(userID)
 	data := struct {
-		Problem     Problem
+		Problem     problems.Problem
 		Submitted   int
 		Rate        float64
 		VerdictData VerdictData
@@ -225,7 +226,7 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		UserID:       userID,
 		ProblemIndex: index,
 		Directory:    d,
-		Verdict:      Received,
+		Verdict:      problems.Received,
 	}
 	submissionID, err := addSubmission(*s, userID)
 	users.UpdateAttemptedCount(userID)

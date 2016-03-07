@@ -2,6 +2,7 @@ package judge
 
 import (
 	".././dao"
+	".././problems"
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -21,15 +22,15 @@ func getProblemStatistics(problemID int) (submitted int, verdictData VerdictData
 		var verdict string
 		row.Scan(&count, &verdict)
 		switch verdict {
-		case Accepted:
+		case problems.Accepted:
 			verdictData.Accepted = count
-		case WrongAnswer:
+		case problems.WrongAnswer:
 			verdictData.WrongAnswer = count
-		case CompileError:
+		case problems.CompileError:
 			verdictData.CompileError = count
-		case RuntimeError:
+		case problems.RuntimeError:
 			verdictData.RuntimeError = count
-		case TimeLimitExceeded:
+		case problems.TimeLimitExceeded:
 			verdictData.TimeLimitExceeded = count
 
 		}

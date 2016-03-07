@@ -2,6 +2,7 @@ package judge
 
 import (
 	".././helper"
+	".././problems"
 	".././users"
 	"bytes"
 	"encoding/json"
@@ -29,22 +30,6 @@ type CodeRangerJudge struct {
 var uvaJudge = new(UvaJudge)
 var codeRangerJudge = new(CodeRangerJudge)
 
-type Problem struct {
-	Index        int
-	Title        string
-	Description  string
-	Difficulty   int
-	SkillID      string
-	SampleInput  string
-	SampleOutput string
-	UvaID        string
-	Input        string
-	Output       string
-	TimeLimit    int
-	MemoryLimit  int
-	Tags         []string
-}
-
 type Submission struct {
 	Username        string
 	UserID          int
@@ -63,25 +48,6 @@ type VerdictData struct {
 	RuntimeError      int
 	TimeLimitExceeded int
 }
-
-const (
-	Received            = "received"
-	Compiling           = "compiling"
-	Running             = "running"
-	Judging             = "judging"
-	Inqueue             = "inqueue"
-	Accepted            = "accepted"
-	PresentationError   = "presentation error"
-	WrongAnswer         = "wrong answer"
-	CompileError        = "compile error"
-	RuntimeError        = "runtime error"
-	TimeLimitExceeded   = "time limit exceeded"
-	MemoryLimitExceeded = "memory limit exceeded"
-	OutputLimitExceeded = "output limit exceeded"
-	SubmissionError     = "submission error"
-	RestrictedFunction  = "restricted function"
-	CantBeJudged        = "can't be judged"
-)
 
 type UvaSubmissions struct {
 	Name  string  `json:"name"`
@@ -118,8 +84,8 @@ func (e Error) Error() string {
 }
 
 var (
-	problemList     []*Problem
-	problemQueue    chan *Problem
+	problemList     []*problems.Problem
+	problemQueue    chan *problems.Problem
 	submissionList  []*Submission
 	submissionQueue chan *Submission
 	uvaQueue        chan *Submission
@@ -129,7 +95,7 @@ var (
 )
 
 func InitQueues() {
-	problemQueue = make(chan *Problem)
+	problemQueue = make(chan *problems.Problem)
 	go func() {
 		for p := range problemQueue {
 			p.Index = len(problemList)
@@ -191,23 +157,23 @@ func (UvaJudge) checkVerdict(s *Submission) {
 					var verdict string
 					switch submissions.Subs[i][2] {
 					case 30:
-						verdict = CompileError
+						verdict = problems.CompileError
 					case 35:
-						verdict = RestrictedFunction
+						verdict = problems.RestrictedFunction
 					case 40:
-						verdict = RuntimeError
+						verdict = problems.RuntimeError
 					case 45:
-						verdict = OutputLimitExceeded
+						verdict = problems.OutputLimitExceeded
 					case 50:
-						verdict = TimeLimitExceeded
+						verdict = problems.TimeLimitExceeded
 					case 60:
-						verdict = MemoryLimitExceeded
+						verdict = problems.MemoryLimitExceeded
 					case 70:
-						verdict = WrongAnswer
+						verdict = problems.WrongAnswer
 					case 80:
-						verdict = PresentationError
+						verdict = problems.PresentationError
 					case 90:
-						verdict = Accepted
+						verdict = problems.Accepted
 						if !acceptedAlready(s.UserID, s.ProblemIndex) {
 							users.IncrementCount(s.UserID, users.Accepted)
 						}
@@ -253,7 +219,7 @@ func (UvaJudge) judge(s *Submission) {
 				continue
 			}
 			updateUvaSubmissionID(s.ID, submissionID)
-			UpdateVerdict(s.ID, Inqueue)
+			UpdateVerdict(s.ID, problems.Inqueue)
 			s.UvaSubmissionID = submissionID
 			uvaQueue <- s
 			notgotten = false
@@ -271,7 +237,7 @@ func (CodeRangerJudge) judge(s *Submission) {
 
 	p, _ := GetProblem(s.ProblemIndex)
 
-	s.Verdict = Compiling
+	s.Verdict = problems.Compiling
 	// UpdateVerdict(s.ID, Compiling)
 
 	err = s.compile()
@@ -281,8 +247,8 @@ func (CodeRangerJudge) judge(s *Submission) {
 		return
 	}
 
-	s.Verdict = Running
-	UpdateVerdict(s.ID, Running)
+	s.Verdict = problems.Running
+	UpdateVerdict(s.ID, problems.Running)
 	t := time.Now()
 	output, err := s.run(p)
 	d := time.Now().Sub(t)
@@ -300,16 +266,16 @@ func (CodeRangerJudge) judge(s *Submission) {
 	if strings.Replace(output, "\r\n", "\n", -1) != strings.Replace(p.Output, "\r\n", "\n", -1) {
 		// whitespace checks..? floats? etc.
 		fmt.Println(output)
-		s.Verdict = WrongAnswer
-		UpdateVerdict(s.ID, WrongAnswer)
+		s.Verdict = problems.WrongAnswer
+		UpdateVerdict(s.ID, problems.WrongAnswer)
 		return
 	}
 
-	s.Verdict = Accepted
+	s.Verdict = problems.Accepted
 	if !acceptedAlready(s.UserID, s.ProblemIndex) {
 		users.IncrementCount(s.UserID, users.Accepted)
 	}
-	UpdateVerdict(s.ID, Accepted)
+	UpdateVerdict(s.ID, problems.Accepted)
 }
 
 func (s Submission) compile() *Error {
@@ -322,13 +288,13 @@ func (s Submission) compile() *Error {
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println(stderr.String())
-		return &Error{CompileError, stderr.String()}
+		return &Error{problems.CompileError, stderr.String()}
 	}
 
 	return nil
 }
 
-func (s Submission) run(p Problem) (string, *Error) {
+func (s Submission) run(p problems.Problem) (string, *Error) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
@@ -345,11 +311,11 @@ func (s Submission) run(p Problem) (string, *Error) {
 	select {
 	case <-timeout:
 		cmd.Process.Kill()
-		return "", &Error{TimeLimitExceeded, ""}
+		return "", &Error{problems.TimeLimitExceeded, ""}
 	case err := <-done:
 		if err != nil {
 			fmt.Println(stderr.String())
-			return "", &Error{RuntimeError, stderr.String()}
+			return "", &Error{problems.RuntimeError, stderr.String()}
 		}
 	}
 
@@ -357,7 +323,7 @@ func (s Submission) run(p Problem) (string, *Error) {
 }
 
 func AddSamples() {
-	p := Problem{
+	p := problems.Problem{
 		Index: -1,
 		Title: "Hashmat the Brave Warrior",
 		Description: "Hashmat is a brave warrior who with his group of " +
@@ -378,7 +344,7 @@ func AddSamples() {
 		Tags:         []string{"Subtract", "Math"},
 	}
 	AddProblem(p)
-	p = Problem{
+	p = problems.Problem{
 		Index: -1,
 		Title: "Relational Operator",
 		Description: "Some operators checks about the relationship between " +
@@ -401,7 +367,7 @@ func AddSamples() {
 		Tags:         []string{"Relational", "Math"},
 	}
 	AddProblem(p)
-	p = Problem{
+	p = problems.Problem{
 		Index: -1,
 		Title: "Big Mod",
 		Description: "Calculate R : B^P mod M\n" +
