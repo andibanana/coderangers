@@ -4,7 +4,6 @@ import (
 	".././dao"
 	".././problems"
 	".././skills"
-	".././users"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -173,8 +172,6 @@ func addSubmission(submission Submission, userID int) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-
-	users.IncrementCount(userID, users.Submitted)
 
 	return int(submissionID), nil
 }

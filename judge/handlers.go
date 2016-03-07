@@ -229,7 +229,6 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		Verdict:      problems.Received,
 	}
 	submissionID, err := addSubmission(*s, userID)
-	users.UpdateAttemptedCount(userID)
 	s.ID = submissionID
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

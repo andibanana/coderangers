@@ -62,50 +62,6 @@ func GetUserData(userID int) (data UserData, err error) {
 	return
 }
 
-func updateViewedProblemCount(userID, count int) error {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	_, err = db.Exec("UPDATE user_data SET viewed_problems_count = ? WHERE user_id = ?",
-		count, userID)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func UpdateAttemptedCount(userID int) error {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-
-	var count int
-	err = tx.QueryRow("SELECT COUNT(DISTINCT problem_id) FROM submissions WHERE user_id = ?", userID).Scan(&count)
-
-	_, err = tx.Exec("UPDATE user_data SET attempted_count = ? where user_id = ?", count, userID)
-
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	tx.Commit()
-
-	return nil
-}
-
 func AddViewedProblem(userID, problemID int) error {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
@@ -119,37 +75,5 @@ func AddViewedProblem(userID, problemID int) error {
 	if err != nil {
 		return err
 	}
-
-	var count int
-	db.QueryRow("SELECT COUNT(*) FROM viewed_problems WHERE user_id = ?", userID).Scan(&count)
-	updateViewedProblemCount(userID, count)
-	return nil
-}
-
-func IncrementCount(userID int, toUpdate string) error {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-
-	var count int
-	err = tx.QueryRow("SELECT "+toUpdate+" FROM user_data WHERE user_id = ?", userID).Scan(&count)
-
-	count += 1
-	_, err = tx.Exec("UPDATE user_data SET "+toUpdate+" = "+toUpdate+" + 1 WHERE user_id = ?", count, userID)
-
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	tx.Commit()
-
 	return nil
 }

@@ -3,7 +3,6 @@ package judge
 import (
 	".././helper"
 	".././problems"
-	".././users"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -174,9 +173,6 @@ func (UvaJudge) checkVerdict(s *Submission) {
 						verdict = problems.PresentationError
 					case 90:
 						verdict = problems.Accepted
-						if !acceptedAlready(s.UserID, s.ProblemIndex) {
-							users.IncrementCount(s.UserID, users.Accepted)
-						}
 					}
 					s.Verdict = verdict
 					s.Runtime = float64(submissions.Subs[i][3]) / 1000.00
@@ -272,9 +268,6 @@ func (CodeRangerJudge) judge(s *Submission) {
 	}
 
 	s.Verdict = problems.Accepted
-	if !acceptedAlready(s.UserID, s.ProblemIndex) {
-		users.IncrementCount(s.UserID, users.Accepted)
-	}
 	UpdateVerdict(s.ID, problems.Accepted)
 }
 
