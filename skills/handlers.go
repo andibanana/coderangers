@@ -3,6 +3,7 @@ package skills
 import (
 	".././cookies"
 	".././dao"
+	".././problems"
 	".././templating"
 	"fmt"
 	"net/http"
@@ -18,7 +19,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	loggedIn := cookies.IsLoggedIn(r)
-	var problemsInSkill []Problem
+	var problemsInSkill []problems.Problem
 	if loggedIn {
 		userID, _ := cookies.GetUserID(r)
 		problemsInSkill, err = getProblemsInSkillForUser(skill, userID)
@@ -32,7 +33,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		ProblemList []Problem
+		ProblemList []problems.Problem
 		Skill       Skill
 		IsAdmin     bool
 		IsLoggedIn  bool

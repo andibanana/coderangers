@@ -2,8 +2,8 @@ package judge
 
 import (
 	".././dao"
+	".././problems"
 	".././skills"
-	".././users"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func AddProblem(problem Problem) (err error) {
+func AddProblem(problem problems.Problem) (err error) {
 
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
@@ -65,7 +65,7 @@ func AddProblem(problem Problem) (err error) {
 	return
 }
 
-func editProblem(problem Problem) error {
+func editProblem(problem problems.Problem) error {
 
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
@@ -173,8 +173,6 @@ func addSubmission(submission Submission, userID int) (int, error) {
 		return -1, err
 	}
 
-	users.IncrementCount(userID, users.Submitted)
-
 	return int(submissionID), nil
 }
 
@@ -237,7 +235,7 @@ func acceptedAlready(userID, problemID int) bool {
 	var count int
 	db.QueryRow("SELECT COUNT(*) FROM submissions, user_account "+
 		"WHERE user_account.id = submissions.user_id AND verdict = ?"+
-		"AND submissions.problem_id = ? AND user_id = ?", Accepted, problemID, userID).Scan(&count)
+		"AND submissions.problem_id = ? AND user_id = ?", problems.Accepted, problemID, userID).Scan(&count)
 
 	if count == 0 {
 		return false
@@ -296,7 +294,7 @@ func updateUvaSubmissionID(id, submissionID int) error {
 	return nil
 }
 
-func GetProblems() []Problem {
+func GetProblems() (problemList []problems.Problem) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return nil
@@ -310,18 +308,17 @@ func GetProblems() []Problem {
 		return nil
 	}
 
-	var problems []Problem
 	for rows.Next() {
-		var problem Problem
+		var problem problems.Problem
 		rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
 			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.UvaID)
-		problems = append(problems, problem)
+		problemList = append(problemList, problem)
 	}
 
-	return problems
+	return problemList
 }
 
-func GetRelatedProblems(userID, problemID int) (problems []Problem, err error) {
+func GetRelatedProblems(userID, problemID int) (relatedProblems []problems.Problem, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return
@@ -338,7 +335,7 @@ func GetRelatedProblems(userID, problemID int) (problems []Problem, err error) {
       SELECT DISTINCT problem_id 
       FROM submissions 
       WHERE verdict = ? AND user_id = ?
-    );`, problemID, problemID, Accepted, userID)
+    );`, problemID, problemID, problems.Accepted, userID)
 	if err != nil {
 		return
 	}
@@ -348,20 +345,20 @@ func GetRelatedProblems(userID, problemID int) (problems []Problem, err error) {
 		return
 	}
 	for rows.Next() {
-		var problem Problem
+		var problem problems.Problem
 		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
 			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.UvaID)
 		if unlocked[problem.SkillID] {
-			problems = append(problems, problem)
+			relatedProblems = append(relatedProblems, problem)
 		}
 	}
 
 	return
 }
 
-func GetProblem(index int) (Problem, error) {
+func GetProblem(index int) (problems.Problem, error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
-	var problem Problem
+	var problem problems.Problem
 	if err != nil {
 		return problem, err
 	}

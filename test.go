@@ -3,8 +3,8 @@ package main
 import (
 	"./dao"
 	"./judge"
+	"./leaderboards"
 	"./skills"
-	// "./leaderboards"
 	"./templating"
 	"./users"
 	"fmt"
@@ -58,7 +58,7 @@ func main() {
 	http.HandleFunc("/add-skill", skills.AddSkillHandler)
 	http.HandleFunc("/edit-skill/", skills.EditSkillHandler)
 
-	// http.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
+	http.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
 	http.HandleFunc("/profile", users.ViewProfileHandler)
 	http.HandleFunc("/profile/", users.ViewUserProfileHandler)
 	http.HandleFunc("/skill/", skills.SkillHandler)

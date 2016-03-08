@@ -2,28 +2,10 @@ package skills
 
 import (
 	".././dao"
+	".././problems"
 	"database/sql"
 	"errors"
 	_ "github.com/mattn/go-sqlite3"
-)
-
-const (
-	Received            = "received"
-	Compiling           = "compiling"
-	Running             = "running"
-	Judging             = "judging"
-	Inqueue             = "inqueue"
-	Accepted            = "accepted"
-	PresentationError   = "presentation error"
-	WrongAnswer         = "wrong answer"
-	CompileError        = "compile error"
-	RuntimeError        = "runtime error"
-	TimeLimitExceeded   = "time limit exceeded"
-	MemoryLimitExceeded = "memory limit exceeded"
-	OutputLimitExceeded = "output limit exceeded"
-	SubmissionError     = "submission error"
-	RestrictedFunction  = "restricted function"
-	CantBeJudged        = "can't be judged"
 )
 
 type Skill struct {
@@ -32,22 +14,6 @@ type Skill struct {
 	Description              string
 	NumberOfProblemsToUnlock int
 	Prerequisites            []string
-}
-
-type Problem struct {
-	Index        int
-	Title        string
-	Description  string
-	Difficulty   int
-	SkillID      string
-	SampleInput  string
-	SampleOutput string
-	UvaID        string
-	Input        string
-	Output       string
-	TimeLimit    int
-	MemoryLimit  int
-	Solved       bool
 }
 
 func AddSamples() {
@@ -194,7 +160,7 @@ func GetAllSkills() (skills []Skill, err error) {
 	return skills, nil
 }
 
-func getProblemsInSkill(skillID string) (problems []Problem, err error) {
+func getProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return
@@ -208,15 +174,15 @@ func getProblemsInSkill(skillID string) (problems []Problem, err error) {
 		return
 	}
 	for rows.Next() {
-		var problem Problem
+		var problem problems.Problem
 		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
 			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID)
-		problems = append(problems, problem)
+		problemsInSkill = append(problemsInSkill, problem)
 	}
 	return
 }
 
-func getProblemsInSkillForUser(skillID string, userID int) (problems []Problem, err error) {
+func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []problems.Problem, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return
@@ -228,16 +194,16 @@ func getProblemsInSkillForUser(skillID string, userID int) (problems []Problem, 
                         FROM problems, skills, inputoutput 
                         LEFT JOIN (SELECT DISTINCT problem_id, verdict FROM submissions WHERE verdict = ? AND user_id = ?) AS submissions ON (problems.id = submissions.problem_id) 
                         WHERE problems.id = inputoutput.problem_id AND skill_id = skills.id AND skill_id = ?       
-                        `, Accepted, userID, skillID)
+                        `, problems.Accepted, userID, skillID)
 	if err != nil {
 		return
 	}
 	for rows.Next() {
-		var problem Problem
+		var problem problems.Problem
 		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
 			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID, &problem.Solved)
 
-		problems = append(problems, problem)
+		problemsInSkill = append(problemsInSkill, problem)
 	}
 	return
 }
