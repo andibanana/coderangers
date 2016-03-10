@@ -1,7 +1,9 @@
 {{define "title"}}{{.Skill.Title}}{{end}}
+{{define "script"}}{{end}}
 {{define "content"}}
 
-  <div class="containerContent">
+<!--   <div class="containerContent">
+
   {{.Skill.ID}}
   {{.Skill.Title}}
   {{.Skill.Description}}
@@ -15,6 +17,31 @@
     <li>{{if $.IsLoggedIn}}{{.Solved}}{{end}} - {{.SkillID}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }}  </li>
     {{end}}
   </ul>
+  </div> -->
+
+  <div class="containerContent">
+
+  <!-- {{.Skill.ID}} -->
+
+    <div class="containerSkillHeader">
+<!--"/images/skill icons/" + {{.Skill.Title}} + ".png"-->
+      <img src="/images/skill icons/{{.Skill.ID}}.png">
+      <h1>{{.Skill.Title}}</h1>
+
+      <div class="containerProgress">
+        <div id="progressBar"></div>
+      </div>
+
+      {{.Skill.Description}}
+
+    </div>
+
+  <ul>
+    {{range .ProblemList}}
+    <li>{{if $.IsLoggedIn}}{{.Solved}}{{end}} - {{.SkillID}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }}  </li>
+    {{end}}
+  </ul>
   </div>
+
   
 {{end}}
