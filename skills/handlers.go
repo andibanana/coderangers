@@ -13,12 +13,19 @@ import (
 
 func SkillHandler(w http.ResponseWriter, r *http.Request) {
 	skill := r.URL.Path[len("/skill/"):]
-	skills, err := getSkill(skill)
+	var skills Skill
+	loggedIn := cookies.IsLoggedIn(r)
+	var err error
+	if loggedIn {
+		userID, _ := cookies.GetUserID(r)
+		skills, err = getUserDataOnSkill(userID, skill)
+	} else {
+		skills, err = getSkill(skill)
+	}
 	if err != nil {
 		templating.ErrorPage(w, 404)
 		return
 	}
-	loggedIn := cookies.IsLoggedIn(r)
 	var problemsInSkill []problems.Problem
 	if loggedIn {
 		userID, _ := cookies.GetUserID(r)
@@ -60,14 +67,22 @@ func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, 404)
 			return
 		}
+		skillsData, err := getUserDataOnSkills(userID)
+		if err != nil {
+			fmt.Println(err)
+			templating.ErrorPage(w, 404)
+			return
+		}
 		data := struct {
 			UnlockedSkills map[string]bool
 			IsLoggedIn     bool
 			IsAdmin        bool
+			SkillsData     map[string]Skill
 		}{
 			unlockedSkills,
 			IsLoggedIn,
 			dao.IsAdmin(r),
+			skillsData,
 		}
 		templating.RenderPageWithBase(w, "skill-tree", data)
 	}

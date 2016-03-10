@@ -4,7 +4,7 @@
     <div class="containerContent">
     <ul>
     {{range $key, $value := .UnlockedSkills}}
-      {{if $value}}<li><a href="/skill/{{$key}}">{{$key}}</a></li>{{end}}
+      {{if $value}}<li><a href="/skill/{{$key}}">{{$key}}</a> - Mastered: {{(index $.SkillsData $key).Mastered}} - Learned: {{(index $.SkillsData $key).Learned}} - Solved: {{(index $.SkillsData $key).Solved}} - Problems To Unlock: {{(index $.SkillsData $key).NumberOfProblemsToUnlock}} - Description: {{(index $.SkillsData $key).Description}}</li>{{end}}
     {{end}}
     </ul>
     </div>

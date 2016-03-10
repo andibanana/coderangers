@@ -30,7 +30,9 @@ func GetAchievements(userID int) (achievements []Achievement, err error) {
                           WHERE problems.id = submissions.problem_id AND user_id = ?
                           GROUP BY skill_id) AS solved
                           ON (skills.id = solved.skill_id);`, userID)
-
+	if err != nil {
+		return
+	}
 	for rows.Next() {
 		var id string
 		var title string
