@@ -163,7 +163,7 @@ func GetAllSkills() (skills []Skill, err error) {
 	return skills, nil
 }
 
-func getProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err error) {
+func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return
@@ -211,7 +211,7 @@ func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []pr
 	return
 }
 
-func getSkill(id string) (skill Skill, err error) {
+func GetSkill(id string) (skill Skill, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return skill, err
@@ -325,6 +325,42 @@ func getUserDataOnSkill(userID int, skillID string) (skill Skill, err error) {
                           GROUP BY skill_id) AS solved
                           ON (skills.id = solved.skill_id);`, skillID, userID, skillID).Scan(&skill.ID,
 		&skill.Title, &skill.Description, &skill.NumberOfProblemsToUnlock, &skill.Solved, &skill.Mastered, &skill.Learned)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetSolvedInSkillWithoutSubmission(userID, submissionID int, skillID string) (solvedCount int, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	err = db.QueryRow(`SELECT COUNT (DISTINCT problems.ID)
+                    FROM problems, submissions 
+                    WHERE problems.ID = submissions.problem_id AND submissions.user_id = ? AND skill_id = ? AND submissions.ID != ? AND verdict = ?;`, userID, skillID,
+		submissionID, problems.Accepted).Scan(&solvedCount)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetSolvedInSkill(userID int, skillID string) (solvedCount int, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	err = db.QueryRow(`SELECT COUNT (DISTINCT problems.ID)
+                    FROM problems, submissions 
+                    WHERE problems.ID = submissions.problem_id AND submissions.user_id = ? AND skill_id = ? AND verdict = ?;`, userID, skillID,
+		problems.Accepted).Scan(&solvedCount)
 	if err != nil {
 		return
 	}

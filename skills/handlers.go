@@ -20,7 +20,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		userID, _ := cookies.GetUserID(r)
 		skills, err = getUserDataOnSkill(userID, skill)
 	} else {
-		skills, err = getSkill(skill)
+		skills, err = GetSkill(skill)
 	}
 	if err != nil {
 		templating.ErrorPage(w, 404)
@@ -31,7 +31,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		userID, _ := cookies.GetUserID(r)
 		problemsInSkill, err = getProblemsInSkillForUser(skill, userID)
 	} else {
-		problemsInSkill, err = getProblemsInSkill(skill)
+		problemsInSkill, err = GetProblemsInSkill(skill)
 	}
 	if err != nil {
 		fmt.Println(err)
@@ -161,7 +161,7 @@ func EditSkillHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		id := r.URL.Path[len("/edit-skill/"):]
-		skill, err := getSkill(id)
+		skill, err := GetSkill(id)
 		if err != nil {
 			templating.ErrorPage(w, 404)
 			return

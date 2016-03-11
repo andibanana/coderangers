@@ -1,6 +1,7 @@
 package judge
 
 import (
+	".././achievements"
 	".././helper"
 	".././notifications"
 	".././problems"
@@ -8,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os/exec"
 	"strconv"
@@ -179,7 +181,34 @@ func (UvaJudge) checkVerdict(s *Submission) {
 					s.Runtime = float64(submissions.Subs[i][3]) / 1000.00
 					UpdateVerdict(s.ID, verdict)
 					UpdateRuntime(s.ID, s.Runtime)
-					notifications.SendMessageTo(s.UserID, s.Verdict)
+					var relatedProblems []problems.Problem
+					var newAchievements []achievements.Achievement
+					if s.Verdict == problems.Accepted {
+						newAchievements, err = achievements.CheckNewAchievementsInSkill(s.UserID, s.ID, prob.SkillID)
+						if err != nil {
+							log.Println(err)
+						}
+					} else {
+						relatedProblems, err = GetRelatedProblems(s.UserID, s.ProblemIndex)
+						if err != nil {
+							log.Println(err)
+						}
+					}
+					data := struct {
+						Submission      Submission
+						RelatedProblems []problems.Problem
+						NewAchievements []achievements.Achievement
+					}{
+						*s,
+						relatedProblems,
+						newAchievements,
+					}
+					message, err := json.Marshal(data)
+					if err != nil {
+						log.Println(err)
+					} else {
+						notifications.SendMessageTo(s.UserID, string(message))
+					}
 				}
 			}
 		}
