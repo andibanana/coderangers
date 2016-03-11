@@ -4,6 +4,7 @@ import (
 	"./dao"
 	"./judge"
 	"./leaderboards"
+	"./notifications"
 	"./skills"
 	"./templating"
 	"./users"
@@ -44,6 +45,7 @@ func main() {
 	judge.DIR = filepath.Join(wd, "submissions")
 	os.Mkdir(judge.DIR, 0777)
 	judge.InitQueues()
+
 	http.HandleFunc("/", judge.HomeHandler)
 	http.HandleFunc("/problems", judge.ProblemsHandler)
 	http.HandleFunc("/add-problem", judge.AddHandler)
@@ -59,6 +61,7 @@ func main() {
 	http.HandleFunc("/edit-skill/", skills.EditSkillHandler)
 
 	http.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
+	http.HandleFunc("/notifications", notifications.InitHandler().ServeHTTP)
 	http.HandleFunc("/profile", users.ViewProfileHandler)
 	http.HandleFunc("/profile/", users.ViewUserProfileHandler)
 	http.HandleFunc("/skill/", skills.SkillHandler)

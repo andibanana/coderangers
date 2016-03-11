@@ -37,6 +37,14 @@
 	</div>
       <script>
       {{template "script" .}}
+        var evtSource = new EventSource('http://localhost/notifications');
+        var eventList = document.getElementById('event-list');
+        evtSource.onmessage = function(e) {
+          var newElement = document.createElement('li');
+          alert(e.data);
+          newElement.innerHTML = 'message: ' + e.data;
+          eventList.appendChild(newElement);
+        }
       </script>
 </body>
 </html>

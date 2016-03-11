@@ -2,6 +2,7 @@ package judge
 
 import (
 	".././helper"
+	".././notifications"
 	".././problems"
 	"bytes"
 	"encoding/json"
@@ -138,10 +139,10 @@ func (UvaJudge) checkVerdict(s *Submission) {
 	prob, err := GetProblem(s.ProblemIndex)
 	// fmt.Println("http://uhunt.felix-halim.net/api/subs-nums/" + UvaUserID + "/" + prob.UvaID + "/" + strconv.Itoa(s.UvaSubmissionID - 1))
 	resp, err := http.Get("http://uhunt.felix-halim.net/api/subs-nums/" + UvaUserID + "/" + prob.UvaID + "/" + strconv.Itoa(s.UvaSubmissionID-1))
+	defer resp.Body.Close()
 	if err != nil {
 		uvaQueue <- s
 	} else {
-		defer resp.Body.Close()
 		userSubmissions := new(UserSubmissions)
 		json.NewDecoder(resp.Body).Decode(userSubmissions)
 		submissions := userSubmissions.Submissions
@@ -178,6 +179,7 @@ func (UvaJudge) checkVerdict(s *Submission) {
 					s.Runtime = float64(submissions.Subs[i][3]) / 1000.00
 					UpdateVerdict(s.ID, verdict)
 					UpdateRuntime(s.ID, s.Runtime)
+					notifications.SendMessageTo(s.UserID, s.Verdict)
 				}
 			}
 		}
