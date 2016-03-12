@@ -2,6 +2,7 @@ package users
 
 import (
 	".././dao"
+	".././problems"
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -48,7 +49,7 @@ func GetUserData(userID int) (data UserData, err error) {
 
 	err = db.QueryRow(`SELECT SUM(difficulty) FROM
                     (SELECT DISTINCT problem_id, difficulty FROM submissions, problems 
-                    WHERE problems.id = submissions.problem_id AND user_id = ? AND verdict = ?);`, userID, "accepted").Scan(&data.Experience)
+                    WHERE problems.id = submissions.problem_id AND user_id = ? AND verdict = ?);`, userID, problems.Accepted).Scan(&data.Experience)
 
 	err = db.QueryRow(`SELECT COUNT(*) FROM submissions
                     WHERE user_id = ?;`, userID).Scan(&data.Submitted)
@@ -57,7 +58,7 @@ func GetUserData(userID int) (data UserData, err error) {
                     WHERE user_id = ?;`, userID).Scan(&data.Attempted)
 
 	err = db.QueryRow(`SELECT COUNT(DISTINCT problem_id) FROM submissions
-                    WHERE verdict = ? AND user_id = ?;`, "accepted", userID).Scan(&data.Accepted)
+                    WHERE verdict = ? AND user_id = ?;`, problems.Accepted, userID).Scan(&data.Accepted)
 
 	return
 }

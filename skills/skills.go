@@ -14,6 +14,9 @@ type Skill struct {
 	Description              string
 	NumberOfProblemsToUnlock int
 	Prerequisites            []string
+	Mastered                 bool
+	Learned                  bool
+	Solved                   int
 }
 
 func AddSamples() {
@@ -160,7 +163,7 @@ func GetAllSkills() (skills []Skill, err error) {
 	return skills, nil
 }
 
-func getProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err error) {
+func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return
@@ -208,7 +211,7 @@ func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []pr
 	return
 }
 
-func getSkill(id string) (skill Skill, err error) {
+func GetSkill(id string) (skill Skill, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return skill, err
@@ -249,9 +252,9 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
                     (SELECT id, prerequisite_id FROM skills LEFT JOIN prerequisites ON id = skill_id) AS prerequisite_table
                     LEFT JOIN
                     (SELECT id AS achieved_id FROM skills, (SELECT skill_id, COUNT(DISTINCT problem_id) as solved FROM submissions, problems 
-                    WHERE user_id = ? AND problem_id = problems.id AND verdict = "accepted" GROUP BY skill_id) AS unique_solved 
+                    WHERE user_id = ? AND problem_id = problems.id AND verdict = ? GROUP BY skill_id) AS unique_solved 
                     WHERE skills.id = unique_solved.skill_id AND unique_solved.solved >= skills.number_of_problems_to_unlock) AS achieved_table
-                    ON prerequisite_id = achieved_id;`, userID)
+                    ON prerequisite_id = achieved_id;`, userID, problems.Accepted)
 	if err != nil {
 		return
 	}
@@ -268,5 +271,99 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 			unlockedSkills[skillID] = false
 		}
 	}
+	return
+}
+
+func getUserDataOnSkills(userID int) (skills map[string]Skill, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+	skills = make(map[string]Skill)
+	rows, err := db.Query(`SELECT id, title, description, number_of_problems_to_unlock, IFNULL(solved, 0) as solved, IFNULL(solved >= number_of_problems, 0) AS mastered, IFNULL(solved >= number_of_problems_to_unlock, 0) AS unlocked FROM 
+                          (SELECT COUNT(DISTINCT problems.id) as number_of_problems, skills.title, skills.id, number_of_problems_to_unlock, skills.description 
+                          FROM skills, problems 
+                          WHERE skills.id = problems.skill_id
+                          GROUP BY skills.id) AS skills
+                        LEFT JOIN
+                          (SELECT COUNT(DISTINCT problem_id) as solved, skill_id 
+                          FROM problems, submissions 
+                          WHERE problems.id = submissions.problem_id AND user_id = ?
+                          GROUP BY skill_id) AS solved
+                          ON (skills.id = solved.skill_id);`, userID)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var skill Skill
+		err = rows.Scan(&skill.ID, &skill.Title, &skill.Description, &skill.NumberOfProblemsToUnlock, &skill.Solved, &skill.Mastered, &skill.Learned)
+		if err != nil {
+			return
+		}
+		skills[skill.ID] = skill
+	}
+	return
+}
+
+func getUserDataOnSkill(userID int, skillID string) (skill Skill, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	err = db.QueryRow(`SELECT id, title, description, number_of_problems_to_unlock, IFNULL(solved, 0) as solved, IFNULL(solved >= number_of_problems, 0) AS mastered, IFNULL(solved >= number_of_problems_to_unlock, 0) AS unlocked FROM 
+                          (SELECT COUNT(DISTINCT problems.id) as number_of_problems, skills.title, skills.id, number_of_problems_to_unlock, skills.description
+                          FROM skills, problems 
+                          WHERE skills.id = problems.skill_id AND skills.id = ?
+                          GROUP BY skills.id) AS skills
+                        LEFT JOIN
+                          (SELECT COUNT(DISTINCT problem_id) as solved, skill_id 
+                          FROM problems, submissions 
+                          WHERE problems.id = submissions.problem_id AND user_id = ? AND skill_id = ?
+                          GROUP BY skill_id) AS solved
+                          ON (skills.id = solved.skill_id);`, skillID, userID, skillID).Scan(&skill.ID,
+		&skill.Title, &skill.Description, &skill.NumberOfProblemsToUnlock, &skill.Solved, &skill.Mastered, &skill.Learned)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetSolvedInSkillWithoutSubmission(userID, submissionID int, skillID string) (solvedCount int, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	err = db.QueryRow(`SELECT COUNT (DISTINCT problems.ID)
+                    FROM problems, submissions 
+                    WHERE problems.ID = submissions.problem_id AND submissions.user_id = ? AND skill_id = ? AND submissions.ID != ? AND verdict = ?;`, userID, skillID,
+		submissionID, problems.Accepted).Scan(&solvedCount)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func GetSolvedInSkill(userID int, skillID string) (solvedCount int, err error) {
+	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	err = db.QueryRow(`SELECT COUNT (DISTINCT problems.ID)
+                    FROM problems, submissions 
+                    WHERE problems.ID = submissions.problem_id AND submissions.user_id = ? AND skill_id = ? AND verdict = ?;`, userID, skillID,
+		problems.Accepted).Scan(&solvedCount)
+	if err != nil {
+		return
+	}
+
 	return
 }

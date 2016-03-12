@@ -7,7 +7,11 @@
   {{.Skill.ID}}
   {{.Skill.Title}}
   {{.Skill.Description}}
-
+  Mastered: {{.Skill.Mastered}}
+  Learned: {{.Skill.Learned}}
+  Solved: {{.Skill.Solved}}
+  Problems To Unlock: {{.Skill.NumberOfProblemsToUnlock}}
+  Problem Count: {{len .ProblemList}}
   <ul>
     {{range .ProblemList}}
     <li>{{if $.IsLoggedIn}}{{.Solved}}{{end}} - {{.SkillID}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }}  </li>

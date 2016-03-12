@@ -2,6 +2,8 @@ package achievements
 
 import (
 	".././dao"
+	".././problems"
+	".././skills"
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -30,7 +32,9 @@ func GetAchievements(userID int) (achievements []Achievement, err error) {
                           WHERE problems.id = submissions.problem_id AND user_id = ?
                           GROUP BY skill_id) AS solved
                           ON (skills.id = solved.skill_id);`, userID)
-
+	if err != nil {
+		return
+	}
 	for rows.Next() {
 		var id string
 		var title string
@@ -55,4 +59,40 @@ func GetAchievements(userID int) (achievements []Achievement, err error) {
 	}
 	return
 
+}
+
+func CheckNewAchievementsInSkill(userID, submissionID int, skillID string) (achievements []Achievement, err error) {
+	solvedWithout, err := skills.GetSolvedInSkillWithoutSubmission(userID, submissionID, skillID)
+	if err != nil {
+		return
+	}
+	solved, err := skills.GetSolvedInSkill(userID, skillID)
+	if err != nil {
+		return
+	}
+	if solved == solvedWithout {
+		return
+	}
+	skill, err := skills.GetSkill(skillID)
+	if err != nil {
+		return
+	}
+	var problems []problems.Problem
+	if solved >= skill.NumberOfProblemsToUnlock {
+		var achievement Achievement
+		achievement.Image = skill.ID + ".png"
+		achievement.Title = "Learned skill " + skill.Title + " (" + skill.ID + ")"
+		achievement.Description = "Learned skill " + skill.Title + " (" + skill.ID + ")"
+		achievements = append(achievements, achievement)
+		problems, err = skills.GetProblemsInSkill(skillID)
+		if err != nil {
+			return
+		}
+		if solved == len(problems) {
+			achievement.Title = "Mastered skill " + skill.Title + " (" + skill.ID + ")"
+			achievement.Description = "Mastered skill " + skill.Title + " (" + skill.ID + ")"
+			achievements = append(achievements, achievement)
+		}
+	}
+	return
 }
