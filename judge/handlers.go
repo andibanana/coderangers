@@ -39,7 +39,7 @@ func ProblemsHandler(w http.ResponseWriter, r *http.Request) {
 func EditHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		index, err := strconv.Atoi(r.URL.Path[len("/edit/"):])
+		index, err := strconv.Atoi(r.URL.Path[len("/edit-problem/"):])
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -239,16 +239,21 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
-	data := struct {
-		Submissions []Submission
-		IsLoggedIn  bool
-		IsAdmin     bool
-	}{
-		getSubmissions(),
-		cookies.IsLoggedIn(r),
-		dao.IsAdmin(r),
+	switch r.Method {
+	case "GET":
+		data := struct {
+			Submissions []Submission
+			IsLoggedIn  bool
+			IsAdmin     bool
+		}{
+			getSubmissions(),
+			cookies.IsLoggedIn(r),
+			dao.IsAdmin(r),
+		}
+		templating.RenderPageWithBase(w, "submissions", data)
+	default:
+		templating.ErrorPage(w, http.StatusMethodNotAllowed)
 	}
-	templating.RenderPageWithBase(w, "submissions", data)
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {

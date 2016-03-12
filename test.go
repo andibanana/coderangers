@@ -49,7 +49,7 @@ func main() {
 	http.HandleFunc("/", judge.HomeHandler)
 	http.HandleFunc("/problems", judge.ProblemsHandler)
 	http.HandleFunc("/add-problem", judge.AddHandler)
-	http.HandleFunc("/edit/", judge.EditHandler)
+	http.HandleFunc("/edit-problem/", judge.EditHandler)
 	http.HandleFunc("/delete", judge.DeleteHandler)
 	http.HandleFunc("/view/", judge.ViewHandler)
 	http.HandleFunc("/submit/", judge.SubmitHandler)
