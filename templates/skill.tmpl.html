@@ -1,5 +1,12 @@
 {{define "title"}}{{.Skill.Title}}{{end}}
-{{define "script"}}{{end}}
+{{define "script"}}
+
+  var x;
+  x = {{len .ProblemList}} - {{.Skill.Solved}};
+  document.getElementById("problemsToMaster").innerHTML = "<strong>Required Problems to Master: " + x + "</strong>";
+
+
+{{end}}
 {{define "content"}}
 
 <!--   <div class="containerContent">
@@ -24,6 +31,17 @@
 
   <!-- {{.Skill.ID}} -->
 
+  {{.Skill.ID}}
+  {{.Skill.Title}}
+  {{.Skill.Description}}
+  Mastered: {{.Skill.Mastered}}
+  Learned: {{.Skill.Learned}}
+  Solved: {{.Skill.Solved}}
+  Problems To Unlock: {{.Skill.NumberOfProblemsToUnlock}}
+  Problem Count: {{len .ProblemList}}
+
+
+
     <div class="containerSkillHeader">
 <!--"/images/skill icons/" + {{.Skill.Title}} + ".png"-->
       <div class="containerSkillIcon">
@@ -34,9 +52,9 @@
         <h1 id="skillTitle">{{.Skill.Title}}</h1>
 
         <div class="containerProgress">
-          <div id="progressBar"></div>
+          <div id="progressBar"><div id="progressBarText">{{.Skill.Solved}}/{{len .ProblemList}} Problems Solved</div></div>
         </div>
-        <strong>Required Problems to Aquire: 8</strong><br>
+        <div id="problemsToMaster"><strong>Required Problems to Master: X</strong><br></div>
         {{.Skill.Description}}
       </div>
     </div>
@@ -63,7 +81,14 @@
             {{end}}
           </tr>
         {{end}}
+
+        <ul>
+
+  </ul>
+
+
   </div>
+
 
   
 {{end}}

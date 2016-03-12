@@ -120,15 +120,36 @@ a{
 .containerProgress {
     position: relative;
     width: 500px;
-    height: 27px;
+    height: 30px;
     background-color: #2599B6;
     margin-bottom: 5px;
 }
+
 #progressBar {
     position: absolute;
-    width: 1%;
+    width: 10%;
     height: 100%;
     background-color: #2EC4E9;
+}
+
+#progressBarText{
+	text-align: left;
+	line-height: 30px;
+	color: white;
+	white-space: nowrap;
+	margin-left: 10px;
+}
+
+/*.skillTreeIconLocked path, polygon{
+	fill: gray;
+}*/
+
+.skillTreeNodeLocked path{
+	fill: gray;
+}
+
+.skillTreeNodeLocked polygon{
+	fill: gray;
 }
 
 .orangeBtn{
