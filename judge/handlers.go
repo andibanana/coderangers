@@ -280,8 +280,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		if !cookies.IsLoggedIn(r) {
-			templating.ErrorPage(w, 404)
 			//render skill-tree without data
+      http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 		userID, _ := cookies.GetUserID(r)

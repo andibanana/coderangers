@@ -58,7 +58,7 @@ func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		IsLoggedIn := cookies.IsLoggedIn(r)
 		if !IsLoggedIn {
-			templating.ErrorPage(w, 404)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 		userID, _ := cookies.GetUserID(r)
