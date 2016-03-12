@@ -13,6 +13,7 @@
     <li>{{if $.IsLoggedIn}}{{.Solved}}{{end}} - {{.SkillID}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }}  </li>
     {{end}}
   </ul>
+
   </div> -->
 
   <div class="containerContent">
@@ -21,22 +22,43 @@
 
     <div class="containerSkillHeader">
 <!--"/images/skill icons/" + {{.Skill.Title}} + ".png"-->
-      <img src="/images/skill icons/{{.Skill.ID}}.png">
-      <h1>{{.Skill.Title}}</h1>
-
-      <div class="containerProgress">
-        <div id="progressBar"></div>
+      <div class="containerSkillIcon">
+        <img src="/images/skill icons/{{.Skill.ID}}.png">
       </div>
 
-      {{.Skill.Description}}
+      <div class="containerSkillInfo">
+        <h1 id="skillTitle">{{.Skill.Title}}</h1>
 
+        <div class="containerProgress">
+          <div id="progressBar"></div>
+        </div>
+        <strong>Required Problems to Aquire: 8</strong><br>
+        {{.Skill.Description}}
+      </div>
     </div>
 
-  <ul>
-    {{range .ProblemList}}
-    <li>{{if $.IsLoggedIn}}{{.Solved}}{{end}} - {{.SkillID}} - <a href="/view/{{.Index}}">{{.Title}}</a> {{ if $.IsAdmin }} <a href="/edit/{{.Index}}">Edit Problem</a> <form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> {{ end }}  </li>
-    {{end}}
-  </ul>
+    <table>
+        <tr>
+<!--           <td>Status</td>
+          <td>Skill ID</td> -->
+          <td>Problem</td>
+          {{ if $.IsAdmin}}
+          <td>Edit</td>
+          <td>Delete</td>
+          {{end}}
+        </tr>
+
+        {{range .ProblemList}}
+          <tr>
+<!--             <td>{{if $.IsLoggedIn}}{{.Solved}}{{end}}</td>
+            <td>{{.SkillID}}</td> -->
+            <td><a href="/view/{{.Index}}">{{.Title}}</a></td>
+            {{ if $.IsAdmin }}
+              <td><a href="/edit/{{.Index}}">Edit Problem</a></td>
+              <td><form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> </td>
+            {{end}}
+          </tr>
+        {{end}}
   </div>
 
   

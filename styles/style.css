@@ -119,9 +119,10 @@ a{
 
 .containerProgress {
     position: relative;
-    width: 100%;
+    width: 500px;
     height: 27px;
     background-color: #2599B6;
+    margin-bottom: 5px;
 }
 #progressBar {
     position: absolute;
@@ -238,6 +239,7 @@ a.sideBarItem:hover, a.sideBarItem:active{
 	width: auto;
 	color: #333333;
 
+
 	word-wrap: break-word;
 
 	margin-left: 20px;
@@ -245,13 +247,30 @@ a.sideBarItem:hover, a.sideBarItem:active{
 
 .containerSkillHeader{
 	height: auto;
-	width: 100%;
+	width: 650px;
 	background-color: #DBDBDB;
+	display: flex;
+	margin-top: 10px;
 
 	word-wrap: break-word;
+	flex-wrap: nowrap;
 	flex-direction: row;
 
 	padding: 10px;
+}
+
+.containerSkillIcon{
+	margin-right: 5px;
+}
+
+.containerSkillInfo{
+	align-items: flex-start;
+	flex-direction: column;
+	margin-left: 10px;
+}
+
+#skillTitle{
+	margin-top: 0px;
 }
 
 
@@ -363,6 +382,10 @@ html{
 
 h1{
 	margin-bottom: 0px;
+}
+
+a{
+	
 }
 
 table{
