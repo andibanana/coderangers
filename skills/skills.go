@@ -13,6 +13,7 @@ type Skill struct {
 	Title                    string
 	Description              string
 	NumberOfProblemsToUnlock int
+	NumberOfProblems         int
 	Prerequisites            []string
 	Mastered                 bool
 	Learned                  bool
@@ -274,7 +275,7 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 	return
 }
 
-func getUserDataOnSkills(userID int) (skills map[string]Skill, err error) {
+func GetUserDataOnSkills(userID int) (skills map[string]Skill, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return

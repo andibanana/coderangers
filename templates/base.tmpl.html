@@ -41,7 +41,11 @@
         var eventList = document.getElementById('event-list');
         evtSource.onmessage = function(e) {
           var newElement = document.createElement('li');
-          alert(e.data);
+          var data = JSON.parse(e.data);
+          if (data["LoggedOut"] != null) {
+            location.reload();
+          }
+          alert(data);
           //newElement.innerHTML = 'message: ' + e.data;
           //eventList.appendChild(newElement);
         }

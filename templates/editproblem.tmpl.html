@@ -3,7 +3,7 @@
     display:block;
   }
 </style>
-<form action="/edit/" method="POST">
+<form action="/edit-problem/" method="POST">
   <input type="hidden" name="problem_id" value="{{.Index}}">
   <label>Title: <input type="text" name="title" value="{{.Title}}"></label>
   <label>Description: <textarea name="description">{{.Description}}</textarea></label>
