@@ -2,10 +2,12 @@
 {{define "script"}}{{end}}	
 {{define "content"}}
 
-{{ if .IsLoggedIn }}
-<a href="/skill-tree"><img style="width:51%;" src="/images/home.png"></a>
-{{ else }}
-<a href="/skill-tree"><img style="width:51%;" src="/images/home.png"></a>
-{{ end }}
-		
+  Welcome back, {{.UserData.Username}}
+  Level: {{xpToLevel .UserData.Experience}}
+  Experience: {{.UserData.Experience}}/100
+  {{if .SuggestSkill}}
+    {{if .Skill.Learned}}Try to master this skill. Solve {{minus .Skill.NumberOfProblems .Skill.Solved}} more problems to master the skill.
+    {{else}}Learn this skill. Solve {{minus .Skill.NumberOfProblemsToUnlock .Skill.Solved}} more problems to learn the skill.{{end}}
+  {{end}}
+
 {{end}}

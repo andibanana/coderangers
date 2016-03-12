@@ -67,7 +67,7 @@ func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, 404)
 			return
 		}
-		skillsData, err := getUserDataOnSkills(userID)
+		skillsData, err := GetUserDataOnSkills(userID)
 		if err != nil {
 			fmt.Println(err)
 			templating.ErrorPage(w, 404)

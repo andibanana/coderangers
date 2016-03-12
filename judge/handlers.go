@@ -279,12 +279,57 @@ func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
+		if !cookies.IsLoggedIn(r) {
+			templating.ErrorPage(w, 404)
+			//render skill-tree without data
+			return
+		}
+		userID, _ := cookies.GetUserID(r)
+		allSkills, err := skills.GetUserDataOnSkills(userID)
+		if err != nil {
+			templating.ErrorPage(w, 404)
+			return
+		}
+		unlockedSkills, err := skills.GetUnlockedSkills(userID)
+		if err != nil {
+			templating.ErrorPage(w, 404)
+			return
+		}
+		var skill skills.Skill
+		var suggestSkill bool
+		for _, element := range allSkills {
+			if element.Mastered {
+				continue
+			}
+			if element.Learned || unlockedSkills[element.ID] {
+				skill = element
+				suggestSkill = true
+				problems, err := skills.GetProblemsInSkill(skill.ID)
+				skill.NumberOfProblems = len(problems)
+				if err != nil {
+					templating.ErrorPage(w, 404)
+					return
+				}
+				break
+			}
+		}
+		userData, err := users.GetUserData(userID)
+		if err != nil {
+			templating.ErrorPage(w, 404)
+			return
+		}
 		data := struct {
-			IsLoggedIn bool
-			IsAdmin    bool
+			IsLoggedIn   bool
+			IsAdmin      bool
+			Skill        skills.Skill
+			SuggestSkill bool
+			UserData     users.UserData
 		}{
 			cookies.IsLoggedIn(r),
 			dao.IsAdmin(r),
+			skill,
+			suggestSkill,
+			userData,
 		}
 		templating.RenderPageWithBase(w, "home", data)
 	default:
