@@ -281,7 +281,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		if !cookies.IsLoggedIn(r) {
 			//render skill-tree without data
-      http.Redirect(w, r, "/login", http.StatusFound)
+			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
 		userID, _ := cookies.GetUserID(r)

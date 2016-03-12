@@ -4,8 +4,11 @@ import (
 	".././achievements"
 	".././cookies"
 	".././dao"
+	".././notifications"
 	".././templating"
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -77,8 +80,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
+		userID, _ := cookies.GetUserID(r)
 		cookies.Logout(r, w)
-
+		data := struct {
+			LoggedOut bool
+		}{
+			true,
+		}
+		message, err := json.Marshal(data)
+		if err != nil {
+			log.Println(err)
+		} else {
+			notifications.SendMessageTo(userID, string(message))
+		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	default:
 		templating.ErrorPage(w, http.StatusMethodNotAllowed)
