@@ -14,7 +14,7 @@ document.getElementById("progressBar").style.width = {{.UserData.Experience}}/10
 
   	<div class="homePageWelcomeText">
   		<h1>Welcome back, {{.UserData.Username}}!</h1>
-  		Insert a totally useful and totally random tip of the day here
+  		<div>Insert a totally useful and totally random tip of the day here</div>
 
   	</div>
 
@@ -26,7 +26,9 @@ document.getElementById("progressBar").style.width = {{.UserData.Experience}}/10
   See how well you are doing so far
 
   <div class="containerProfileBanner">
-  	<img src="/images/rank7.png" class="rankImage">
+  	<a href="/profile">
+  		<img src="/images/rank7.png" class="rankImage">
+  	</a>
   	<div class="profileBannerInfo">
   		<h2>{{.UserData.Username}}</h2>
   		<h4>Level: {{xpToLevel .UserData.Experience}}</h4>
@@ -45,7 +47,9 @@ document.getElementById("progressBar").style.width = {{.UserData.Experience}}/10
   <h1>Skills/Skill Tree</h1>
 
   <div class="containerProfileBanner">
-  	<img src="/images/skill icons/{{.Skill.ID}}.png" class="rankImage">
+  	<a href="/skill/{{.Skill.ID}}" >
+  		<img src="/images/skill icons/{{.Skill.ID}}.png" class="rankImage">
+  	</a>
   	<div class="profileBannerInfo">
   		<h2>{{.Skill.Title}}</h2>
   		<h4>{{.Skill.Description}}</h4>
