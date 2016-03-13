@@ -144,12 +144,52 @@ a{
 	fill: gray;
 }*/
 
+.containerHomePageWelcomeBanner{
+	display: flex;
+	margin-top: 40px;
+}
+
+.homePageWelcomeImage{
+	height: 180px;
+	width: auto;
+}
+
+.homePageWelcomeText{
+	align-items: center;
+	margin-left: 15px;
+}
+
+.containerProfileBanner{
+	display: flex;
+	flex-direction: row;
+	align-content: center;
+	width: 630px;
+
+	background-color: #DBDBDB;
+	padding: 10px;
+
+}
+
+.profileBannerInfo{
+	align-content: center;
+}
+
+.profileBannerInfo > h2, h4{
+	margin: 0px;
+}
+
 .skillTreeNodeLocked path{
 	fill: gray;
 }
 
 .skillTreeNodeLocked polygon{
 	fill: gray;
+}
+
+.rankImage{
+	height: 100px;
+	width: auto;
+	margin-right: 10px;
 }
 
 .orangeBtn{

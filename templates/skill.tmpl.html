@@ -5,6 +5,8 @@
   x = {{len .ProblemList}} - {{.Skill.Solved}};
   document.getElementById("problemsToMaster").innerHTML = "<strong>Required Problems to Master: " + x + "</strong>";
 
+  document.getElementById("progressBar").style.width = {{.Skill.Solved}}/{{len .ProblemList}}*100 +'%'
+
 
 {{end}}
 {{define "content"}}
