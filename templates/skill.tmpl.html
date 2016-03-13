@@ -33,14 +33,14 @@
 
   <!-- {{.Skill.ID}} -->
 
-  {{.Skill.ID}}
+<!--   {{.Skill.ID}}
   {{.Skill.Title}}
   {{.Skill.Description}}
   Mastered: {{.Skill.Mastered}}
   Learned: {{.Skill.Learned}}
   Solved: {{.Skill.Solved}}
   Problems To Unlock: {{.Skill.NumberOfProblemsToUnlock}}
-  Problem Count: {{len .ProblemList}}
+  Problem Count: {{len .ProblemList}} -->
 
 
 
@@ -66,6 +66,7 @@
 <!--           <td>Status</td>
           <td>Skill ID</td> -->
           <td>Problem</td>
+          <td>Status</td>
           {{ if $.IsAdmin}}
           <td>Edit</td>
           <td>Delete</td>
@@ -73,20 +74,21 @@
         </tr>
 
         {{range .ProblemList}}
-          <tr>
+          <tr class="{{if .Solved}}problemRowSolved{{else}}problemRowUnsolved{{end}}">
 <!--             <td>{{if $.IsLoggedIn}}{{.Solved}}{{end}}</td>
             <td>{{.SkillID}}</td> -->
-            <td><a href="/view/{{.Index}}">{{.Title}}</a></td>
-            {{ if $.IsAdmin }}
-              <td><a href="/edit/{{.Index}}">Edit Problem</a></td>
-              <td><form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> </td>
-            {{end}}
+
+              <td><a href="/view/{{.Index}}">{{.Title}}</a></td>
+              <td>{{if .Solved}}Solved{{else}}Not Solved{{end}}</td>
+              {{ if $.IsAdmin }}
+                <td><a href="/edit/{{.Index}}">Edit Problem</a></td>
+                <td><form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> </td>
+              {{end}}
+       
           </tr>
         {{end}}
 
-        <ul>
-
-  </ul>
+        
 
 
   </div>

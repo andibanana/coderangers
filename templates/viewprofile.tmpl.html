@@ -2,24 +2,39 @@
 {{define "title"}}{{.UserData.Username}}{{end}}
 {{define "script"}}{{end}}
 {{define "content"}}
-<div class="profileInfo1">
+<div class="containerContent">
+  <h1>Personal Record</h1>
+  <div class="containerProfileInfo">
+    <div class="profileInfo1">
+      <h2>{{.UserData.Username}}</h2>
+      <img class="rankImageLarge" src="/images/rank7.png">
 
-  <img class="rankIcon" src="/images/rank7.png">
-  <h1>{{.UserData.Username}}</h1>
-  <span class="levelText">Level: {{xpToLevel .UserData.Experience}}</span><br>
-  Experience: {{.UserData.Experience}} <br>
-  Problems Solved: {{.UserData.Accepted}} <br>
-  Problems Attempted: {{.UserData.Attempted}} <br>
-  Submitted Solutions: {{.UserData.Submitted}} <br>
-  <span>
-    {{range .Achievements}}
-    <div style="display:inline-block;">
-      {{.Title}}<br>
-      <img src="/images/{{.Image}}"><br>
+      <h4>Level: {{xpToLevel .UserData.Experience}}</h4>
+      Experience: {{.UserData.Experience}} <br>
+      Problems Solved: {{.UserData.Accepted}} <br>
+      Problems Attempted: {{.UserData.Attempted}} <br>
+      Submitted Solutions: {{.UserData.Submitted}} <br>
+
     </div>
-    {{end}}
-    
-  </span>
 
+    <div class="profileInfo2">
+    <h1>Achievements</h1>
+
+      <div class="containerAchievements">
+            {{range .Achievements}}
+            <div class="achievementItem">
+              <div>
+                <img src="/images/achievements/{{.Image}}" class="achievementImage"><br>
+                {{.Title}}
+              </div>
+            </div>
+            {{end}}
+
+      </div>
+
+    </div>
+
+  </div>
 </div>
+
 {{end}}
