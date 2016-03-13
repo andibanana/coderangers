@@ -2,6 +2,7 @@ package main
 
 import (
 	"./dao"
+	"./emails"
 	"./judge"
 	"./leaderboards"
 	"./notifications"
@@ -12,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 /*
@@ -69,6 +71,8 @@ func main() {
 	http.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir("./styles"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./images"))))
 	// http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts"))))
+
+	emails.SendEmailsEvery(3 * 24 * time.Hour)
 
 	http.ListenAndServe(":80", nil)
 }
