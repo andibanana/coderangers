@@ -62,7 +62,7 @@ type UserSubmissions struct {
 }
 
 const (
-	UvaNodeDirectory = `C:\Users\Sean\Desktop\uva-node`
+	UvaNodeDirectory = `C:\uva-node`
 	UvaUsername      = "CodeRanger2"
 	UvaUserID        = "821610"
 )
