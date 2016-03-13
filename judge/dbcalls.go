@@ -176,25 +176,29 @@ func addSubmission(submission Submission, userID int) (int, error) {
 	return int(submissionID), nil
 }
 
-func getSubmissions() []Submission {
+func getSubmissions() (submissions []Submission, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
-		return nil
+		return
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict, user_account.id, runtime, uva_submission_id FROM submissions, user_account " +
+	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0) FROM submissions, user_account " +
 		"WHERE user_account.id = submissions.user_id " +
 		"ORDER BY timestamp DESC")
-
-	var submissions []Submission
+	if err != nil {
+		return
+	}
 	for rows.Next() {
 		var submission Submission
-		rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime, &submission.UvaSubmissionID)
+		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime, &submission.UvaSubmissionID)
+		if err != nil {
+			return
+		}
 		submissions = append(submissions, submission)
 	}
 
-	return submissions
+	return
 }
 
 func GetSubmission(id int) (submission Submission) {

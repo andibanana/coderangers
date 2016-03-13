@@ -8,6 +8,7 @@ import (
 	".././templating"
 	".././users"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -261,12 +262,16 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
+		submissions, err := getSubmissions()
+		if err != nil {
+			log.Print(err)
+		}
 		data := struct {
 			Submissions []Submission
 			IsLoggedIn  bool
 			IsAdmin     bool
 		}{
-			getSubmissions(),
+			submissions,
 			cookies.IsLoggedIn(r),
 			dao.IsAdmin(r),
 		}

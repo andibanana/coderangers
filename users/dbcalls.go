@@ -34,34 +34,17 @@ func Register(username, password, email string, admin bool) (int, error) {
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 0)
 
-	tx, err := db.Begin()
-	if err != nil {
-		return 0, err
-	}
-
-	result, err := tx.Exec("INSERT INTO user_account (username, hashed_password, email, admin, date_joined) VALUES (?, ?, ?, ?, ?)",
+	result, err := db.Exec("INSERT INTO user_account (username, hashed_password, email, admin, date_joined) VALUES (?, ?, ?, ?, ?)",
 		username, hashedPassword, email, admin, time.Now())
 	if err != nil {
-		tx.Rollback()
 		return 0, err
 	}
 
 	userID, err := result.LastInsertId()
 
 	if err != nil {
-		tx.Rollback()
 		return 0, err
 	}
-
-	_, err = tx.Exec(`INSERT INTO user_data (user_id, submitted_count, accepted_count, attempted_count, viewed_problems_count, experience) 
-                    VALUES (?, ?, ?, ?, ?, ?)`, userID, 0, 0, 0, 0, 0)
-
-	if err != nil {
-		tx.Rollback()
-		return 0, err
-	}
-
-	tx.Commit()
 
 	return int(userID), nil
 }
