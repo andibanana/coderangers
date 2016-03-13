@@ -391,20 +391,23 @@ func GetProblem(index int) (problems.Problem, error) {
 	return problem, nil
 }
 
-func getSkill(index int) (skills.Skill, error) {
+func GetUnsolvedProblems(userID int) (unsolvedProblems []int, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
-	var skill skills.Skill
 	if err != nil {
-		return skill, err
+		return
 	}
 	defer db.Close()
-	err = db.QueryRow("SELECT skills.id, skills.title, skills.description, number_of_problems_to_unlock FROM skills,"+
-		" problems WHERE skill_id = skills.id AND problems.id = ?", index).Scan(
-		&skill.ID, &skill.Title, &skill.Description, &skill.NumberOfProblemsToUnlock)
 
-	if err != nil {
-		return skill, errors.New("No such skill")
+	rows, err := db.Query(`SELECT DISTINCT problem_id FROM submissions WHERE user_id = ?
+                  EXCEPT
+                  SELECT DISTINCT problem_id FROM submissions WHERE user_id = ? AND verdict = ?;`, userID, userID, problems.Accepted)
+	for rows.Next() {
+		var problem int
+		err = rows.Scan(&problem)
+		if err != nil {
+			return
+		}
+		unsolvedProblems = append(unsolvedProblems, problem)
 	}
-
-	return skill, nil
+	return
 }

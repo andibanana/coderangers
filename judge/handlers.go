@@ -186,7 +186,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		if verdictData.Accepted == 0 {
 			rate = 0
 		}
-		skill, err := getSkill(index)
+		skill, err := skills.GetSkill(problem.SkillID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

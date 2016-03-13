@@ -3,7 +3,6 @@ package emails
 import (
 	".././dao"
 	"database/sql"
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"time"
 )
