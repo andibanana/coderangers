@@ -39,11 +39,28 @@ func SendEmailsToInactive() (err error) {
 			return
 		}
 		duration := time.Since(submittime)
-		if duration.Hours()/24 >= 3 {
+		if duration.Hours()/24 >= 1 {
 			//get unsolved problems
 			//get skills
 			//send email
 		}
 	}
 	return
+}
+
+func SendEmailsEvery(interval time.Duration) {
+	SendEmailsToInactive()
+	ticker := time.NewTicker(interval)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				SendEmailsToInactive()
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
 }
