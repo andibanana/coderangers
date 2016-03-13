@@ -162,7 +162,7 @@ func (UvaJudge) checkVerdict(s *Submission) {
 		for i := 0; i < len(submissions.Subs); i++ {
 			if submissions.Subs[i][0] == s.UvaSubmissionID {
 				if submissions.Subs[i][2] == 10 {
-					go addToSubmissionQueue(s)
+					submissionQueue <- s
 				} else if submissions.Subs[i][2] == 20 || submissions.Subs[i][2] == 0 {
 					time.Sleep(2 * time.Second)
 					uvaQueue <- s
@@ -221,6 +221,7 @@ func (UvaJudge) checkVerdict(s *Submission) {
 						notifications.SendMessageTo(s.UserID, string(message))
 					}
 				}
+				break
 			}
 		}
 	}
