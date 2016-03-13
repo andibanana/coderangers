@@ -1,13 +1,77 @@
 {{define "title"}}Home{{end}}
-{{define "script"}}{{end}}	
+{{define "script"}}
+
+document.getElementById("progressBar").style.width = {{.UserData.Experience}}/100*100 +'%'
+
+
+{{end}}	
 {{define "content"}}
 
-  Welcome back, {{.UserData.Username}}
+  <div class="containerContent">
+
+  <div class="containerHomePageWelcomeBanner">
+  	<img src="/images/scientist.png" class="homePageWelcomeImage">
+
+  	<div class="homePageWelcomeText">
+  		<h1>Welcome back, {{.UserData.Username}}!</h1>
+  		Insert a totally useful and totally random tip of the day here
+
+  	</div>
+
+
+  </div>
+
+
+  <h1>Profile</h1>
+  See how well you are doing so far
+
+  <div class="containerProfileBanner">
+  	<img src="/images/rank7.png" class="rankImage">
+  	<div class="profileBannerInfo">
+  		<h2>{{.UserData.Username}}</h2>
+  		<h4>Level: {{xpToLevel .UserData.Experience}}</h4>
+
+  		<div class="containerProgress">
+          <div id="progressBar"><div id="progressBarText">{{.UserData.Experience}}/100 XP 
+          </div></div>
+        </div>
+
+  	</div>
+  	
+  </div>
+
+  {{if .SuggestSkill}}
+
+  <h1>Skills/Skill Tree</h1>
+
+  <div class="containerProfileBanner">
+  	<img src="/images/skill icons/{{.Skill.ID}}.png" class="rankImage">
+  	<div class="profileBannerInfo">
+  		<h2>{{.Skill.Title}}</h2>
+  		<h4>{{.Skill.Description}}</h4>
+
+  		{{if .Skill.Learned}}Try to master this skill. Solve {{minus .Skill.NumberOfProblems .Skill.Solved}} more problems to master the skill.
+    	{{else}}Learn this skill. Solve {{minus .Skill.NumberOfProblemsToUnlock .Skill.Solved}} more problems to learn the skill.{{end}}
+  		{{end}} 
+
+  	</div>
+  	
+  </div>
+
+  <br><br>
+
+<!-- 
+ Welcome back, {{.UserData.Username}}
+
   Level: {{xpToLevel .UserData.Experience}}
   Experience: {{.UserData.Experience}}/100
   {{if .SuggestSkill}}
     {{if .Skill.Learned}}Try to master this skill. Solve {{minus .Skill.NumberOfProblems .Skill.Solved}} more problems to master the skill.
     {{else}}Learn this skill. Solve {{minus .Skill.NumberOfProblemsToUnlock .Skill.Solved}} more problems to learn the skill.{{end}}
-  {{end}}
+  {{end}} 
+-->
+
+  </div>
 
 {{end}}
+    
