@@ -30,11 +30,47 @@
 
 
             <span class = "sideBarItem">{{ if not .IsLoggedIn }} <a href="/login" class="sideBarItem">Log In</a> {{ end }}</span>
+
+
+            <!-- <button id="myBtn">Open Modal</button> -->
 	        </div>
 	      </div>
 	    </div>
       {{template "content" .}}
+
 	</div>
+
+
+<!-- /*
+show verdict with submission id
+cgro
+and runtime
+kng verdict accepted
+check kng may newachievement then show it
+kng hindi accepted check relatedproblem to suggest
+*/ -->
+
+  <!--Modal Stuff-->
+<!--      -->
+
+    <!-- The Modal -->
+    <div id="submissionReportModal">
+
+      <!-- Modal content -->
+      <div class="modalContent">
+        <span class="close">x</span>
+        
+        <div class="status">
+          <span id="submissionId">Sub</span><br>
+          <span id="verdict">Ver</span><br>
+          <span id="runtime">Run</span><br>
+        </div>
+        <div id="recommendations"></div>
+          <div id="recommendationsContent">Blah</span>
+      </div>
+
+    </div>
+
       <script>
       {{template "script" .}}
         var evtSource = new EventSource('http://localhost/notifications');
@@ -45,10 +81,128 @@
           if (data["LoggedOut"] != null) {
             location.reload();
           }
-          alert(data);
-          //newElement.innerHTML = 'message: ' + e.data;
-          //eventList.appendChild(newElement);
+
+          alert(e.data);
+
+
+/*          if(data.Submission.Verdict == "accepted"){
+            if(data.NewAchievements != null){
+              message2 = "Achievement/s unlocked: " + data.NewAchievements;
+            }else{
+              message2 = "No new achievements unlocked";
+            }
+          }else{
+            message2 = "If you're stuck, I recommend you try this similar problem:\n" + 
+                      data.RelatedProblems[0].Title;
+          }*/
+
+          document.getElementById("submissionId").innerHTML = "Submission ID: " + data.Submission.ID;
+          document.getElementById("verdict").innerHTML = "Verdict: " + data.Submission.Verdict;
+          document.getElementById("runtime").innerHTML = "Runtime: " + data.Submission.Runtime;
+
+          if(data.Submission.Verdict == "accepted"){
+            if(data.NewAchievements != null){
+              document.getElementById("recommendationsContent").innerHTML = "Achievement/s unlocked: " + data.NewAchievements;
+            }else{
+              document.getElementById("recommendationsContent").innerHTML = "No new achievements unlocked";
+            }
+          }else{
+            if(data.RelatedProblems[0].Title != null){
+              document.getElementById("recommendationsContent").innerHTML = "If you're stuck, I recommend you try this similar problem:<br>" + data.RelatedProblems[0].Title;
+            }
+          }
+
+
+
+          var modal = document.getElementById("submissionReportModal");
+
+          // Get the button that opens the modal
+          var btn = document.getElementById("myBtn");
+
+          // Get the <span> element that closes the modal
+          var span = document.getElementsByClassName("close")[0];
+
+          btn.onclick = function() {
+            modal.style.display = "block";
+          }
+
+          modal.style.display = "block";
+
+          span.onclick = function() {
+              modal.style.display = "none";
+          }
+
+          // When the user clicks anywhere outside of the modal, close it
+          window.onclick = function(event) {
+              if (event.target == modal) {
+                  modal.style.display = "none";
+              }
+          }
+
+          // When the user clicks on <span> (x), close the modal
+
+          //data.Submission.Username
+
+/*          var message1, message2;
+
+          alert(e.data);
+
+          message1 = "Submission ID: " + data.Submission.ID + "\n" +
+                        "Verdict: " + data.Submission.Verdict + "\n\n";
+
+          if(data.Submission.Verdict == "accepted"){
+            if(data.NewAchievements != null){
+              message2 = "Achievement/s unlocked: " + data.NewAchievements;
+            }else{
+              message2 = "No new achievements unlocked";
+            }
+          }else{
+            message2 = "If you're stuck, I recommend you try this similar problem:\n" + 
+                      data.RelatedProblems[0].Title;
+          }
+          */
+/*
+show verdict wiith submission id
+cgro
+and runtime
+kng verdict accepted
+check kng may newachievement then show it
+kng hindi accepted check relatedproblem to suggest
+*/
+          //alert(message1 + message2);
+          //alert(e.data);
         }
+
+        var modal = document.getElementById("submissionReportModal");
+
+          // Get the button that opens the modal
+          var btn = document.getElementById("myBtn");
+
+          // Get the <span> element that closes the modal
+          var span = document.getElementsByClassName("close")[0];
+
+          btn.onclick = function() {
+            modal.style.display = "block";
+          }
+
+          //modal.style.display = "block";
+
+          span.onclick = function() {
+              modal.style.display = "none";
+          }
+
+          // When the user clicks anywhere outside of the modal, close it
+          window.onclick = function(event) {
+              if (event.target == modal) {
+                  modal.style.display = "none";
+              }
+          }
+
+// MODAL STUFF
+
+        // Get the modal
+
+
       </script>
 </body>
 </html>
