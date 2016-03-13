@@ -84,7 +84,8 @@ func SendEmailsToInactive() (err error) {
 			message += "You've been inactive for a few days!<br>We want you back, here are a few things you can do!<br>"
 			if len(unsolvedProblems) != 0 {
 				problem, err = judge.GetProblem(unsolvedProblems[0])
-				message += `You can try to solve the problem <b>` + problem.Title + `</b><br>`
+				message += `<h2>` + problem.Title + `</h2>`
+				message += `You can try to solve this problem!<br>`
 			}
 			if suggestSkill {
 				message += "<h2>" + skill.Title + "</h2>"
