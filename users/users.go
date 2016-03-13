@@ -23,29 +23,12 @@ type UserData struct {
 	Attempted  int
 }
 
-func GetSpecificUserData(userID int, toGet string) (int, error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
-	if err != nil {
-		return 0, err
-	}
-	defer db.Close()
-
-	var value int
-	db.QueryRow("SELECT ? FROM user_data WHERE user_id = ?", toGet, userID).Scan(&value)
-
-	return value, err
-}
-
 func GetUserData(userID int) (data UserData, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return
 	}
 	defer db.Close()
-
-	err = db.QueryRow("SELECT username, experience, submitted_count, accepted_count, attempted_count "+
-		"FROM user_data, user_account WHERE user_id = id AND user_id = ?", userID).Scan(&data.Username,
-		&data.Experience, &data.Submitted, &data.Accepted, &data.Attempted)
 
 	err = db.QueryRow(`SELECT SUM(difficulty) FROM
                     (SELECT DISTINCT problem_id, difficulty FROM submissions, problems 
