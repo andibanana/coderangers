@@ -30,6 +30,8 @@ func GetUserData(userID int) (data UserData, err error) {
 	}
 	defer db.Close()
 
+	err = db.QueryRow("SELECT username FROM user_account WHERE id = ?", userID).Scan(&data.Username)
+
 	err = db.QueryRow(`SELECT SUM(difficulty) FROM
                     (SELECT DISTINCT problem_id, difficulty FROM submissions, problems 
                     WHERE problems.id = submissions.problem_id AND user_id = ? AND verdict = ?);`, userID, problems.Accepted).Scan(&data.Experience)
