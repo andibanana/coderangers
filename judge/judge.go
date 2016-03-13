@@ -132,7 +132,10 @@ func InitQueues() {
 	cmd.Dir = UvaNodeDirectory
 	cmd.Stdout = &stdout
 	stdin, _ = cmd.StdinPipe()
-
+	io.WriteString(stdin, "add uva "+UvaUsername+" "+UvaUsername+"\n")
+	if strings.Contains(stdout.String(), "is not recognized as an internal or external command,") {
+		log.Fatal("UVA NODE NOT FOUND!")
+	}
 	cmd.Start()
 }
 
