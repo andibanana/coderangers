@@ -132,8 +132,19 @@ func InitQueues() {
 	cmd.Dir = UvaNodeDirectory
 	cmd.Stdout = &stdout
 	stdin, _ = cmd.StdinPipe()
-
 	cmd.Start()
+	io.WriteString(stdin, "add uva "+UvaUsername+" "+UvaUsername+"\n")
+	if strings.Contains(stdout.String(), "is not recognized as an internal or external command,") {
+		log.Fatal("UVA NODE NOT FOUND!")
+	}
+	for {
+		if strings.Contains(stdout.String(), "ERR!") {
+			log.Fatal("UVA NODE NOT FOUND OR NPM INSTALL NOT YET RUN.")
+		}
+		if strings.Contains(stdout.String(), "Account added successfully") || strings.Contains(stdout.String(), "An existing account was replaced") {
+			break
+		}
+	}
 }
 
 func (UvaJudge) checkVerdict(s *Submission) {
@@ -151,7 +162,7 @@ func (UvaJudge) checkVerdict(s *Submission) {
 		for i := 0; i < len(submissions.Subs); i++ {
 			if submissions.Subs[i][0] == s.UvaSubmissionID {
 				if submissions.Subs[i][2] == 10 {
-					go addToSubmissionQueue(s)
+					submissionQueue <- s
 				} else if submissions.Subs[i][2] == 20 || submissions.Subs[i][2] == 0 {
 					time.Sleep(2 * time.Second)
 					uvaQueue <- s
@@ -210,6 +221,7 @@ func (UvaJudge) checkVerdict(s *Submission) {
 						notifications.SendMessageTo(s.UserID, string(message))
 					}
 				}
+				break
 			}
 		}
 	}
