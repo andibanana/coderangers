@@ -13,7 +13,9 @@ const (
 )
 
 type UserData struct {
+	ID         int
 	Username   string
+	Email      string
 	Experience int
 	Coins      int
 	Submitted  int
@@ -28,7 +30,7 @@ func GetUserData(userID int) (data UserData, err error) {
 	}
 	defer db.Close()
 
-	err = db.QueryRow("SELECT username FROM user_account WHERE id = ?", userID).Scan(&data.Username)
+	err = db.QueryRow("SELECT id, username, email FROM user_account WHERE id = ?", userID).Scan(&data.ID, &data.Username, &data.Email)
 
 	err = db.QueryRow(`SELECT SUM(difficulty) FROM
                     (SELECT DISTINCT problem_id, difficulty FROM submissions, problems 

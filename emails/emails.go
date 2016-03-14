@@ -5,7 +5,7 @@ import (
 	".././judge"
 	".././problems"
 	".././skills"
-
+	".././users"
 	"log"
 	"net/smtp"
 	"strconv"
@@ -82,9 +82,14 @@ func SendEmailsToInactive() (err error) {
 			message := "<h1>Hi " + username + "</h1>"
 			message += "You've been inactive for a few days!<br>We want you back, here are a few things you can do!<br>"
 			if len(unsolvedProblems) != 0 {
+				var user users.UserData
 				problem, err = judge.GetProblem(unsolvedProblems[0])
 				message += `<h2>` + problem.Title + `</h2>`
 				message += `You can try to solve this problem!<br>`
+				user, err = judge.GetUserWhoRecentlySolvedProblem(unsolvedProblems[0], userID)
+				if err == nil && len(user.Username) != 0 {
+					message += user.Username + ` recently solved this.<br>`
+				}
 			}
 			if suggestSkill {
 				message += "<h2>" + skill.Title + "</h2>"

@@ -4,7 +4,7 @@ import (
 	".././dao"
 	".././problems"
 	".././skills"
-
+	".././users"
 	"errors"
 	"fmt"
 
@@ -435,5 +435,19 @@ func GetUnsolvedProblems(userID int) (unsolvedProblems []int, err error) {
 		}
 		unsolvedProblems = append(unsolvedProblems, problem)
 	}
+	return
+}
+
+func GetUserWhoRecentlySolvedProblem(userID, problemID int) (user users.UserData, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	err = db.QueryRow(`SELECT user_account.id, username, email FROM user_account, submissions 
+                      WHERE user_account.id = submissions.user_id AND submissions.problem_id = ? AND verdict = ? AND submissions.user_id != ?
+                      ORDER BY timestamp DESC;`, problemID, problems.Accepted, userID).Scan(&user.ID, &user.Username, &user.Email)
+
 	return
 }
