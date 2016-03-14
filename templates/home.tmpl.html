@@ -55,12 +55,27 @@ document.getElementById("progressBar").style.width = {{.UserData.Experience}}/10
 
   		{{if .Skill.Learned}}Try to master this skill. Solve {{minus .Skill.NumberOfProblems .Skill.Solved}} more problems to master the skill.
     	{{else}}Learn this skill. Solve {{minus .Skill.NumberOfProblemsToUnlock .Skill.Solved}} more problems to learn the skill.{{end}}
-  		{{end}} 
 
   	</div>
   	
   </div>
+  {{end}} 
+  
+  {{if .SuggestProblem}}
 
+  <h1>Problem</h1>
+
+  <div class="containerProfileBanner">
+  	<div class="profileBannerInfo">
+  	<a href="/view/{{.Problem.Index}}" >
+  		<h2>{{.Problem.Title}}</h2>
+  	</a>
+  		Try and solve this problem!
+  	</div>
+  	
+  </div>
+  {{end}} 
+  
   <br><br>
 
 

@@ -323,18 +323,33 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, 404)
 			return
 		}
+		unsolvedProblems, err := GetUnsolvedProblems(userID)
+		if err != nil {
+			templating.ErrorPage(w, 404)
+			return
+		}
+		var problem problems.Problem
+		var suggestProblem = true
+		if len(unsolvedProblems) != 0 {
+			problem, err = GetProblem(unsolvedProblems[0])
+			suggestProblem = true
+		}
 		data := struct {
-			IsLoggedIn   bool
-			IsAdmin      bool
-			Skill        skills.Skill
-			SuggestSkill bool
-			UserData     users.UserData
+			IsLoggedIn     bool
+			IsAdmin        bool
+			Skill          skills.Skill
+			SuggestSkill   bool
+			UserData       users.UserData
+			SuggestProblem bool
+			Problem        problems.Problem
 		}{
 			cookies.IsLoggedIn(r),
 			dao.IsAdmin(r),
 			skill,
 			suggestSkill,
 			userData,
+			suggestProblem,
+			problem,
 		}
 		templating.RenderPageWithBase(w, "home", data)
 	default:

@@ -415,3 +415,25 @@ func GetUnsolvedTriedProblems(userID int) (unsolvedProblems []int, err error) {
 	}
 	return
 }
+
+func GetUnsolvedProblems(userID int) (unsolvedProblems []int, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+	defer db.Close()
+
+	rows, err := db.Query(`SELECT DISTINCT id FROM problems 
+                          EXCEPT
+                        SELECT DISTINCT problem_id as id FROM submissions WHERE user_id = ? AND verdict = ?;`,
+		userID, userID, problems.Accepted)
+	for rows.Next() {
+		var problem int
+		err = rows.Scan(&problem)
+		if err != nil {
+			return
+		}
+		unsolvedProblems = append(unsolvedProblems, problem)
+	}
+	return
+}
