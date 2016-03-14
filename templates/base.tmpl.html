@@ -73,7 +73,7 @@ kng hindi accepted check relatedproblem to suggest
 
       <script>
       {{template "script" .}}
-        var evtSource = new EventSource('http://localhost/notifications');
+        var evtSource = new EventSource('/notifications');
         var eventList = document.getElementById('event-list');
         evtSource.onmessage = function(e) {
           var newElement = document.createElement('li');
