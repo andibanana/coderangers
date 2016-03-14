@@ -2,14 +2,12 @@ package users
 
 import (
 	".././dao"
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
 func Login(username, password string) (userID int, ok bool) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return 0, false
 	}
@@ -26,7 +24,7 @@ func Login(username, password string) (userID int, ok bool) {
 }
 
 func Register(username, password, email string, admin bool) (int, error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return 0, err
 	}
@@ -50,7 +48,7 @@ func Register(username, password, email string, admin bool) (int, error) {
 }
 
 func RegisterAndFakeData(username, password string, admin bool, xp, coins int) (int, error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return 0, err
 	}

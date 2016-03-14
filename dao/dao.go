@@ -9,6 +9,10 @@ import (
 
 const DatabaseURL = "file:database.sqlite?cache=shared&mode=rwc"
 
+func Open() (*sql.DB, error) {
+	return sql.Open("sqlite3", DatabaseURL)
+}
+
 func IsAdmin(req *http.Request) bool {
 	userID, ok := cookies.GetUserID(req)
 	if !ok {
