@@ -14,7 +14,7 @@
 
       {{ range .Leaderboards }}
       <tr>
-        <td>{{.ID}}</td> <td>{{.Username}}</td> <td>{{.Experience}}</td>
+        <td>{{.ID}}</td> <td><a href="/profile/{{.ID}}">{{.Username}}</a></td> <td>{{.Experience}}</td>
       </tr>
       {{ end }}
     </table>
