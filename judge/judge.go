@@ -207,10 +207,12 @@ func (UvaJudge) checkVerdict(s *Submission) {
 					}
 					data := struct {
 						Submission      Submission
+						Problem         problems.Problem
 						RelatedProblems []problems.Problem
 						NewAchievements []achievements.Achievement
 					}{
 						*s,
+						prob,
 						relatedProblems,
 						newAchievements,
 					}
