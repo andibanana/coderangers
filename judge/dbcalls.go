@@ -4,16 +4,16 @@ import (
 	".././dao"
 	".././problems"
 	".././skills"
-	"database/sql"
+
 	"errors"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+
 	"time"
 )
 
 func AddProblem(problem problems.Problem) (err error) {
 
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -67,7 +67,7 @@ func AddProblem(problem problems.Problem) (err error) {
 
 func editProblem(problem problems.Problem) error {
 
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func editProblem(problem problems.Problem) error {
 
 func deleteProblem(problemID int) {
 
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -151,7 +151,7 @@ func deleteProblem(problemID int) {
 }
 
 func addSubmission(submission Submission, userID int) (int, error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return -1, err
 	}
@@ -177,7 +177,7 @@ func addSubmission(submission Submission, userID int) (int, error) {
 }
 
 func getSubmissions() (submissions []Submission, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -202,7 +202,7 @@ func getSubmissions() (submissions []Submission, err error) {
 }
 
 func GetSubmission(id int) (submission Submission) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return submission
 	}
@@ -215,7 +215,7 @@ func GetSubmission(id int) (submission Submission) {
 }
 
 func usedSubmissionID(id int) bool {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return true
 	}
@@ -230,7 +230,7 @@ func usedSubmissionID(id int) bool {
 }
 
 func acceptedAlready(userID, problemID int) bool {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return false
 	}
@@ -249,7 +249,7 @@ func acceptedAlready(userID, problemID int) bool {
 }
 
 func UpdateVerdict(id int, verdict string) error {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return err
 	}
@@ -267,7 +267,7 @@ func UpdateVerdict(id int, verdict string) error {
 }
 
 func UpdateRuntime(id int, runtime float64) error {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return err
 	}
@@ -283,7 +283,7 @@ func UpdateRuntime(id int, runtime float64) error {
 }
 
 func updateUvaSubmissionID(id, submissionID int) error {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return err
 	}
@@ -299,7 +299,7 @@ func updateUvaSubmissionID(id, submissionID int) error {
 }
 
 func GetProblems() (problemList []problems.Problem) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return nil
 	}
@@ -323,7 +323,7 @@ func GetProblems() (problemList []problems.Problem) {
 }
 
 func GetRelatedProblems(userID, problemID int) (relatedProblems []problems.Problem, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -361,7 +361,7 @@ func GetRelatedProblems(userID, problemID int) (relatedProblems []problems.Probl
 }
 
 func GetProblem(index int) (problems.Problem, error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	var problem problems.Problem
 	if err != nil {
 		return problem, err
@@ -396,7 +396,7 @@ func GetProblem(index int) (problems.Problem, error) {
 }
 
 func GetUnsolvedTriedProblems(userID int) (unsolvedProblems []int, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}

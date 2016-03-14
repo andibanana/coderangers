@@ -4,8 +4,6 @@ import (
 	".././dao"
 	".././problems"
 	".././skills"
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type Achievement struct {
@@ -15,7 +13,7 @@ type Achievement struct {
 }
 
 func GetAchievements(userID int) (achievements []Achievement, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}

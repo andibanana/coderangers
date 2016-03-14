@@ -3,8 +3,6 @@ package users
 import (
 	".././dao"
 	".././problems"
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
@@ -24,7 +22,7 @@ type UserData struct {
 }
 
 func GetUserData(userID int) (data UserData, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -49,7 +47,7 @@ func GetUserData(userID int) (data UserData, err error) {
 }
 
 func AddViewedProblem(userID, problemID int) error {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return err
 	}

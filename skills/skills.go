@@ -3,9 +3,8 @@ package skills
 import (
 	".././dao"
 	".././problems"
-	"database/sql"
+
 	"errors"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type Skill struct {
@@ -137,7 +136,7 @@ func AddSamples() {
 }
 
 func addSkill(skill Skill) error {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return err
 	}
@@ -189,7 +188,7 @@ func addSkill(skill Skill) error {
 }
 
 func editSkill(skill Skill, originalID string) error {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return err
 	}
@@ -244,7 +243,7 @@ func editSkill(skill Skill, originalID string) error {
 }
 
 func GetAllSkills() (skills []Skill, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return skills, err
 	}
@@ -264,7 +263,7 @@ func GetAllSkills() (skills []Skill, err error) {
 }
 
 func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -286,7 +285,7 @@ func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err
 }
 
 func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []problems.Problem, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -312,7 +311,7 @@ func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []pr
 }
 
 func GetSkill(id string) (skill Skill, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return skill, err
 	}
@@ -342,7 +341,7 @@ func GetSkill(id string) (skill Skill, err error) {
 }
 
 func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -375,7 +374,7 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 }
 
 func GetUserDataOnSkills(userID int) (skills map[string]Skill, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -407,7 +406,7 @@ func GetUserDataOnSkills(userID int) (skills map[string]Skill, err error) {
 }
 
 func getUserDataOnSkill(userID int, skillID string) (skill Skill, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -433,7 +432,7 @@ func getUserDataOnSkill(userID int, skillID string) (skill Skill, err error) {
 }
 
 func GetSolvedInSkillWithoutSubmission(userID, submissionID int, skillID string) (solvedCount int, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}
@@ -451,7 +450,7 @@ func GetSolvedInSkillWithoutSubmission(userID, submissionID int, skillID string)
 }
 
 func GetSolvedInSkill(userID int, skillID string) (solvedCount int, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}

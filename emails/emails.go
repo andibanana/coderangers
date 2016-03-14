@@ -5,8 +5,7 @@ import (
 	".././judge"
 	".././problems"
 	".././skills"
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
+
 	"log"
 	"net/smtp"
 	"strconv"
@@ -14,7 +13,7 @@ import (
 )
 
 func SendEmailsToInactive() (err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return
 	}

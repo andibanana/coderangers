@@ -3,8 +3,6 @@ package leaderboards
 import (
 	".././dao"
 	".././problems"
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type User struct {
@@ -14,7 +12,7 @@ type User struct {
 }
 
 func GetTopUsers(limit, offset int) (users []User, err error) {
-	db, err := sql.Open("sqlite3", dao.DatabaseURL)
+	db, err := dao.Open()
 	if err != nil {
 		return users, err
 	}

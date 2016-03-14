@@ -19,7 +19,7 @@ func IsAdmin(req *http.Request) bool {
 		return false
 	}
 
-	db, err := sql.Open("sqlite3", DatabaseURL)
+	db, err := Open()
 	if err != nil {
 		return false
 	}
@@ -30,7 +30,7 @@ func IsAdmin(req *http.Request) bool {
 }
 
 func CreateDB() error {
-	db, err := sql.Open("sqlite3", DatabaseURL)
+	db, err := Open()
 	if err != nil {
 		return err
 	}
