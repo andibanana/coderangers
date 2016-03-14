@@ -20,10 +20,12 @@ func GetTopUsers(limit, offset int) (users []User, err error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query(`SELECT user_id, username, SUM(difficulty) AS experience FROM
-                          (SELECT DISTINCT problem_id, difficulty, user_id FROM submissions, problems 
-                          WHERE problems.id = submissions.problem_id AND verdict = ?) AS submitted, user_account
-                        WHERE submitted.user_id = user_account.id
+	rows, err := db.Query(`SELECT user_account.id, username, IFNULL(SUM(difficulty), 0) AS experience FROM
+                          user_account
+                        LEFT JOIN
+                          (SELECT DISTINCT problem_id, difficulty, user_id, verdict FROM problems LEFT JOIN submissions ON problems.id = submissions.problem_id 
+                          WHERE verdict = ?) AS submitted 
+                        ON submitted.user_id = user_account.id 
                         GROUP BY user_id
                         ORDER BY experience DESC
                         LIMIT ? OFFSET ?;`, problems.Accepted, limit, offset)
