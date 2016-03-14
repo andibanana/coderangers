@@ -52,7 +52,7 @@ func SendEmailsToInactive() (err error) {
 			var suggestSkill bool
 			var skill skills.Skill
 			var unlockedSkills map[string]bool
-			unsolvedProblems, err = judge.GetUnsolvedProblems(userID)
+			unsolvedProblems, err = judge.GetUnsolvedTriedProblems(userID)
 			if err != nil {
 				return
 			}

@@ -395,7 +395,7 @@ func GetProblem(index int) (problems.Problem, error) {
 	return problem, nil
 }
 
-func GetUnsolvedProblems(userID int) (unsolvedProblems []int, err error) {
+func GetUnsolvedTriedProblems(userID int) (unsolvedProblems []int, err error) {
 	db, err := sql.Open("sqlite3", dao.DatabaseURL)
 	if err != nil {
 		return
