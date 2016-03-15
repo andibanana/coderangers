@@ -1,6 +1,16 @@
 
 {{define "title"}}{{.UserData.Username}}{{end}}
-{{define "script"}}{{end}}
+{{define "script"}}
+
+  if(document.getElementsByClassName("achievementItem")[0].innerHTML == null){
+      document.getElementsByClassName("containerAchievements")[0].innerHTML = "<h2>None... For now...</h2>";
+    }
+
+     //document.getElementsByClassName("containerAchievements")[0].innerHTML = "<h2>None... For now...</h2>"
+
+
+
+{{end}}
 {{define "content"}}
 <div class="containerContent">
   <h1>Personal Record</h1>
@@ -21,20 +31,22 @@
     <h1>Achievements</h1>
 
       <div class="containerAchievements">
-            {{range .Achievements}}
-            <div class="achievementItem">
-              <div>
-                <img src="/images/achievements/{{.Image}}" class="achievementImage"><br>
-                {{.Title}}
+            {{if .Achievements}}
+              {{range .Achievements}}
+              <div class="achievementItem">
+                <div>
+                  <img src="/images/achievements/{{.Image}}" class="achievementImage"><br>
+                  {{.Title}}
+                </div>
               </div>
-            </div>
+              {{end}}
+            {{else}}
+              <h2>None... For now...</h2>
             {{end}}
-
       </div>
 
     </div>
 
   </div>
 </div>
-
 {{end}}
