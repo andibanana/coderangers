@@ -405,7 +405,7 @@ func GetUserDataOnSkills(userID int) (skills map[string]Skill, err error) {
 	return
 }
 
-func getUserDataOnSkill(userID int, skillID string) (skill Skill, err error) {
+func GetUserDataOnSkill(userID int, skillID string) (skill Skill, err error) {
 	db, err := dao.Open()
 	if err != nil {
 		return

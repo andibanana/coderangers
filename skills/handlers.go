@@ -18,7 +18,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if loggedIn {
 		userID, _ := cookies.GetUserID(r)
-		skills, err = getUserDataOnSkill(userID, skill)
+		skills, err = GetUserDataOnSkill(userID, skill)
 	} else {
 		skills, err = GetSkill(skill)
 	}

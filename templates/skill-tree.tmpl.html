@@ -566,7 +566,7 @@ A series of trivial problems focused on getting you up to speed with the tactica
 </g>
 </svg>
 
-
+	{{index .UnlockedSkills "B"}}
 	<ul>
     {{range $key, $value := .UnlockedSkills}}
       {{if $value}}<li><a href="/skill/{{$key}}">{{$key}}</a> - Mastered: {{(index $.SkillsData $key).Mastered}} - Learned: {{(index $.SkillsData $key).Learned}} - Solved: {{(index $.SkillsData $key).Solved}} - Problems To Unlock: {{(index $.SkillsData $key).NumberOfProblemsToUnlock}} - Description: {{(index $.SkillsData $key).Description}}</li> - Title: {{(index $.SkillsData $key).Title}}{{end}}

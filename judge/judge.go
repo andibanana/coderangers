@@ -5,6 +5,8 @@ import (
 	".././helper"
 	".././notifications"
 	".././problems"
+	".././skills"
+	".././users"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -206,14 +208,31 @@ func (UvaJudge) checkVerdict(s *Submission) {
 							log.Println(err)
 						}
 					}
+					user, err := users.GetUserData(s.UserID)
+					if err != nil {
+						log.Println(err)
+					}
+					skill, err := skills.GetUserDataOnSkill(s.UserID, prob.SkillID)
+					if err != nil {
+						log.Println(err)
+					}
+					problemList, err := skills.GetProblemsInSkill(prob.SkillID)
+					if err != nil {
+						log.Println(err)
+					}
+					skill.NumberOfProblems = len(problemList)
 					data := struct {
 						Submission      Submission
 						Problem         problems.Problem
+						User            users.UserData
+						Skill           skills.Skill
 						RelatedProblems []problems.Problem
 						NewAchievements []achievements.Achievement
 					}{
 						*s,
 						prob,
+						user,
+						skill,
 						relatedProblems,
 						newAchievements,
 					}
