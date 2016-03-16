@@ -183,15 +183,15 @@ func getSubmissions() (submissions []Submission, err error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT submissions.id, problem_id, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0) FROM submissions, user_account " +
-		"WHERE user_account.id = submissions.user_id " +
+	rows, err := db.Query("SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0) FROM problems, submissions, user_account " +
+		"WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id " +
 		"ORDER BY timestamp DESC")
 	if err != nil {
 		return
 	}
 	for rows.Next() {
 		var submission Submission
-		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime, &submission.UvaSubmissionID)
+		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime, &submission.UvaSubmissionID)
 		if err != nil {
 			return
 		}

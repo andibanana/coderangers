@@ -41,6 +41,7 @@ type Submission struct {
 	Verdict         string
 	UvaSubmissionID int
 	Runtime         float64
+	ProblemTitle    string
 }
 
 type VerdictData struct {

@@ -7,14 +7,13 @@
   <h1>Leaderboard</h1>
     <table>
       <tr>
-        <td>ID</td>
+        <td>Rank</td>
         <td>Username</td>
         <td>XP</td>
       </tr>
-
-      {{ range .Leaderboards }}
+      {{ range  $index, $element := .Leaderboards }}
       <tr>
-        <td>{{.ID}}</td> <td><a href="/profile/{{.ID}}">{{.Username}}</a></td> <td>{{.Experience}}</td>
+        <td>{{add $index 1}}</td> <td><a href="/profile/{{.ID}}">{{$element.Username}}</a></td> <td>{{$element.Experience}}</td>
       </tr>
       {{ end }}
     </table>
