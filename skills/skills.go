@@ -3,8 +3,8 @@ package skills
 import (
 	".././dao"
 	".././problems"
-
 	"errors"
+	"fmt"
 )
 
 type Skill struct {
@@ -172,13 +172,13 @@ func addSkill(skill Skill) error {
 		var values string
 		for i := 0; i < len(skill.Prerequisites); i++ {
 			if i == len(skill.Prerequisites)-1 {
-				values += " (" + skill.ID + ", " + skill.Prerequisites[i] + ");"
+				values += " (\"" + skill.ID + "\", \"" + skill.Prerequisites[i] + "\");"
 			} else {
-				values += " (" + skill.ID + ", " + skill.Prerequisites[i] + "),"
+				values += " (\"" + skill.ID + "\", \"" + skill.Prerequisites[i] + "\"),"
 			}
 		}
-
 		_, err = db.Exec("INSERT INTO prerequisites (skill_id, prerequisite_id) VALUES " + values)
+		fmt.Println("INSERT INTO prerequisites (skill_id, prerequisite_id) VALUES " + values)
 
 		if err != nil {
 			return err
