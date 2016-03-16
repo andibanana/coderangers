@@ -110,6 +110,7 @@ kng hindi accepted check relatedproblem to suggest
           var data = JSON.parse(e.data);
           if (data["LoggedOut"] != null) {
             location.reload();
+			return;
           }
 
           alert(e.data);
