@@ -347,13 +347,13 @@ a{
 }
 
 
-.skillTreeNodeLocked path{
+/*.skillTreeNodeLocked path{
 	fill: gray;
 }
 
 .skillTreeNodeLocked polygon{
 	fill: gray;
-}
+}*/
 
 .skillTreeLocked path, symbol{
 	-webkit-filter: grayscale(100%); /* Chrome, Safari, Opera */
@@ -362,6 +362,11 @@ a{
 
 .skillTreeUnlocked{
 
+}
+
+
+.skillTreePathLocked{
+	stroke: gray;
 }
 
 .containerSkillTree{
@@ -615,30 +620,41 @@ a{
 
 table{
 	border-collapse: collapse;
-	font-size: 20px;
+	font-size: 18px;
 	margin-top:20px;
 }
 
 tr:nth-child(odd) {
-  background-color: #E5E3DC;
+	background-color: #E5E3DC;
 }
 
 tr:nth-child(1) {
-  background-color: #CDCCC6;
-  font-weight: bold;
-  line-height: 35px;
+	background-color: #CDCCC6;
+	font-weight: bold;
+	line-height: 35px;
+}
+
+/*tr:hover{
+	background-color: red;
+}*/
+
+.tableLeaderboard td{
+	padding-right: 90px;
+	padding-left: 90px;
+	padding-top: 15px;
+	padding-bottom: 15px;
 }
 
 td{
-  padding-right: 30px;
-  padding-left: 30px;
-  padding-top: 2px;
-  padding-bottom: 2px;
+	padding-right: 30px;
+	padding-left: 30px;
+	padding-top: 6px;
+	padding-bottom: 6px;
 }
 
 td:nth-child(1){
-  padding-right: 30px;
-  padding-left: 20px;
-  padding-top: 2px;
-  padding-bottom: 2px;
+	padding-right: 30px;
+	padding-left: 20px;
+	padding-top: 6px;
+	padding-bottom: 6px;
 }
