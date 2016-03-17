@@ -346,12 +346,27 @@ a{
 	align-self: flex-end;
 }
 
+
 .skillTreeNodeLocked path{
 	fill: gray;
 }
 
 .skillTreeNodeLocked polygon{
 	fill: gray;
+}
+
+.skillTreeLocked path, symbol{
+	-webkit-filter: grayscale(100%); /* Chrome, Safari, Opera */
+	 filter: grayscale(100%);
+}
+
+.skillTreeUnlocked{
+
+}
+
+.containerSkillTree{
+	display: flex;
+	flex-align: flex-start;
 }
 
 .rankImage{
