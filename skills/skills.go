@@ -4,7 +4,6 @@ import (
 	".././dao"
 	".././problems"
 	"errors"
-	"fmt"
 )
 
 type Skill struct {
@@ -178,7 +177,6 @@ func addSkill(skill Skill) error {
 			}
 		}
 		_, err = db.Exec("INSERT INTO prerequisites (skill_id, prerequisite_id) VALUES " + values)
-		fmt.Println("INSERT INTO prerequisites (skill_id, prerequisite_id) VALUES " + values)
 
 		if err != nil {
 			return err
@@ -270,7 +268,7 @@ func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err
 	defer db.Close()
 
 	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
-                        sample_output, input, output, uva_id 
+                        sample_output, input, output, uva_id, pdf_link 
                         FROM problems, skills, inputoutput WHERE problems.id = inputoutput.problem_id AND skill_id = skills.id AND skill_id = ?`, skillID)
 	if err != nil {
 		return
@@ -278,7 +276,7 @@ func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err
 	for rows.Next() {
 		var problem problems.Problem
 		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
-			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID)
+			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID, &problem.PDFLink)
 		problemsInSkill = append(problemsInSkill, problem)
 	}
 	return
@@ -292,7 +290,7 @@ func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []pr
 	defer db.Close()
 
 	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
-                        sample_output, input, output, uva_id, verdict is not null  
+                        sample_output, input, output, uva_id, pdf_link, verdict is not null  
                         FROM problems, skills, inputoutput 
                         LEFT JOIN (SELECT DISTINCT problem_id, verdict FROM submissions WHERE verdict = ? AND user_id = ?) AS submissions ON (problems.id = submissions.problem_id) 
                         WHERE problems.id = inputoutput.problem_id AND skill_id = skills.id AND skill_id = ?       
@@ -303,7 +301,7 @@ func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []pr
 	for rows.Next() {
 		var problem problems.Problem
 		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
-			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID, &problem.Solved)
+			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID, &problem.PDFLink, &problem.Solved)
 
 		problemsInSkill = append(problemsInSkill, problem)
 	}

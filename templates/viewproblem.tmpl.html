@@ -19,12 +19,15 @@
 		<h4>Runtime Error: {{.VerdictData.RuntimeError}}</h4>
 		<h4>Time Limit Exceeded: {{.VerdictData.TimeLimitExceeded}}</h4> -->
 
-
+    {{if eq .Problem.PDFLink "" }}
 		<p style="width:800px">{{.Problem.Description}}</p>
 		<h2>Sample Input</h2>
 		<p>{{.Problem.SampleInput | fixNewLines}}</p>
 		<h2>Sample Output</h2>
 		<p>{{.Problem.SampleOutput | fixNewLines}}</p>
+    {{else}}
+    <iframe src="{{ .Problem.PDFLink}}" width="1000px" height="568"></iframe>
+    {{end}}
 		<form action="/submit/{{.Problem.Index}}" method="POST" {{if .Locked}} disabled {{end}}>
 		  <textarea name="code" class="codeBox" {{if .Locked}} disabled {{end}}></textarea> <br>
 		<input type="submit" class="orangeBtn" {{if .Locked}} disabled {{end}}>
