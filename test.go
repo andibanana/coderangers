@@ -74,5 +74,6 @@ func main() {
 
 	emails.SendEmailsEvery(3 * 24 * time.Hour)
 
+	fmt.Println("serving")
 	http.ListenAndServe(":80", nil)
 }

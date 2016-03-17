@@ -14,12 +14,15 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 )
 
 var DIR string
+var OS string
 
 type Judge interface {
 	judge(s Submission)
@@ -64,10 +67,11 @@ type UserSubmissions struct {
 	Submissions UvaSubmissions `json:"821610"`
 }
 
+var UvaNodeDirectory string
+
 const (
-	UvaNodeDirectory = `C:\uva-node`
-	UvaUsername      = "CodeRanger2"
-	UvaUserID        = "821610"
+	UvaUsername = "CodeRanger2"
+	UvaUserID   = "821610"
 )
 
 const (
@@ -89,9 +93,6 @@ func (e Error) Error() string {
 }
 
 var (
-	problemList     []*problems.Problem
-	problemQueue    chan *problems.Problem
-	submissionList  []*Submission
 	submissionQueue chan *Submission
 	uvaQueue        chan *Submission
 	cmd             *exec.Cmd
@@ -100,18 +101,15 @@ var (
 )
 
 func InitQueues() {
-	problemQueue = make(chan *problems.Problem)
-	go func() {
-		for p := range problemQueue {
-			p.Index = len(problemList)
-			problemList = append(problemList, p)
-		}
-	}()
-
+	OS = runtime.GOOS
+	if OS == "windows" {
+		UvaNodeDirectory = `C:\uva-node`
+	} else {
+		UvaNodeDirectory = `/root/uva-node`
+	}
 	submissionQueue = make(chan *Submission)
 	go func() {
 		for s := range submissionQueue {
-			submissionList = append(submissionList, s)
 			p, err := GetProblem(s.ProblemIndex)
 			if err != nil {
 				fmt.Println("ERR!!!!: ", err)
@@ -137,7 +135,8 @@ func InitQueues() {
 	stdin, _ = cmd.StdinPipe()
 	cmd.Start()
 	io.WriteString(stdin, "add uva "+UvaUsername+" "+UvaUsername+"\n")
-	if strings.Contains(stdout.String(), "is not recognized as an internal or external command,") {
+	if strings.Contains(stdout.String(), "is not recognized as an internal or external command,") ||
+		strings.Contains(stdout.String(), "command not found") {
 		log.Fatal("UVA NODE NOT FOUND!")
 	}
 	for {
@@ -253,14 +252,17 @@ func (UvaJudge) judge(s *Submission) {
 	p, _ := GetProblem(s.ProblemIndex)
 
 	io.WriteString(stdin, "use uva "+UvaUsername+"\n")
-	str := "send " + p.UvaID + " " + s.Directory + `\Main.java` + "\n"
+	str := "send " + p.UvaID + " " + filepath.Join(s.Directory, `Main.java`) + "\n"
+
 	io.WriteString(stdin, str)
-	for !(strings.Contains(stdout.String(), "Send ok") || strings.Contains(stdout.String(), "send failed")) {
+	for !(strings.Contains(stdout.String(), "Send ok") || strings.Contains(stdout.String(), "send failed") ||
+		strings.Contains(stdout.String(), "Login error")) {
 		time.Sleep(2 * time.Second)
 	}
 
-	if strings.Contains(stdout.String(), "send failed") {
-		submissionQueue <- s
+	if strings.Contains(stdout.String(), "send failed") || strings.Contains(stdout.String(), "Login error") {
+		stdout.Reset()
+		go addToSubmissionQueue(s)
 		return
 	}
 

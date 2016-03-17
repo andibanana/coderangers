@@ -92,7 +92,6 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			MemoryLimit:  memory_limit,
 			Tags:         stringToArray(r.FormValue("tags")),
 		}
-		problemQueue <- p
 		editProblem(*p)
 		http.Redirect(w, r, "/view/"+r.FormValue("problem_id"), http.StatusFound)
 	default:
@@ -142,7 +141,6 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			MemoryLimit:  memory_limit,
 			Tags:         tags,
 		}
-		problemQueue <- p
 		AddProblem(*p)
 		http.Redirect(w, r, "/problems/", http.StatusFound)
 	default:
