@@ -1,12 +1,10 @@
 {{define "title"}}{{.Skill.Title}}{{end}}
 {{define "script"}}
 
-  var x;
-  x = {{len .ProblemList}} - {{.Skill.Solved}};
-  document.getElementById("problemsToMaster").innerHTML = "<strong>Required Problems to Master: " + x + "</strong>";
+  document.getElementById("problemsToMaster").innerHTML = "<strong>{{if .Skill.Learned}}Solve {{minus .Skill.NumberOfProblems .Skill.Solved}} more problems to master the skill.
+      {{else}}Solve {{minus .Skill.NumberOfProblemsToUnlock .Skill.Solved}} more problems to learn the skill.{{end}}</strong>";
 
-  document.getElementById("progressBar").style.width = {{.Skill.Solved}}/{{len .ProblemList}}*100 +'%'
-
+  document.getElementById("progressBar").style.width = {{.Skill.Solved}}/{{len .ProblemList}}*100 +'%';
 
 {{end}}
 {{define "content"}}
@@ -54,9 +52,10 @@
         <h1 id="skillTitle">{{.Skill.Title}}</h1>
 
         <div class="containerProgress">
-          <div id="progressBar"><div id="progressBarText">{{.Skill.Solved}}/{{len .ProblemList}} Problems Solved</div></div>
+          <div id="progressBar" class="progressBar"><div id="progressBarText" class="progressBarText">{{.Skill.Solved}}/{{len .ProblemList}} Problems Solved</div></div>
         </div>
-        <div id="problemsToMaster"><strong>Required Problems to Master: X</strong><br></div>
+        <div id="problemsToMaster"><strong>{{if .Skill.Learned}}Try to master this skill. Solve {{minus .Skill.NumberOfProblems .Skill.Solved}} more problems to master the skill.
+      {{else}}Learn this skill. Solve {{minus .Skill.NumberOfProblemsToUnlock .Skill.Solved}} more problems to learn the skill.{{end}}</strong><br></div>
         {{.Skill.Description}}
       </div>
     </div>

@@ -205,12 +205,21 @@ a{
 	text-decoration: none;
 }
 
-.unmarkedLinked{
+a{
 	text-decoration: none;
 }
 
+a:visited, a:active, a:link{
+	color: #333333;;
+}
 
+a:hover{
+	color: #777777;
+}
 
+.noMargin{
+	margin: 0px;
+}
 
 
 
@@ -247,6 +256,8 @@ a{
 	color: #333333;
 	display: flex;
 	flex-direction: column;
+	margin-top: 130px;
+
 }
 
 .containerAchievements{
@@ -294,7 +305,15 @@ a{
     margin-bottom: 5px;
 }
 
-#progressBar {
+.containerProgressFlexible {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background-color: #2599B6;
+    margin-bottom: 5px;
+}
+
+/*#progressBar {
     position: absolute;
     width: 10%;
     height: 100%;
@@ -302,6 +321,21 @@ a{
 }
 
 #progressBarText{
+	text-align: left;
+	line-height: 30px;
+	color: white;
+	white-space: nowrap;
+	margin-left: 10px;
+}
+*/
+.progressBar {
+    position: absolute;
+    width: 10%;
+    height: 100%;
+    background-color: #2EC4E9;
+}
+
+.progressBarText{
 	text-align: left;
 	line-height: 30px;
 	color: white;
@@ -385,6 +419,7 @@ a{
 .rankImage{
 /*	height: 100px !important;*/
 	width: 80px;
+	height: 80px;
 
 	margin-right: 10px;
 	flex: none;
@@ -392,8 +427,7 @@ a{
 
 .rankImageLarge{
 /*	height: 100px !important;*/
-	width: 140px;
-	margin-right: 10px;
+	width: 190px;
 	flex: none;
 }
 
@@ -666,3 +700,38 @@ td:nth-child(1){
 	padding-top: 6px;
 	padding-bottom: 6px;
 }
+
+.hiddenTable tr{
+	margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+.hiddenTable th{
+	margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+.hiddenTable td{
+	margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+}
+
+.hiddenTable{
+	width: 100%;
+}
+
