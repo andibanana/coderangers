@@ -18,8 +18,34 @@
 		document.getElementById("Sym_" + {{$key}}).setAttribute("class", {{if $value}}"skillTreeUnlocked"{{else}}"skillTreeUnlocked"{{end}});
 	{{end}}
 
+	var paths;
 	{{range $key, $value := .UnlockedSkills}}
-		document.getElementById("Sym_" + {{$key}}).setAttribute("class", {{if $value}}"skillTreeUnlocked"{{else}}"skillTreeUnlocked"{{end}});
+		paths = document.getElementsByClassName("P_" + {{$key}});
+console.log("---------------------");
+		console.log("A >> P_" + "{{$key}}" + " " + paths.length);
+
+		for(i=0; i<paths.length; i++){
+
+			console.log("TEST LOOP >> " + paths[i].getAttribute("class"));
+			console.log("TEST LOOP >> " + paths[i].getAttribute("id"));
+
+		}
+		
+		var elem;
+
+		if(paths.length > 0){
+			for(i=paths.length - 1; i>=0; i--){
+			console.log("iteration " + i);
+			console.log("length " + paths.length);
+			console.log(paths);
+
+					elem = paths[i];
+					elem.setAttribute("class", {{if $value}}"skillTreePathUnlocked"{{else}}"skillTreePathLocked"{{end}});
+				console.log("lengthEnd " + paths.length);
+				console.log(paths);
+			}
+		}
+
 	{{end}}
 
 
@@ -27,8 +53,8 @@
 {{end}}
 {{define "content"}}
 
-<div id="Sym_1"></div>
-<div id="Sym_2"></div>
+<div id="Sym_1" class="P_1"></div> <!--dummy ids due to compile error of skills 1 and 2 not being in the tree -->
+<div id="Sym_2" class="P_2"></div>
 
     <div class="containerContent">
     	<h1>Skill Tree</h1>
@@ -647,29 +673,31 @@
 </symbol>
 <g id="Paths">
 	
-		<line id="P_x5F_B" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="400.025" y1="73.551" x2="400.025" y2="242.135"/>
+		<line id="P_x5F_B" class="P_B" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="400.025" y1="73.551" x2="400.025" y2="242.135"/>
 	
-		<line id="P_x5F_C1" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="400.025" y1="242.135" x2="188.46" y2="409.694"/>
+		<line id="P_x5F_C1" class="P_C1" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="400.025" y1="242.135" x2="188.46" y2="409.694"/>
 	
-		<line id="P_x5F_C2" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="400.025" y1="242.135" x2="580.051" y2="410.469"/>
+		<line id="P_x5F_C2" class="P_C2" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="400.025" y1="242.135" x2="580.051" y2="410.469"/>
 	
-		<line id="P_x5F_D1" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="187.135" y1="410.469" x2="187.135" y2="578.402"/>
+		<line id="P_x5F_D1" class="P_D1" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="187.135" y1="410.469" x2="187.135" y2="578.402"/>
 	
-		<line id="P_x5F_F1" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="187.135" y1="578.402" x2="187.135" y2="918.099"/>
+		<line id="P_x5F_F1" class="P_F1" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="187.135" y1="578.402" x2="187.135" y2="918.099"/> <!-- prob-->
 	
-		<line id="P_x5F_E_2_" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="188.46" y1="409.694" x2="468.9" y2="748.25"/>
+		<line id="P_x5F_E_2_" class="P_E" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="188.46" y1="409.694" x2="468.9" y2="748.25"/>
 	
-		<line id="P_x5F_D2" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="580.051" y1="410.469" x2="468.9" y2="577.468"/>
+		<line id="P_x5F_D2" class="P_D2" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="580.051" y1="410.469" x2="468.9" y2="577.468"/>
 	
-		<line id="P_x5F_D3" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="580.051" y1="410.469" x2="681.551" y2="575.803"/>
+		<line id="P_x5F_D3" class="P_D3" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="580.051" y1="410.469" x2="681.551" y2="575.803"/>
 	
-		<line id="P_x5F_E_1_" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="468.9" y1="577.468" x2="468.9" y2="748.25"/>
+		<line id="P_x5F_E_1_" class="P_E" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="468.9" y1="577.468" x2="468.9" y2="748.25"/> <!--pprob-->
 	
-		<line id="P_x5F_F2" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="468.9" y1="748.25" x2="468.9" y2="920.57"/>
+		<line id="P_x5F_F2" class="P_F2" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="468.9" y1="748.25" x2="468.9" y2="920.57"/>
 	
-		<line id="P_x5F_E" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="681.551" y1="580.742" x2="468.9" y2="748.25"/>
+		<line id="P_x5F_E" class="P_E" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="681.551" y1="580.742" x2="468.9" y2="748.25"/>
 	
-		<line id="P_x5F_F3" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="681.551" y1="580.742" x2="681.551" y2="911.197"/>
+		<line id="P_x5F_F3" class="P_F3" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="681.551" y1="580.742" x2="681.551" y2="911.197"/>
+
+		<line id="P_x5F_F1_1_" class="P_F1" fill="none" stroke="#353535" stroke-width="8" stroke-miterlimit="10" x1="468.9" y1="748.25" x2="184.634" y2="920.57"/>
 </g>
 <g id="Nodes">
 
