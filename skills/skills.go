@@ -3,8 +3,8 @@ package skills
 import (
 	".././dao"
 	".././problems"
-
 	"errors"
+	"fmt"
 )
 
 type Skill struct {
@@ -172,13 +172,13 @@ func addSkill(skill Skill) error {
 		var values string
 		for i := 0; i < len(skill.Prerequisites); i++ {
 			if i == len(skill.Prerequisites)-1 {
-				values += " (" + skill.ID + ", " + skill.Prerequisites[i] + ");"
+				values += " (\"" + skill.ID + "\", \"" + skill.Prerequisites[i] + "\");"
 			} else {
-				values += " (" + skill.ID + ", " + skill.Prerequisites[i] + "),"
+				values += " (\"" + skill.ID + "\", \"" + skill.Prerequisites[i] + "\"),"
 			}
 		}
-
 		_, err = db.Exec("INSERT INTO prerequisites (skill_id, prerequisite_id) VALUES " + values)
+		fmt.Println("INSERT INTO prerequisites (skill_id, prerequisite_id) VALUES " + values)
 
 		if err != nil {
 			return err
@@ -382,8 +382,9 @@ func GetUserDataOnSkills(userID int) (skills map[string]Skill, err error) {
 	skills = make(map[string]Skill)
 	rows, err := db.Query(`SELECT id, title, description, number_of_problems_to_unlock, IFNULL(solved, 0) as solved, IFNULL(solved >= number_of_problems, 0) AS mastered, IFNULL(solved >= number_of_problems_to_unlock, 0) AS unlocked FROM 
                           (SELECT COUNT(DISTINCT problems.id) as number_of_problems, skills.title, skills.id, number_of_problems_to_unlock, skills.description 
-                          FROM skills, problems 
-                          WHERE skills.id = problems.skill_id
+                          FROM skills
+                          LEFT JOIN problems 
+                          ON (skills.id = problems.skill_id)
                           GROUP BY skills.id) AS skills
                         LEFT JOIN
                           (SELECT COUNT(DISTINCT problem_id) as solved, skill_id 
