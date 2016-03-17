@@ -15,7 +15,7 @@
 
 
 	{{range $key, $value := .UnlockedSkills}}
-		document.getElementById("Sym_" + {{$key}}).setAttribute("class", {{if $value}}"skillTreeUnlocked"{{else}}"skillTreeUnlocked"{{end}});
+		document.getElementById("Sym_" + {{$key}}).setAttribute("class", {{if $value}}"skillTreeUnlocked"{{else}}"skillTreeLocked"{{end}});
 	{{end}}
 
 	var paths;
