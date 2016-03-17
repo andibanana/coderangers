@@ -197,9 +197,17 @@ a{
 	color: #66CC99;
 }
 
+.containerProfileBanner{
+	text-decoration: none;
+}
 
+.profileBannerInfo{
+	text-decoration: none;
+}
 
-
+.unmarkedLinked{
+	text-decoration: none;
+}
 
 
 
