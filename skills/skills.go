@@ -414,16 +414,18 @@ func GetUserDataOnSkill(userID int, skillID string) (skill Skill, err error) {
 	defer db.Close()
 
 	err = db.QueryRow(`SELECT id, title, description, number_of_problems_to_unlock, IFNULL(solved, 0) as solved, IFNULL(solved >= number_of_problems, 0) AS mastered, IFNULL(solved >= number_of_problems_to_unlock, 0) AS unlocked FROM 
-                          (SELECT COUNT(DISTINCT problems.id) as number_of_problems, skills.title, skills.id, number_of_problems_to_unlock, skills.description
-                          FROM skills, problems 
-                          WHERE skills.id = problems.skill_id AND skills.id = ?
-                          GROUP BY skills.id) AS skills
-                        LEFT JOIN
-                          (SELECT COUNT(DISTINCT problem_id) as solved, skill_id 
-                          FROM problems, submissions 
-                          WHERE problems.id = submissions.problem_id AND user_id = ? AND skill_id = ?
-                          GROUP BY skill_id) AS solved
-                          ON (skills.id = solved.skill_id);`, skillID, userID, skillID).Scan(&skill.ID,
+                      (SELECT COUNT(DISTINCT problems.id) as number_of_problems, skills.title, skills.id, number_of_problems_to_unlock, skills.description 
+                      FROM skills
+                      LEFT JOIN problems 
+                      ON (skills.id = problems.skill_id)
+                      WHERE skills.id = ?
+                      GROUP BY skills.id) AS skills
+                    LEFT JOIN
+                      (SELECT COUNT(DISTINCT problem_id) as solved, skill_id 
+                      FROM problems, submissions 
+                      WHERE problems.id = submissions.problem_id AND user_id = ? AND skill_id = ?
+                      GROUP BY skill_id) AS solved
+                      ON (skills.id = solved.skill_id);`, skillID, userID, skillID).Scan(&skill.ID,
 		&skill.Title, &skill.Description, &skill.NumberOfProblemsToUnlock, &skill.Solved, &skill.Mastered, &skill.Learned)
 	if err != nil {
 		return
