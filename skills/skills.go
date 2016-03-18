@@ -20,21 +20,6 @@ type Skill struct {
 
 func AddSamples() {
 	s := Skill{
-		ID:                       "1",
-		Title:                    "Math",
-		Description:              "Mathematic Problems",
-		NumberOfProblemsToUnlock: 3,
-	}
-	addSkill(s)
-	s = Skill{
-		ID:                       "2",
-		Title:                    "Ad Hoc",
-		Description:              "Implementation Problems",
-		NumberOfProblemsToUnlock: 3,
-	}
-	addSkill(s)
-
-	s = Skill{
 		ID:                       "A",
 		Title:                    "Introduction to Competitive Programming",
 		Description:              "Trivial problems focused on familiarizing yourself with the software",

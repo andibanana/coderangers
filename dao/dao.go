@@ -11,7 +11,7 @@ import (
 const SQLiteDatabaseURL = "file:database.sqlite?cache=shared&mode=rwc"
 const MySQLDatabaseURL = "root:p@ssword@tcp(127.0.0.1:3306)/"
 const MySQLDB = "coderangers"
-const MySQL = true
+const MySQL = false
 
 func Open() (*sql.DB, error) {
 	if MySQL {
@@ -79,7 +79,7 @@ func CreateDB() error {
       id VARCHAR(20) PRIMARY KEY,
       
 			title VARCHAR(100) NOT NULL,
-      description VARCHAR(200) NOT NULL,
+      description TEXT NOT NULL,
       number_of_problems_to_unlock INTEGER NOT NULL
 		)
 	`)
@@ -92,7 +92,7 @@ func CreateDB() error {
       id INTEGER PRIMARY KEY ` + AUTOINCREMENT + `,
 			
 			title VARCHAR(100) NOT NULL,
-      description VARCHAR(200) NOT NULL,
+      description TEXT NOT NULL,
       skill_id VARCHAR(20) NOT NULL,
       uva_id VARCHAR(100) NOT NULL,
       difficulty INTEGER,

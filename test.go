@@ -39,8 +39,8 @@ func main() {
 		// users.RegisterAndFakeData("gopherzapper_", "gopherzapper_", false, 12300, 1230)
 		// users.RegisterAndFakeData("DarkMega12", "DarkMega12", false, 100000, 10000)
 		//users.RegisterAndFakeData("gmg", "gmg", false, 3230, 323)
-		judge.AddSamples()
 		skills.AddSamples()
+		judge.AddSamples()
 	}
 	templating.InitTemplates()
 	wd, _ := os.Getwd()
