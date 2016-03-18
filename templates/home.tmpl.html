@@ -15,7 +15,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
 
   	<div class="homePageWelcomeText">
   		<h1>Welcome back, {{.UserData.Username}}!</h1>
-  		<div>Insert a totally useful and totally random tip of the day here</div>
+  		<div>Nodes that are grayed out in the skill tree are locked. You will need to learn all the connecting nodes above it in order to solve the problems there.</div>
 
   	</div>
 
@@ -28,7 +28,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
 
   <a href="/profile">
     <div class="containerProfileBanner">
-    		<img src="/images/rank7.png" class="rankImage">
+    		<img src="/images/rank icons/{{xpToLevel .UserData.Experience}}.png" class="rankImage2">
     	<div class="profileBannerInfo">
     		<h2>{{.UserData.Username}}</h2>
     		<h4>Level: {{xpToLevel .UserData.Experience}}</h4>

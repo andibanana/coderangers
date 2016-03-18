@@ -245,6 +245,10 @@ a:hover{
 	margin-bottom: 5px;
 }
 
+.difficultyImageSmall2{
+	width: 35px;
+}
+
 .difficultyImageLarge{
 	width: 50px;
 	margin-bottom: 5px;
@@ -418,6 +422,7 @@ a:hover{
 	margin-top: 40px;
 	flex-direction: row;
 	align-items: center;
+	width: 800px;
 }
 
 .homePageWelcomeImage{
@@ -550,7 +555,13 @@ a:hover{
 	height: 80px;
 
 	margin-right: 10px;
-	flex: none;
+}
+
+.rankImage2{
+	width: 80px;
+	height: 80px;
+
+	margin-right: 10px;
 }
 
 .rankImageLarge{

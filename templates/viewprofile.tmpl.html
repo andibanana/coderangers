@@ -20,9 +20,9 @@
       <h2 class="noMargin">{{.UserData.Username}}</h2>
       <h4 class="noMargin">ID: PDR-42095K</h4>
       <h4 class="noMargin">F/N: 452-32B9</h4>
-      <img class="rankImageLarge" src="/images/rank7.png">
+      <img class="rankImageLarge" src="/images/rank icons/{{xpToLevel .UserData.Experience}}.png">
 
-      <h4>Level: {{xpToLevel .UserData.Experience}}</h4>
+      <h3 class="noMargin">Level: {{xpToLevel .UserData.Experience}}</h3>
       <div class="containerProgressFlexible">
             <div id="containerProgress" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{.UserData.Experience}}/100 XP 
             </div></div>
