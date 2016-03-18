@@ -60,6 +60,7 @@ func main() {
 	http.HandleFunc("/register", users.RegisterHandler)
 	http.HandleFunc("/login", users.LoginHandler)
 	http.HandleFunc("/logout", users.LogoutHandler)
+	http.HandleFunc("/change-password", users.ChangePasswordHandler)
 	http.HandleFunc("/add-skill", skills.AddSkillHandler)
 	http.HandleFunc("/edit-skill/", skills.EditSkillHandler)
 

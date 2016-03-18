@@ -47,6 +47,29 @@ func Register(username, password, email string, admin bool) (int, error) {
 	return int(userID), nil
 }
 
+func changePassword(userID int, password string) (err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 0)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("UPDATE user_account SET hashed_password = ? WHERE id = ?;",
+		hashedPassword, userID)
+
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 func RegisterAndFakeData(username, password string, admin bool, xp, coins int) (int, error) {
 	db, err := dao.Open()
 	if err != nil {
