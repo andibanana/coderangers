@@ -194,57 +194,62 @@ func (UvaJudge) checkVerdict(s *Submission) {
 					s.Runtime = float64(submissions.Subs[i][3]) / 1000.00
 					UpdateVerdict(s.ID, verdict)
 					UpdateRuntime(s.ID, s.Runtime)
-					var relatedProblems []problems.Problem
-					var newAchievements []achievements.Achievement
-					if s.Verdict == problems.Accepted {
-						newAchievements, err = achievements.CheckNewAchievementsInSkill(s.UserID, s.ID, prob.SkillID)
-						if err != nil {
-							log.Println(err)
-						}
-					} else {
-						relatedProblems, err = GetRelatedProblems(s.UserID, s.ProblemIndex)
-						if err != nil {
-							log.Println(err)
-						}
-					}
-					user, err := users.GetUserData(s.UserID)
-					if err != nil {
-						log.Println(err)
-					}
-					skill, err := skills.GetUserDataOnSkill(s.UserID, prob.SkillID)
-					if err != nil {
-						log.Println(err)
-					}
-					problemList, err := skills.GetProblemsInSkill(prob.SkillID)
-					if err != nil {
-						log.Println(err)
-					}
-					skill.NumberOfProblems = len(problemList)
-					data := struct {
-						Submission      Submission
-						Problem         problems.Problem
-						User            users.UserData
-						Skill           skills.Skill
-						RelatedProblems []problems.Problem
-						NewAchievements []achievements.Achievement
-					}{
-						*s,
-						prob,
-						user,
-						skill,
-						relatedProblems,
-						newAchievements,
-					}
-					message, err := json.Marshal(data)
-					if err != nil {
-						log.Println(err)
-					} else {
-						notifications.SendMessageTo(s.UserID, string(message))
-					}
+					sendNotification(*s, prob)
 				}
 				break
 			}
 		}
+	}
+}
+
+func sendNotification(s Submission, prob problems.Problem) {
+	var relatedProblems []problems.Problem
+	var newAchievements []achievements.Achievement
+	var err error
+	if s.Verdict == problems.Accepted {
+		newAchievements, err = achievements.CheckNewAchievementsInSkill(s.UserID, s.ID, prob.SkillID)
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		relatedProblems, err = GetRelatedProblems(s.UserID, s.ProblemIndex)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+	user, err := users.GetUserData(s.UserID)
+	if err != nil {
+		log.Println(err)
+	}
+	skill, err := skills.GetUserDataOnSkill(s.UserID, prob.SkillID)
+	if err != nil {
+		log.Println(err)
+	}
+	problemList, err := skills.GetProblemsInSkill(prob.SkillID)
+	if err != nil {
+		log.Println(err)
+	}
+	skill.NumberOfProblems = len(problemList)
+	data := struct {
+		Submission      Submission
+		Problem         problems.Problem
+		User            users.UserData
+		Skill           skills.Skill
+		RelatedProblems []problems.Problem
+		NewAchievements []achievements.Achievement
+	}{
+		s,
+		prob,
+		user,
+		skill,
+		relatedProblems,
+		newAchievements,
+	}
+	message, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+	} else {
+		notifications.SendMessageTo(s.UserID, string(message))
 	}
 }
 
@@ -298,7 +303,10 @@ func addToSubmissionQueue(s *Submission) {
 func (CodeRangerJudge) judge(s *Submission) {
 	var err *Error
 
-	p, _ := GetProblem(s.ProblemIndex)
+	p, er := GetProblem(s.ProblemIndex)
+	if er != nil {
+		log.Println(er)
+	}
 
 	s.Verdict = problems.Compiling
 	// UpdateVerdict(s.ID, Compiling)
@@ -306,7 +314,8 @@ func (CodeRangerJudge) judge(s *Submission) {
 	err = s.compile()
 	if err != nil {
 		s.Verdict = err.Verdict
-		UpdateVerdict(s.ID, err.Verdict)
+		UpdateVerdict(s.ID, s.Verdict)
+		sendNotification(*s, p)
 		return
 	}
 
@@ -319,7 +328,8 @@ func (CodeRangerJudge) judge(s *Submission) {
 	// fmt.Println(d)
 	if err != nil {
 		s.Verdict = err.Verdict
-		UpdateVerdict(s.ID, err.Verdict)
+		UpdateVerdict(s.ID, s.Verdict)
+		sendNotification(*s, p)
 		return
 	}
 
@@ -331,11 +341,13 @@ func (CodeRangerJudge) judge(s *Submission) {
 		fmt.Println(output)
 		s.Verdict = problems.WrongAnswer
 		UpdateVerdict(s.ID, problems.WrongAnswer)
+		sendNotification(*s, p)
 		return
 	}
 
 	s.Verdict = problems.Accepted
 	UpdateVerdict(s.ID, problems.Accepted)
+	sendNotification(*s, p)
 }
 
 func (s Submission) compile() *Error {
@@ -399,6 +411,24 @@ func ResendReceivedAndCheckInqueue() (err error) {
 
 func AddSamples() {
 	p := problems.Problem{
+		Index: -1,
+		Title: "Hello, world!",
+		Description: "You've just been born into the world and " +
+			"there's a lot of people around you. Your job is to call them all " +
+			"by their name and saying hello before it. Given a <name> which consists " +
+			"alphaneumeric characters and no spaces, print Hello, <name> in a line.",
+		SkillID:      "A",
+		Difficulty:   1,
+		Input:        "Sean\nMatthew\nJM\nKiel\n",
+		Output:       "Hello, Sean\nHello, Matthew\nHello, JM\nHello, Kiel\n",
+		SampleInput:  "Sean\nMatthew\n",
+		SampleOutput: "Hello, Sean\nHello, Matthew\n",
+		TimeLimit:    2,
+		MemoryLimit:  200,
+		Tags:         []string{"Subtract", "Math"},
+	}
+	AddProblem(p)
+	p = problems.Problem{
 		Index: -1,
 		Title: "Hashmat the Brave Warrior",
 		Description: "Hashmat is a brave warrior who with his group of " +
