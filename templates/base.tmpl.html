@@ -159,11 +159,13 @@ kng hindi accepted check relatedproblem to suggest
 
             }else{
               document.getElementById("achievementContent").innerHTML = "None";
+              }
 
               document.getElementById("recommendationTitle").innerHTML = "";
               document.getElementById("recommendedProblemsContent").innerHTML = "";
-            }
+
           }else{
+            if(data.NewAchievements != null){
             document.getElementById("recommendationTitle").innerHTML = "Stuck? Try this instead:";
             document.getElementById("recommendedProblemsContent").innerHTML = 
             "<h3><span id=\"problemName\"><a href=\"/view/" +
@@ -171,6 +173,10 @@ kng hindi accepted check relatedproblem to suggest
             "</a></span><br></h3> \
                 Difficulty: " + data.RelatedProblems[0].Difficulty + "<br> \
                 Description: " + data.RelatedProblems[0].Description.substring(0,150) + "...";
+              }else{
+                document.getElementById("recommendationTitle").innerHTML = "No similar problems to recommend";
+                document.getElementById("recommendedProblemsContent").innerHTML = "";
+              }
 
             document.getElementById("achievementsTitle").innerHTML = "";
             document.getElementById("achievementContent").innerHTML = "";
