@@ -7,7 +7,6 @@ import (
 	".././skills"
 	".././templating"
 	".././users"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -290,13 +289,11 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		userID, _ := cookies.GetUserID(r)
 		allSkills, err := skills.GetUserDataOnSkills(userID)
-		fmt.Println(err)
 		if err != nil {
 			templating.ErrorPage(w, 404)
 			return
 		}
 		unlockedSkills, err := skills.GetUnlockedSkills(userID)
-		fmt.Println(err)
 		if err != nil {
 			templating.ErrorPage(w, 404)
 			return
@@ -313,7 +310,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 				problems, err := skills.GetProblemsInSkill(skill.ID)
 				skill.NumberOfProblems = len(problems)
 				if err != nil {
-					fmt.Println(err)
 					templating.ErrorPage(w, 404)
 					return
 				}
@@ -321,13 +317,11 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		userData, err := users.GetUserData(userID)
-		fmt.Println(err)
 		if err != nil {
 			templating.ErrorPage(w, 404)
 			return
 		}
 		unsolvedProblems, err := GetUnsolvedProblems(userID)
-		fmt.Println(err)
 		if err != nil {
 			templating.ErrorPage(w, 404)
 			return

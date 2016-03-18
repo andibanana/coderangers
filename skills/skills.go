@@ -137,7 +137,7 @@ func addSkill(skill Skill) error {
 			}
 		}
 		var count int
-		db.QueryRow("SELECT COUNT(*) FROM SKILLS " + where).Scan(&count)
+		db.QueryRow("SELECT COUNT(*) FROM skills " + where).Scan(&count)
 
 		if len(skill.Prerequisites) > 0 {
 			if count != len(skill.Prerequisites) {
