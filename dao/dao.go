@@ -11,7 +11,7 @@ import (
 const SQLiteDatabaseURL = "file:database.sqlite?cache=shared&mode=rwc"
 const MySQLDatabaseURL = "root:p@ssword@tcp(127.0.0.1:3306)/"
 const MySQLDB = "coderangers"
-const MySQL = false
+const MySQL = true
 
 func Open() (*sql.DB, error) {
 	if MySQL {

@@ -337,12 +337,12 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 	defer db.Close()
 	unlockedSkills = make(map[string]bool)
 	rows, err := db.Query(`SELECT id, prerequisite_id, achieved_id FROM
-                    (SELECT id, prerequisite_id FROM skills LEFT JOIN prerequisites ON id = skill_id) AS prerequisite_table
-                    LEFT JOIN
-                    (SELECT id AS achieved_id FROM skills, (SELECT skill_id, COUNT(DISTINCT problem_id) as solved FROM submissions, problems 
-                    WHERE user_id = ? AND problem_id = problems.id AND verdict = ? GROUP BY skill_id) AS unique_solved 
-                    WHERE skills.id = unique_solved.skill_id AND unique_solved.solved >= skills.number_of_problems_to_unlock) AS achieved_table
-                    ON prerequisite_id = achieved_id;`, userID, problems.Accepted)
+                      (SELECT id, prerequisite_id FROM skills LEFT JOIN prerequisites ON id = skill_id) AS prerequisite_table
+                      LEFT JOIN
+                      (SELECT id AS achieved_id FROM skills, (SELECT skill_id, COUNT(DISTINCT problem_id) as solved FROM submissions, problems 
+                      WHERE user_id = ? AND problem_id = problems.id AND verdict = ? GROUP BY skill_id) AS unique_solved 
+                      WHERE skills.id = unique_solved.skill_id AND unique_solved.solved >= skills.number_of_problems_to_unlock) AS achieved_table
+                      ON prerequisite_id = achieved_id;`, userID, problems.Accepted)
 	if err != nil {
 		return
 	}
@@ -359,6 +359,7 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 			unlockedSkills[skillID] = false
 		}
 	}
+	unlockedSkills["A"] = true
 	return
 }
 
