@@ -622,6 +622,23 @@ a:hover{
 	margin-bottom: 10px;
 }
 
+.sideBarBtn{
+	display: block;
+	font-size: 18px;
+
+	background:none;
+    border:none;
+    margin:0;
+    padding:0;
+    color: #FFFFFF;
+}
+
+.sideBarBtn:hover{
+	color: #D0D0D0;
+	cursor: hand;
+	cursor: pointer;
+}
+
 a.sideBarItem:link, a.sideBarItem:visited
 a.sideBarItem:hover, a.sideBarItem:active{
 	text-decoration: none;
