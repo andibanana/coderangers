@@ -382,6 +382,21 @@ func (s Submission) run(p problems.Problem) (string, *Error) {
 	return stdout.String(), nil
 }
 
+func ResendReceivedAndCheckInqueue() (err error) {
+	subs, err := getSubmissionsReceivedAndInqueue()
+	if err != nil {
+		return err
+	}
+	for _, sub := range subs {
+		if sub.Verdict == problems.Inqueue {
+			uvaQueue <- &sub
+		} else if sub.Verdict == problems.Received {
+			submissionQueue <- &sub
+		}
+	}
+	return
+}
+
 func AddSamples() {
 	p := problems.Problem{
 		Index: -1,

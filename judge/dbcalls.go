@@ -451,3 +451,30 @@ func GetUserWhoRecentlySolvedProblem(userID, problemID int) (user users.UserData
 
 	return
 }
+
+func getSubmissionsReceivedAndInqueue() (submissions []Submission, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+
+	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), 
+                          IFNULL(uva_submission_id, 0), directory    
+                         FROM problems, submissions, user_account 
+                         WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id AND verdict IN (?, ?)
+                         ORDER BY timestamp DESC`, problems.Received, problems.Inqueue)
+
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var submission Submission
+		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID,
+			&submission.Runtime, &submission.UvaSubmissionID, &submission.Directory)
+		if err != nil {
+			return
+		}
+		submissions = append(submissions, submission)
+	}
+	return
+}

@@ -47,6 +47,7 @@ func main() {
 	judge.DIR = filepath.Join(wd, "submissions")
 	os.Mkdir(judge.DIR, 0777)
 	judge.InitQueues()
+	fmt.Println("RESEND: ", judge.ResendReceivedAndCheckInqueue())
 
 	http.HandleFunc("/", judge.HomeHandler)
 	http.HandleFunc("/problems", judge.ProblemsHandler)
