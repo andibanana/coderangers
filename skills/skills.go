@@ -20,21 +20,6 @@ type Skill struct {
 
 func AddSamples() {
 	s := Skill{
-		ID:                       "1",
-		Title:                    "Math",
-		Description:              "Mathematic Problems",
-		NumberOfProblemsToUnlock: 3,
-	}
-	addSkill(s)
-	s = Skill{
-		ID:                       "2",
-		Title:                    "Ad Hoc",
-		Description:              "Implementation Problems",
-		NumberOfProblemsToUnlock: 3,
-	}
-	addSkill(s)
-
-	s = Skill{
 		ID:                       "A",
 		Title:                    "Introduction to Competitive Programming",
 		Description:              "Trivial problems focused on familiarizing yourself with the software",
@@ -152,7 +137,7 @@ func addSkill(skill Skill) error {
 			}
 		}
 		var count int
-		db.QueryRow("SELECT COUNT(*) FROM SKILLS " + where).Scan(&count)
+		db.QueryRow("SELECT COUNT(*) FROM skills " + where).Scan(&count)
 
 		if len(skill.Prerequisites) > 0 {
 			if count != len(skill.Prerequisites) {
@@ -269,10 +254,11 @@ func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err
 
 	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
                         sample_output, IFNULL(input, ""), IFNULL(output, ""), uva_id  
-                        FROM problems, skills
+                        FROM problems 
                           LEFT JOIN
                         inputoutput 
                         ON (problems.id = inputoutput.problem_id)
+                        , skills
                         WHERE skill_id = skills.id AND skill_id = ?;`, skillID)
 	if err != nil {
 		return
@@ -295,9 +281,10 @@ func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []pr
 
 	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
                         sample_output, IFNULL(input,"") , IFNULL(output,"") , uva_id, verdict is not null  
-                        FROM problems, skills
+                        FROM problems 
                         LEFT JOIN inputoutput ON (problems.id = inputoutput.problem_id)
                         LEFT JOIN (SELECT DISTINCT problem_id, verdict FROM submissions WHERE verdict = ? AND user_id = ?) AS submissions ON (problems.id = submissions.problem_id) 
+                        , skills
                         WHERE skill_id = skills.id AND skill_id = ?;`, problems.Accepted, userID, skillID)
 	if err != nil {
 		return
@@ -350,12 +337,12 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 	defer db.Close()
 	unlockedSkills = make(map[string]bool)
 	rows, err := db.Query(`SELECT id, prerequisite_id, achieved_id FROM
-                    (SELECT id, prerequisite_id FROM skills LEFT JOIN prerequisites ON id = skill_id) AS prerequisite_table
-                    LEFT JOIN
-                    (SELECT id AS achieved_id FROM skills, (SELECT skill_id, COUNT(DISTINCT problem_id) as solved FROM submissions, problems 
-                    WHERE user_id = ? AND problem_id = problems.id AND verdict = ? GROUP BY skill_id) AS unique_solved 
-                    WHERE skills.id = unique_solved.skill_id AND unique_solved.solved >= skills.number_of_problems_to_unlock) AS achieved_table
-                    ON prerequisite_id = achieved_id;`, userID, problems.Accepted)
+                      (SELECT id, prerequisite_id FROM skills LEFT JOIN prerequisites ON id = skill_id) AS prerequisite_table
+                      LEFT JOIN
+                      (SELECT id AS achieved_id FROM skills, (SELECT skill_id, COUNT(DISTINCT problem_id) as solved FROM submissions, problems 
+                      WHERE user_id = ? AND problem_id = problems.id AND verdict = ? GROUP BY skill_id) AS unique_solved 
+                      WHERE skills.id = unique_solved.skill_id AND unique_solved.solved >= skills.number_of_problems_to_unlock) AS achieved_table
+                      ON prerequisite_id = achieved_id;`, userID, problems.Accepted)
 	if err != nil {
 		return
 	}
@@ -372,6 +359,7 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 			unlockedSkills[skillID] = false
 		}
 	}
+	unlockedSkills["A"] = true
 	return
 }
 
@@ -443,7 +431,7 @@ func GetSolvedInSkillWithoutSubmission(userID, submissionID int, skillID string)
 	}
 	defer db.Close()
 
-	err = db.QueryRow(`SELECT COUNT (DISTINCT problems.ID)
+	err = db.QueryRow(`SELECT COUNT(DISTINCT problems.ID)
                     FROM problems, submissions 
                     WHERE problems.ID = submissions.problem_id AND submissions.user_id = ? AND skill_id = ? AND submissions.ID != ? AND verdict = ?;`, userID, skillID,
 		submissionID, problems.Accepted).Scan(&solvedCount)
@@ -461,7 +449,7 @@ func GetSolvedInSkill(userID int, skillID string) (solvedCount int, err error) {
 	}
 	defer db.Close()
 
-	err = db.QueryRow(`SELECT COUNT (DISTINCT problems.ID)
+	err = db.QueryRow(`SELECT COUNT(DISTINCT problems.ID)
                     FROM problems, submissions 
                     WHERE problems.ID = submissions.problem_id AND submissions.user_id = ? AND skill_id = ? AND verdict = ?;`, userID, skillID,
 		problems.Accepted).Scan(&solvedCount)

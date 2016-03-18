@@ -423,9 +423,13 @@ func GetUnsolvedProblems(userID int) (unsolvedProblems []int, err error) {
 	defer db.Close()
 
 	rows, err := db.Query(`SELECT DISTINCT id FROM problems 
-                          EXCEPT
-                        SELECT DISTINCT problem_id as id FROM submissions WHERE user_id = ? AND verdict = ?;`,
+                        WHERE id NOT IN(SELECT DISTINCT problem_id AS id 
+                        FROM submissions 
+                        WHERE user_id = ? AND verdict = ?);`,
 		userID, problems.Accepted)
+	if err != nil {
+		return
+	}
 	for rows.Next() {
 		var problem int
 		err = rows.Scan(&problem)
