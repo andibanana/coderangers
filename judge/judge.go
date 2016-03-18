@@ -402,7 +402,8 @@ func ResendReceivedAndCheckInqueue() (err error) {
 	for _, sub := range subs {
 		if sub.Verdict == problems.Inqueue {
 			uvaQueue <- &sub
-		} else if sub.Verdict == problems.Received {
+		} else if sub.Verdict == problems.Received ||
+			sub.Verdict == problems.Compiling || sub.Verdict == problems.Running {
 			submissionQueue <- &sub
 		}
 	}
