@@ -305,9 +305,7 @@ func GetProblems() (problemList []problems.Problem) {
 	}
 	defer db.Close()
 	rows, err := db.Query("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems")
-	//, inputoutput " +
-	//"WHERE problems.id = inputoutput.problem_id ")
-	// fmt.Println(err)
+
 	if err != nil {
 		return nil
 	}

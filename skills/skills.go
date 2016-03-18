@@ -268,8 +268,12 @@ func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err
 	defer db.Close()
 
 	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
-                        sample_output, input, output, uva_id  
-                        FROM problems, skills, inputoutput WHERE problems.id = inputoutput.problem_id AND skill_id = skills.id AND skill_id = ?`, skillID)
+                        sample_output, IFNULL(input, ""), IFNULL(output, ""), uva_id  
+                        FROM problems, skills
+                          LEFT JOIN
+                        inputoutput 
+                        ON (problems.id = inputoutput.problem_id)
+                        WHERE skill_id = skills.id AND skill_id = ?;`, skillID)
 	if err != nil {
 		return
 	}
@@ -290,11 +294,11 @@ func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []pr
 	defer db.Close()
 
 	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
-                        sample_output, input, output, uva_id, verdict is not null  
-                        FROM problems, skills, inputoutput 
+                        sample_output, IFNULL(input,"") , IFNULL(output,"") , uva_id, verdict is not null  
+                        FROM problems, skills
+                        LEFT JOIN inputoutput ON (problems.id = inputoutput.problem_id)
                         LEFT JOIN (SELECT DISTINCT problem_id, verdict FROM submissions WHERE verdict = ? AND user_id = ?) AS submissions ON (problems.id = submissions.problem_id) 
-                        WHERE problems.id = inputoutput.problem_id AND skill_id = skills.id AND skill_id = ?       
-                        `, problems.Accepted, userID, skillID)
+                        WHERE skill_id = skills.id AND skill_id = ?;`, problems.Accepted, userID, skillID)
 	if err != nil {
 		return
 	}
