@@ -75,11 +75,26 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
   <a href="/view/{{.Problem.Index}}" >
   <div class="containerProfileBanner">
   	<div class="profileBannerInfo">
-  	
-  		<h2>{{.Problem.Title}}</h2>
-  		Try and solve this problem!
-  	</div>
-  	
+      <h2 class="noMargin">{{.Problem.Title}}</h2>
+      <div class="problemInfo">
+               
+      </div>
+
+
+      <div>{{.Problem.Description}}</div>
+
+
+      <div class="infoHeader">
+          <div class="problemInfoElement">
+            <img src="/images/difficulty icons/{{.Problem.Difficulty}}.png" class="difficultyImageSmall"><span><strong>Difficulty</strong></span>
+          </div>
+
+          <div class="problemInfoElement">
+            <img src="/images/skill icons/{{.Problem.SkillID}}.png" class="difficultyImageSmall"><span><strong>Skill</strong></span>
+          </div>
+      </div>
+
+      </div> 	
   </div>
   </a>
   {{end}} 

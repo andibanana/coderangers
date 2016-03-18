@@ -5,8 +5,19 @@
     <div class="containerContent">
 
 		<h1>{{.Problem.Title}}</h1>
-		<p>Skill: {{.Skill.Title}}</p>
-		<p>Difficulty: {{.Problem.Difficulty}}</p>
+
+		<div class="infoHeaderLarge">
+          <div class="problemInfoElementLarge">
+            <img src="/images/difficulty icons/{{.Problem.Difficulty}}.png" class="difficultyImageLarge"><span><strong>Difficulty</strong></span>
+          </div>
+
+          <div class="problemInfoElementLarge">
+            <!-- <a href="/skill/{{.Problem.SkillID}}"> --><img src="/images/skill icons/{{.Problem.SkillID}}.png" class="difficultyImageLarge" title="{{.Skill.Title}}"><!-- </a> --><span><strong>Skill</strong></span>
+          </div>
+      	</div>
+
+		<!-- <p>Skill: {{.Skill.Title}}</p>
+		<p>Difficulty: {{.Problem.Difficulty}}</p> -->
 		
 <!-- 		<h3>Submitted: {{.Submitted}}</h3>
 		<h3>Accepted: {{.VerdictData.Accepted}}</h3>
@@ -28,8 +39,10 @@
     {{else}}
     <iframe src="https://uva.onlinejudge.org/external/{{makeUvaExternal .Problem.UvaID}}/{{ .Problem.UvaID}}.pdf" width="1000px" height="568"></iframe>
     {{end}}
+
+
 		<form action="/submit/{{.Problem.Index}}" method="POST" {{if .Locked}} disabled {{end}}>
-		  <textarea name="code" class="codeBox" {{if .Locked}} disabled {{end}}></textarea> <br>
+		  <textarea name="code" class="codeBox" {{if .Locked}} disabled {{end}}>{{if .Locked}}SKILL LOCKED - learn all requisite skills to solve this problem{{else}}[Place your code here]{{end}}</textarea> <br>
 		<input type="submit" class="orangeBtn" {{if .Locked}} disabled {{end}}>
 		</form>
     </div>
