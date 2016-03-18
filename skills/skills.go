@@ -391,9 +391,9 @@ func GetUserDataOnSkills(userID int) (skills map[string]*Skill, err error) {
                         LEFT JOIN
                           (SELECT COUNT(DISTINCT problem_id) as solved, skill_id 
                           FROM problems, submissions 
-                          WHERE problems.id = submissions.problem_id AND user_id = ?
+                          WHERE problems.id = submissions.problem_id AND user_id = ? AND verdict = ?
                           GROUP BY skill_id) AS solved
-                          ON (skills.id = solved.skill_id);`, userID)
+                          ON (skills.id = solved.skill_id);`, userID, problems.Accepted)
 	if err != nil {
 		return
 	}
@@ -425,9 +425,9 @@ func GetUserDataOnSkill(userID int, skillID string) (skill Skill, err error) {
                     LEFT JOIN
                       (SELECT COUNT(DISTINCT problem_id) as solved, skill_id 
                       FROM problems, submissions 
-                      WHERE problems.id = submissions.problem_id AND user_id = ? AND skill_id = ?
+                      WHERE problems.id = submissions.problem_id AND user_id = ? AND skill_id = ? AND verdict = ?
                       GROUP BY skill_id) AS solved
-                      ON (skills.id = solved.skill_id);`, skillID, userID, skillID).Scan(&skill.ID,
+                      ON (skills.id = solved.skill_id);`, skillID, userID, skillID, problems.Accepted).Scan(&skill.ID,
 		&skill.Title, &skill.Description, &skill.NumberOfProblemsToUnlock, &skill.Solved, &skill.Mastered, &skill.Learned)
 	if err != nil {
 		return

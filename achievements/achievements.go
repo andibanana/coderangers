@@ -27,9 +27,9 @@ func GetAchievements(userID int) (achievements []Achievement, err error) {
                         LEFT JOIN
                           (SELECT COUNT(DISTINCT problem_id) as solved, skill_id 
                           FROM problems, submissions 
-                          WHERE problems.id = submissions.problem_id AND user_id = ?
+                          WHERE problems.id = submissions.problem_id AND user_id = ? AND verdict = ? 
                           GROUP BY skill_id) AS solved
-                          ON (skills.id = solved.skill_id);`, userID)
+                          ON (skills.id = solved.skill_id);`, userID, problems.Accepted)
 	if err != nil {
 		return
 	}
