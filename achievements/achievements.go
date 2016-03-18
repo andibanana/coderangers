@@ -17,7 +17,6 @@ func GetAchievements(userID int) (achievements []Achievement, err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	rows, err := db.Query(`SELECT id, title, IFNULL(solved >= number_of_problems, 0) AS mastered, IFNULL(solved >= number_of_problems_to_unlock, 0) AS unlocked FROM 
                           (SELECT COUNT(DISTINCT problems.id) as number_of_problems, skills.title, skills.id, number_of_problems_to_unlock 

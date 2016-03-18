@@ -17,7 +17,6 @@ func SendEmailsToInactive() (err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	rows, err := db.Query(`SELECT user_account.id, username, email, max(timestamp) FROM
                         user_account

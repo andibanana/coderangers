@@ -28,7 +28,6 @@ func GetUserData(userID int) (data UserData, err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	err = db.QueryRow("SELECT id, username, email FROM user_account WHERE id = ?", userID).Scan(&data.ID, &data.Username, &data.Email)
 
@@ -53,7 +52,6 @@ func AddViewedProblem(userID, problemID int) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	_, err = db.Exec("INSERT INTO viewed_problems (user_id, problem_id) VALUES (?, ?)",
 		userID, problemID)

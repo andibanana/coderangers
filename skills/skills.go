@@ -124,7 +124,6 @@ func addSkill(skill Skill) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	var where string
 	if skill.Prerequisites != nil {
@@ -175,7 +174,6 @@ func editSkill(skill Skill, originalID string) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	var where string
 	if skill.Prerequisites != nil {
@@ -230,7 +228,6 @@ func GetAllSkills() (skills []Skill, err error) {
 	if err != nil {
 		return skills, err
 	}
-	defer db.Close()
 
 	rows, err := db.Query("SELECT id, title, description, number_of_problems_to_unlock FROM skills")
 	if err != nil {
@@ -250,7 +247,6 @@ func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
                         sample_output, IFNULL(input, ""), IFNULL(output, ""), uva_id  
@@ -277,7 +273,6 @@ func getProblemsInSkillForUser(skillID string, userID int) (problemsInSkill []pr
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	rows, err := db.Query(`SELECT problems.id, problems.title, problems.description, difficulty, skill_id, time_limit, memory_limit, sample_input,
                         sample_output, IFNULL(input,"") , IFNULL(output,"") , uva_id, verdict is not null  
@@ -304,7 +299,6 @@ func GetSkill(id string) (skill Skill, err error) {
 	if err != nil {
 		return skill, err
 	}
-	defer db.Close()
 
 	err = db.QueryRow("SELECT id, title, description, number_of_problems_to_unlock FROM skills WHERE id = ?", id).Scan(&skill.ID, &skill.Title, &skill.Description, &skill.NumberOfProblemsToUnlock)
 	if err != nil {
@@ -334,7 +328,6 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 	unlockedSkills = make(map[string]bool)
 	rows, err := db.Query(`SELECT id, prerequisite_id, achieved_id FROM
                       (SELECT id, prerequisite_id FROM skills LEFT JOIN prerequisites ON id = skill_id) AS prerequisite_table
@@ -368,7 +361,6 @@ func GetUserDataOnSkills(userID int) (skills map[string]*Skill, err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 	skills = make(map[string]*Skill)
 	rows, err := db.Query(`SELECT id, title, description, number_of_problems_to_unlock, IFNULL(solved, 0) as solved, IFNULL(solved >= number_of_problems, 0) AS mastered, IFNULL(solved >= number_of_problems_to_unlock, 0) AS unlocked FROM 
                           (SELECT COUNT(DISTINCT problems.id) as number_of_problems, skills.title, skills.id, number_of_problems_to_unlock, skills.description 
@@ -401,7 +393,6 @@ func GetUserDataOnSkill(userID int, skillID string) (skill Skill, err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	err = db.QueryRow(`SELECT id, title, description, number_of_problems_to_unlock, IFNULL(solved, 0) as solved, IFNULL(solved >= number_of_problems, 0) AS mastered, IFNULL(solved >= number_of_problems_to_unlock, 0) AS unlocked FROM 
                       (SELECT COUNT(DISTINCT problems.id) as number_of_problems, skills.title, skills.id, number_of_problems_to_unlock, skills.description 
@@ -429,7 +420,6 @@ func GetSolvedInSkillWithoutSubmission(userID, submissionID int, skillID string)
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	err = db.QueryRow(`SELECT COUNT(DISTINCT problems.ID)
                     FROM problems, submissions 
@@ -447,7 +437,6 @@ func GetSolvedInSkill(userID int, skillID string) (solvedCount int, err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	err = db.QueryRow(`SELECT COUNT(DISTINCT problems.ID)
                     FROM problems, submissions 

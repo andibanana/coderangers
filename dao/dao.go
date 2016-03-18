@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
+	"log"
 	"net/http"
 )
 
@@ -13,12 +14,25 @@ const MySQLDatabaseURL = "root:p@ssword@tcp(127.0.0.1:3306)/"
 const MySQLDB = "coderangers"
 const MySQL = false
 
-func Open() (*sql.DB, error) {
+var db *sql.DB
+
+func initDB() {
+	var err error
 	if MySQL {
-		return sql.Open("mysql", MySQLDatabaseURL+MySQLDB)
+		db, err = sql.Open("mysql", MySQLDatabaseURL+MySQLDB)
 	} else {
-		return sql.Open("sqlite3", SQLiteDatabaseURL)
+		db, err = sql.Open("sqlite3", SQLiteDatabaseURL)
 	}
+	if err != nil {
+		log.Fatal("DB CONNECTION NOT MADE")
+	}
+}
+
+func Open() (*sql.DB, error) {
+	if db == nil {
+		initDB()
+	}
+	return db, db.Ping()
 }
 
 func IsAdmin(req *http.Request) bool {
@@ -31,7 +45,6 @@ func IsAdmin(req *http.Request) bool {
 	if err != nil {
 		return false
 	}
-	defer db.Close()
 
 	err = db.QueryRow("SELECT id FROM user_account WHERE id=? AND admin=?", userID, true).Scan(&userID)
 	return err == nil
@@ -45,7 +58,6 @@ func CreateDB() error {
 		if err != nil {
 			return err
 		}
-		defer db.Close()
 
 		_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + MySQLDB)
 		if err != nil {
@@ -57,7 +69,6 @@ func CreateDB() error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	_, err = db.Exec(`
 		CREATE TABLE user_account (

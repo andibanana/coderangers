@@ -11,7 +11,6 @@ func Login(username, password string) (userID int, ok bool) {
 	if err != nil {
 		return 0, false
 	}
-	defer db.Close()
 
 	var hashedPassword string
 	err = db.QueryRow("SELECT id, hashed_password FROM user_account WHERE username=?", username).Scan(&userID, &hashedPassword)
@@ -28,7 +27,6 @@ func Register(username, password, email string, admin bool) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer db.Close()
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 0)
 
@@ -52,7 +50,6 @@ func changePassword(userID int, password string) (err error) {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 0)
 
@@ -75,7 +72,6 @@ func RegisterAndFakeData(username, password string, admin bool, xp, coins int) (
 	if err != nil {
 		return 0, err
 	}
-	defer db.Close()
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 0)
 

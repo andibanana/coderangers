@@ -16,7 +16,6 @@ func GetTopUsers(limit, offset int) (users []User, err error) {
 	if err != nil {
 		return users, err
 	}
-	defer db.Close()
 
 	rows, err := db.Query(`SELECT user_account.id, username, IFNULL(SUM(difficulty), 0) AS experience FROM
                           user_account

@@ -17,7 +17,6 @@ func AddProblem(problem problems.Problem) (err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -71,7 +70,6 @@ func editProblem(problem problems.Problem) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -126,7 +124,6 @@ func deleteProblem(problemID int) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -155,7 +152,6 @@ func addSubmission(submission Submission, userID int) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	defer db.Close()
 
 	if _, err := GetProblem(submission.ProblemIndex); err != nil {
 		return -1, errors.New("No such problem")
@@ -181,7 +177,6 @@ func getSubmissions() (submissions []Submission, err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	rows, err := db.Query("SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0) FROM problems, submissions, user_account " +
 		"WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id " +
@@ -206,7 +201,6 @@ func GetSubmission(id int) (submission Submission) {
 	if err != nil {
 		return submission
 	}
-	defer db.Close()
 	db.QueryRow("SELECT submissions.id, problem_id, username, verdict, user_account.id, uva_submission_id, runtime FROM submissions, user_account "+
 		"WHERE user_account.id = submissions.user_id and submissions.id = ?", id).Scan(&submission.ID, &submission.ProblemIndex,
 		&submission.Username, &submission.Verdict, &submission.UserID, &submission.UvaSubmissionID, &submission.Runtime)
@@ -219,7 +213,6 @@ func usedSubmissionID(id int) bool {
 	if err != nil {
 		return true
 	}
-	defer db.Close()
 	var count int
 	db.QueryRow("SELECT COUNT(*) FROM submissions WHERE uva_submission_id = ?", id).Scan(&count)
 	if count == 0 {
@@ -234,7 +227,6 @@ func acceptedAlready(userID, problemID int) bool {
 	if err != nil {
 		return false
 	}
-	defer db.Close()
 
 	var count int
 	db.QueryRow("SELECT COUNT(*) FROM submissions, user_account "+
@@ -253,7 +245,6 @@ func UpdateVerdict(id int, verdict string) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	_, err = db.Exec("UPDATE submissions SET verdict = ? WHERE id = ?", verdict, id)
 
@@ -271,7 +262,6 @@ func UpdateRuntime(id int, runtime float64) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	_, err = db.Exec("UPDATE submissions SET runtime = ? WHERE id = ?", runtime, id)
 
@@ -287,7 +277,6 @@ func updateUvaSubmissionID(id, submissionID int) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 
 	_, err = db.Exec("UPDATE submissions SET uva_submission_id = ? WHERE id = ?", submissionID, id)
 
@@ -303,7 +292,6 @@ func GetProblems() (problemList []problems.Problem) {
 	if err != nil {
 		return nil
 	}
-	defer db.Close()
 	rows, err := db.Query("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems")
 
 	if err != nil {
@@ -325,7 +313,6 @@ func GetRelatedProblems(userID, problemID int) (relatedProblems []problems.Probl
 	if err != nil {
 		return
 	}
-	defer db.Close()
 	rows, err := db.Query(`
     SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems WHERE id IN (
 
@@ -364,7 +351,6 @@ func GetProblem(index int) (problems.Problem, error) {
 	if err != nil {
 		return problem, err
 	}
-	defer db.Close()
 	err = db.QueryRow(`SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, IFNULL(input, ""), IFNULL(output, ""), uva_id 
                      FROM problems LEFT JOIN inputoutput ON (problems.id = inputoutput.problem_id)
                      WHERE problems.id = ?`, index).Scan(&problem.Index, &problem.Title, &problem.Description,
@@ -399,7 +385,6 @@ func GetUnsolvedTriedProblems(userID int) (unsolvedProblems []int, err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	rows, err := db.Query(`SELECT DISTINCT problem_id FROM submissions WHERE user_id = ?
                   EXCEPT
@@ -420,7 +405,6 @@ func GetUnsolvedProblems(userID int) (unsolvedProblems []int, err error) {
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	rows, err := db.Query(`SELECT DISTINCT id FROM problems 
                         WHERE id NOT IN(SELECT DISTINCT problem_id AS id 
@@ -446,7 +430,6 @@ func GetUserWhoRecentlySolvedProblem(userID, problemID int) (user users.UserData
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	err = db.QueryRow(`SELECT user_account.id, username, email FROM user_account, submissions 
                       WHERE user_account.id = submissions.user_id AND submissions.problem_id = ? AND verdict = ? AND submissions.user_id != ?

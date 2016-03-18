@@ -78,4 +78,6 @@ func main() {
 
 	fmt.Println("serving")
 	http.ListenAndServe(":80", nil)
+	db, _ := dao.Open()
+	db.Close()
 }
