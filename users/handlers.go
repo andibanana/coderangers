@@ -65,12 +65,50 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		userID, ok := Login(username, password)
 		if !ok {
-			http.Error(w, "Invalid username or password.", http.StatusBadRequest)
+			templating.RenderPage(w, "login", "Invalid username or password.")
 			return
 		}
 
 		cookies.Login(r, w, userID, username)
 
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	default:
+		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+	}
+}
+
+func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		if cookies.IsLoggedIn(r) {
+			http.Redirect(w, r, "/", http.StatusFound)
+			return
+		}
+
+		templating.RenderPage(w, "changepassword", nil)
+	case "POST":
+		username := r.FormValue("username")
+		oldPassword := r.FormValue("old_password")
+		newPassword := r.FormValue("new_password")
+		cnewPassword := r.FormValue("cnew_password")
+
+		if newPassword != cnewPassword {
+			templating.RenderPage(w, "changepassword", "New password not the same as confirm new password.")
+			return
+		}
+
+		userID, ok := Login(username, oldPassword)
+		if !ok {
+			templating.RenderPage(w, "changepassword", "Invalid username or password.")
+			return
+		}
+
+		err := changePassword(userID, newPassword)
+
+		if err != nil {
+			templating.RenderPage(w, "changepassword", err.Error())
+			return
+		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	default:
 		templating.ErrorPage(w, http.StatusMethodNotAllowed)

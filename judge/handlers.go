@@ -136,7 +136,6 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			Output:       r.FormValue("output"),
 			SampleInput:  r.FormValue("sample_input"),
 			SampleOutput: r.FormValue("sample_output"),
-			PDFLink:      r.FormValue("pdf_link"),
 			TimeLimit:    time_limit,
 			MemoryLimit:  memory_limit,
 			Tags:         tags,

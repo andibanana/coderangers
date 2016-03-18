@@ -64,7 +64,6 @@ func CreateDB() error {
       memory_limit INTEGER,
       sample_input TEXT,
       sample_output TEXT,
-      pdf_link TEXT,
       
       FOREIGN KEY(skill_id) REFERENCES skills(id)
 		)

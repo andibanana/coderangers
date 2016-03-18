@@ -24,8 +24,8 @@ func AddProblem(problem problems.Problem) (err error) {
 		return
 	}
 
-	result, err := tx.Exec("INSERT INTO problems (title, description, difficulty, skill_id, uva_id, time_limit, memory_limit, sample_input, sample_output, pdf_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		problem.Title, problem.Description, problem.Difficulty, problem.SkillID, problem.UvaID, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput, problem.PDFLink)
+	result, err := tx.Exec("INSERT INTO problems (title, description, difficulty, skill_id, uva_id, time_limit, memory_limit, sample_input, sample_output) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		problem.Title, problem.Description, problem.Difficulty, problem.SkillID, problem.UvaID, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput)
 	if err != nil {
 		tx.Rollback()
 		return
@@ -36,7 +36,7 @@ func AddProblem(problem problems.Problem) (err error) {
 		tx.Rollback()
 		return
 	}
-	if problem.UvaID != "" {
+	if problem.UvaID == "" {
 		_, err = tx.Exec("INSERT INTO inputoutput (problem_id, input_number, input, output) VALUES (?, ?, ?, ?)",
 			problemID, 1, problem.Input, problem.Output)
 
@@ -78,8 +78,8 @@ func editProblem(problem problems.Problem) error {
 		return err
 	}
 
-	_, err = tx.Exec("UPDATE problems SET title = ?, description = ?, difficulty = ?, skill_id = ?, uva_id = ?, time_limit = ?, memory_limit = ?, sample_input = ?, sample_output = ?, pdf_link = ? WHERE id = ?",
-		problem.Title, problem.Description, problem.Difficulty, problem.SkillID, problem.UvaID, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput, problem.PDFLink, problem.Index)
+	_, err = tx.Exec("UPDATE problems SET title = ?, description = ?, difficulty = ?, skill_id = ?, uva_id = ?, time_limit = ?, memory_limit = ?, sample_input = ?, sample_output = ? WHERE id = ?",
+		problem.Title, problem.Description, problem.Difficulty, problem.SkillID, problem.UvaID, problem.TimeLimit, problem.MemoryLimit, problem.SampleInput, problem.SampleOutput, problem.Index)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -304,7 +304,7 @@ func GetProblems() (problemList []problems.Problem) {
 		return nil
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id, pdf_link FROM problems")
+	rows, err := db.Query("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems")
 	//, inputoutput " +
 	//"WHERE problems.id = inputoutput.problem_id ")
 	// fmt.Println(err)
@@ -315,7 +315,7 @@ func GetProblems() (problemList []problems.Problem) {
 	for rows.Next() {
 		var problem problems.Problem
 		rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
-			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.UvaID, &problem.PDFLink)
+			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.UvaID)
 		problemList = append(problemList, problem)
 	}
 
@@ -329,7 +329,7 @@ func GetRelatedProblems(userID, problemID int) (relatedProblems []problems.Probl
 	}
 	defer db.Close()
 	rows, err := db.Query(`
-    SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id, pdf_link FROM problems WHERE id IN (
+    SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems WHERE id IN (
 
       SELECT DISTINCT problem_id FROM tags WHERE problem_id != ? AND tag IN 
       (SELECT DISTINCT tag FROM problems, tags WHERE problem_id = id AND id = ?)
@@ -351,7 +351,7 @@ func GetRelatedProblems(userID, problemID int) (relatedProblems []problems.Probl
 	for rows.Next() {
 		var problem problems.Problem
 		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
-			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.UvaID, &problem.PDFLink)
+			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.UvaID)
 		if unlocked[problem.SkillID] {
 			relatedProblems = append(relatedProblems, problem)
 		}
@@ -367,10 +367,10 @@ func GetProblem(index int) (problems.Problem, error) {
 		return problem, err
 	}
 	defer db.Close()
-	err = db.QueryRow("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, input, output, uva_id, pdf_link FROM problems, inputoutput "+
+	err = db.QueryRow("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, input, output, uva_id FROM problems, inputoutput "+
 		"WHERE problems.id = inputoutput.problem_id and problems.id = ?", index).Scan(&problem.Index, &problem.Title, &problem.Description,
 		&problem.Difficulty, &problem.SkillID, &problem.TimeLimit, &problem.MemoryLimit, &problem.SampleInput,
-		&problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID, &problem.PDFLink)
+		&problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID)
 
 	if err != nil {
 		return problem, errors.New("No such problem")
@@ -449,5 +449,32 @@ func GetUserWhoRecentlySolvedProblem(userID, problemID int) (user users.UserData
                       WHERE user_account.id = submissions.user_id AND submissions.problem_id = ? AND verdict = ? AND submissions.user_id != ?
                       ORDER BY timestamp DESC;`, problemID, problems.Accepted, userID).Scan(&user.ID, &user.Username, &user.Email)
 
+	return
+}
+
+func getSubmissionsReceivedAndInqueue() (submissions []Submission, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+
+	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), 
+                          IFNULL(uva_submission_id, 0), directory    
+                         FROM problems, submissions, user_account 
+                         WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id AND verdict IN (?, ?, ?, ?)
+                         ORDER BY timestamp DESC`, problems.Received, problems.Inqueue, problems.Compiling, problems.Running)
+
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var submission Submission
+		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID,
+			&submission.Runtime, &submission.UvaSubmissionID, &submission.Directory)
+		if err != nil {
+			return
+		}
+		submissions = append(submissions, submission)
+	}
 	return
 }

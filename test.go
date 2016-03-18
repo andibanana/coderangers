@@ -47,6 +47,7 @@ func main() {
 	judge.DIR = filepath.Join(wd, "submissions")
 	os.Mkdir(judge.DIR, 0777)
 	judge.InitQueues()
+	fmt.Println("RESEND: ", judge.ResendReceivedAndCheckInqueue())
 
 	http.HandleFunc("/", judge.HomeHandler)
 	http.HandleFunc("/problems", judge.ProblemsHandler)
@@ -59,6 +60,7 @@ func main() {
 	http.HandleFunc("/register", users.RegisterHandler)
 	http.HandleFunc("/login", users.LoginHandler)
 	http.HandleFunc("/logout", users.LogoutHandler)
+	http.HandleFunc("/change-password", users.ChangePasswordHandler)
 	http.HandleFunc("/add-skill", skills.AddSkillHandler)
 	http.HandleFunc("/edit-skill/", skills.EditSkillHandler)
 
