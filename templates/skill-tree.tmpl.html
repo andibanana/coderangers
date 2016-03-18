@@ -37,7 +37,7 @@
 		var i=0;
 
 		{{range $key, $value := .UnlockedSkills}}
-      		skills[i]={key: "{{$key}}", title: "{{(index $.SkillsData $key).Title}}", mastered: {{(index $.SkillsData $key).Mastered}}, learned: {{(index $.SkillsData $key).Learned}}, solved: "{{(index $.SkillsData $key).Solved}}", numberOfProblems: "{{(index $.SkillsData "1").NumberOfProblems}}", problemsToUnlock: "{{(index $.SkillsData $key).NumberOfProblemsToUnlock}}", description: "{{(index $.SkillsData $key).Description}}", unlocked: {{if $value}}true{{else}}false{{end}}}
+      		skills[i]={key: "{{$key}}", title: "{{(index $.SkillsData $key).Title}}", mastered: {{(index $.SkillsData $key).Mastered}}, learned: {{(index $.SkillsData $key).Learned}}, solved: "{{(index $.SkillsData $key).Solved}}", numberOfProblems: "{{(index $.SkillsData $key).NumberOfProblems}}", problemsToUnlock: "{{(index $.SkillsData $key).NumberOfProblemsToUnlock}}", description: "{{(index $.SkillsData $key).Description}}", unlocked: {{if $value}}true{{else}}false{{end}}}
 
       		i++;
     	{{end}}

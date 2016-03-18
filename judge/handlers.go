@@ -298,7 +298,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, 404)
 			return
 		}
-		var skill skills.Skill
+		var skill *skills.Skill
 		var suggestSkill bool
 		for _, element := range allSkills {
 			if element.Mastered {
@@ -343,7 +343,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}{
 			cookies.IsLoggedIn(r),
 			dao.IsAdmin(r),
-			skill,
+			*skill,
 			suggestSkill,
 			userData,
 			suggestProblem,

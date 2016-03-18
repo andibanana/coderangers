@@ -46,10 +46,10 @@ func SendEmailsToInactive() (err error) {
 		duration := time.Since(submittime)
 		if duration.Hours()/24 >= 3 {
 			var unsolvedProblems []int
-			var userDataOnSkill map[string]skills.Skill
+			var userDataOnSkill map[string]*skills.Skill
 			var problem problems.Problem
 			var suggestSkill bool
-			var skill skills.Skill
+			var skill *skills.Skill
 			var unlockedSkills map[string]bool
 			unsolvedProblems, err = judge.GetUnsolvedTriedProblems(userID)
 			if err != nil {

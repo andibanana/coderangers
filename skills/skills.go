@@ -371,13 +371,13 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 	return
 }
 
-func GetUserDataOnSkills(userID int) (skills map[string]Skill, err error) {
+func GetUserDataOnSkills(userID int) (skills map[string]*Skill, err error) {
 	db, err := dao.Open()
 	if err != nil {
 		return
 	}
 	defer db.Close()
-	skills = make(map[string]Skill)
+	skills = make(map[string]*Skill)
 	rows, err := db.Query(`SELECT id, title, description, number_of_problems_to_unlock, IFNULL(solved, 0) as solved, IFNULL(solved >= number_of_problems, 0) AS mastered, IFNULL(solved >= number_of_problems_to_unlock, 0) AS unlocked FROM 
                           (SELECT COUNT(DISTINCT problems.id) as number_of_problems, skills.title, skills.id, number_of_problems_to_unlock, skills.description 
                           FROM skills
@@ -399,7 +399,7 @@ func GetUserDataOnSkills(userID int) (skills map[string]Skill, err error) {
 		if err != nil {
 			return
 		}
-		skills[skill.ID] = skill
+		skills[skill.ID] = &skill
 	}
 	return
 }
