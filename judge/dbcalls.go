@@ -367,8 +367,9 @@ func GetProblem(index int) (problems.Problem, error) {
 		return problem, err
 	}
 	defer db.Close()
-	err = db.QueryRow("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, input, output, uva_id FROM problems, inputoutput "+
-		"WHERE problems.id = inputoutput.problem_id and problems.id = ?", index).Scan(&problem.Index, &problem.Title, &problem.Description,
+	err = db.QueryRow(`SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, IFNULL(input, ""), IFNULL(output, ""), uva_id 
+                     FROM problems LEFT JOIN inputoutput ON (problems.id = inputoutput.problem_id)
+                     WHERE problems.id = ?`, index).Scan(&problem.Index, &problem.Title, &problem.Description,
 		&problem.Difficulty, &problem.SkillID, &problem.TimeLimit, &problem.MemoryLimit, &problem.SampleInput,
 		&problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID)
 
@@ -426,7 +427,7 @@ func GetUnsolvedProblems(userID int) (unsolvedProblems []int, err error) {
 	rows, err := db.Query(`SELECT DISTINCT id FROM problems 
                           EXCEPT
                         SELECT DISTINCT problem_id as id FROM submissions WHERE user_id = ? AND verdict = ?;`,
-		userID, userID, problems.Accepted)
+		userID, problems.Accepted)
 	for rows.Next() {
 		var problem int
 		err = rows.Scan(&problem)

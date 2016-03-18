@@ -327,10 +327,17 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		var problem problems.Problem
-		var suggestProblem = true
-		if len(unsolvedProblems) != 0 {
-			problem, err = GetProblem(unsolvedProblems[0])
-			suggestProblem = true
+		var suggestProblem = false
+		for i := 0; i < len(unsolvedProblems); i++ {
+			problem, err = GetProblem(unsolvedProblems[i])
+			if err != nil {
+				templating.ErrorPage(w, 404)
+				return
+			}
+			if unlockedSkills[problem.SkillID] {
+				suggestProblem = true
+				break
+			}
 		}
 		data := struct {
 			IsLoggedIn     bool
