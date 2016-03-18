@@ -27,18 +27,22 @@ func stringToArray(input string) []string {
 func ProblemsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
+		problemList, err := GetProblems()
+		if err != nil {
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+		}
 		data := struct {
 			ProblemList []problems.Problem
 			IsAdmin     bool
 			IsLoggedIn  bool
 		}{
-			GetProblems(),
+			problemList,
 			dao.IsAdmin(r),
 			cookies.IsLoggedIn(r),
 		}
 		templating.RenderPageWithBase(w, "viewproblems", data)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -47,34 +51,34 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		index, err := strconv.Atoi(r.URL.Path[len("/edit-problem/"):])
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		problem, err := GetProblem(index)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		templating.RenderPage(w, "editproblem", problem)
 	case "POST":
 		time_limit, err := strconv.Atoi(r.FormValue("time_limit"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		memory_limit, err := strconv.Atoi(r.FormValue("memory_limit"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		difficulty, err := strconv.Atoi(r.FormValue("difficulty"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		index, err := strconv.Atoi(r.FormValue("problem_id"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		p := &problems.Problem{
@@ -95,7 +99,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 		editProblem(*p)
 		http.Redirect(w, r, "/view/"+r.FormValue("problem_id"), http.StatusFound)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -104,24 +108,24 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		skills, err := skills.GetAllSkills()
 		if err != nil {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		templating.RenderPage(w, "addproblem", skills)
 	case "POST":
 		time_limit, err := strconv.Atoi(r.FormValue("time_limit"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		memory_limit, err := strconv.Atoi(r.FormValue("memory_limit"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		difficulty, err := strconv.Atoi(r.FormValue("difficulty"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		tags := stringToArray(r.FormValue("tags"))
@@ -143,7 +147,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 		AddProblem(*p)
 		http.Redirect(w, r, "/problems/", http.StatusFound)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -152,13 +156,13 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		problemID, err := strconv.Atoi(r.FormValue("problem_id"))
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		deleteProblem(problemID)
 		http.Redirect(w, r, "/problems/", http.StatusFound)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -167,12 +171,12 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		index, err := strconv.Atoi(r.URL.Path[len("/view/"):])
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		problem, err := GetProblem(index)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		var userID int
@@ -187,7 +191,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		skill, err := skills.GetSkill(problem.SkillID)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		unlockedSkills, err := skills.GetUnlockedSkills(userID)
@@ -214,7 +218,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		templating.RenderPageWithBase(w, "viewproblem", data)
 		// perhaps have a JS WARNING..
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 func SubmitHandler(w http.ResponseWriter, r *http.Request) {
@@ -227,13 +231,13 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		index, _ := strconv.Atoi(r.URL.Path[len("/submit/"):])
 		problem, err := GetProblem(index)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		userID, _ := cookies.GetUserID(r)
 		unlockedSkills, err := skills.GetUnlockedSkills(userID)
 		if !unlockedSkills[problem.SkillID] {
-			templating.ErrorPage(w, 401)
+			templating.ErrorPage(w, "Skill not unlocked.", http.StatusUnauthorized)
 			return
 		}
 		d, _ := ioutil.TempDir(DIR, "")
@@ -247,13 +251,13 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		submissionID, err := addSubmission(*s, userID)
 		s.ID = submissionID
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		go addToSubmissionQueue(s)
 		http.Redirect(w, r, "/submissions/", http.StatusFound)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -275,7 +279,7 @@ func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		templating.RenderPageWithBase(w, "submissions", data)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -290,12 +294,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		userID, _ := cookies.GetUserID(r)
 		allSkills, err := skills.GetUserDataOnSkills(userID)
 		if err != nil {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		unlockedSkills, err := skills.GetUnlockedSkills(userID)
 		if err != nil {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		var skill *skills.Skill
@@ -310,7 +314,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 				problems, err := skills.GetProblemsInSkill(skill.ID)
 				skill.NumberOfProblems = len(problems)
 				if err != nil {
-					templating.ErrorPage(w, 404)
+					templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 					return
 				}
 				break
@@ -318,12 +322,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		userData, err := users.GetUserData(userID)
 		if err != nil {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		unsolvedProblems, err := GetUnsolvedProblems(userID)
 		if err != nil {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		var problem problems.Problem
@@ -331,7 +335,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		for i := 0; i < len(unsolvedProblems); i++ {
 			problem, err = GetProblem(unsolvedProblems[i])
 			if err != nil {
-				templating.ErrorPage(w, 404)
+				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 			if unlockedSkills[problem.SkillID] {
@@ -358,6 +362,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		templating.RenderPageWithBase(w, "home", data)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }

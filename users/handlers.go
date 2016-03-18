@@ -7,7 +7,6 @@ import (
 	".././notifications"
 	".././templating"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,18 +26,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		accessLevel := r.FormValue("access_level")
 		if accessLevel != "" && !dao.IsAdmin(r) {
-			fmt.Fprintf(w, `
-				<body style="background: black; text-align: center;">
-					<video src="/images/gandalf.mp4" autoplay loop>You Shall Not Pass!</video>
-				</body>
-			`)
+			templating.ErrorPage(w, "You shall not pass", http.StatusUnauthorized)
 			return
 		}
 		admin := accessLevel == "admin"
 
 		userID, err := Register(username, password, email, admin)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -46,7 +41,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -73,7 +68,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -111,7 +106,7 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -133,7 +128,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -147,12 +142,12 @@ func ViewProfileHandler(w http.ResponseWriter, r *http.Request) {
 		userID, _ := cookies.GetUserID(r)
 		userData, err := GetUserData(userID)
 		if err != nil {
-			templating.ErrorPage(w, http.StatusMethodNotAllowed)
+			templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 			return
 		}
 		badges, err := achievements.GetAchievements(userID)
 		if err != nil {
-			templating.ErrorPage(w, http.StatusMethodNotAllowed)
+			templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 			return
 		}
 		data := struct {
@@ -168,7 +163,7 @@ func ViewProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		templating.RenderPageWithBase(w, "viewprofile", data)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -182,12 +177,12 @@ func ViewUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		userData, err := GetUserData(userID)
 		if err != nil {
-			templating.ErrorPage(w, http.StatusMethodNotAllowed)
+			templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 			return
 		}
 		badges, err := achievements.GetAchievements(userID)
 		if err != nil {
-			templating.ErrorPage(w, http.StatusMethodNotAllowed)
+			templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 			return
 		}
 		data := struct {
@@ -203,6 +198,6 @@ func ViewUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		templating.RenderPageWithBase(w, "viewprofile", data)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }

@@ -10,7 +10,6 @@ func getProblemStatistics(problemID int) (submitted int, verdictData VerdictData
 	if err != nil {
 		return
 	}
-	defer db.Close()
 
 	db.QueryRow("SELECT COUNT(*) FROM submissions WHERE problem_id = ?", problemID).Scan(&submitted)
 	row, err := db.Query("SELECT COUNT(*), verdict FROM submissions WHERE problem_id = ? GROUP BY verdict ORDER BY verdict", problemID)

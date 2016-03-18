@@ -2,6 +2,7 @@ package notifications
 
 import (
 	".././cookies"
+	".././templating"
 	"fmt"
 	"net/http"
 	// "time"
@@ -45,7 +46,7 @@ func NewSSEConnsHandler() (handler *ConnsHandler) {
 func (handler *ConnsHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	flusher, ok := rw.(http.Flusher)
 	if !ok {
-		http.Error(rw, "Streaming unsupported!", http.StatusInternalServerError)
+		templating.ErrorPage(rw, "Streaming unsupported!", http.StatusInternalServerError)
 		return
 	}
 
@@ -53,7 +54,7 @@ func (handler *ConnsHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request
 	var conn Conn
 	conn.UserID, ok = cookies.GetUserID(req)
 	if !ok {
-		http.Error(rw, "Streaming unsupported!", http.StatusInternalServerError)
+		templating.ErrorPage(rw, "Streaming unsupported!", http.StatusInternalServerError)
 		return
 	}
 	conn.SSEConn = messageChan
@@ -92,7 +93,6 @@ func (handler *ConnsHandler) handleConns() {
 			handler.connSet[conn.UserID][conn] = true
 		case conn := <-handler.closingConns:
 			delete(handler.connSet[conn.UserID], conn)
-			// fmt.Println("deleted!", conn.UserID)
 		case msg := <-handler.broadcasts:
 			for conn, _ := range handler.connSet[msg.To] {
 				conn.SSEConn <- msg.Message
@@ -106,18 +106,8 @@ func InitHandler() *ConnsHandler {
 	if handler == nil {
 		handler = NewSSEConnsHandler()
 	}
-	// go func() {
-	// for {
-	// time.Sleep(time.Second * 2)
-	// timeMessage := fmt.Sprintf("the time is %v", time.Now())
-	// var message Message
-	// message.Message = []byte(timeMessage)
-	// message.To = 1
-	// handler.broadcasts <- message
-	// }
-	// }()
+
 	return handler
-	// log.Fatal("HTTP server error: ", http.ListenAndServe("localhost:3000", handler))
 }
 
 func SendMessageTo(userID int, stringMsg string) {

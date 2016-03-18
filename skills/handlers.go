@@ -5,7 +5,6 @@ import (
 	".././dao"
 	".././problems"
 	".././templating"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -23,7 +22,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		skills, err = GetSkill(skill)
 	}
 	if err != nil {
-		templating.ErrorPage(w, 404)
+		templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	var problemsInSkill []problems.Problem
@@ -34,8 +33,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		problemsInSkill, err = GetProblemsInSkill(skill)
 	}
 	if err != nil {
-		fmt.Println(err)
-		templating.ErrorPage(w, 404)
+		templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -64,19 +62,18 @@ func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
 		userID, _ := cookies.GetUserID(r)
 		unlockedSkills, err := GetUnlockedSkills(userID)
 		if err != nil {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		skillsData, err := GetUserDataOnSkills(userID)
 		if err != nil {
-			fmt.Println(err)
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		for index, _ := range skillsData {
 			probs, err := GetProblemsInSkill(skillsData[index].ID)
 			if err != nil {
-				templating.ErrorPage(w, 404)
+				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 			skillsData[index].NumberOfProblems = len(probs)
@@ -101,34 +98,34 @@ func AddSkillHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		IsLoggedIn := cookies.IsLoggedIn(r)
 		if !IsLoggedIn {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, "Not logged in.", http.StatusBadRequest)
 			break
 		}
 		IsAdmin := dao.IsAdmin(r)
 		if !IsAdmin {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, "Not an admin.", http.StatusBadRequest)
 			break
 		}
 		skills, err := GetAllSkills()
 		if err != nil {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			break
 		}
 		templating.RenderPage(w, "addskill", skills)
 	case "POST":
 		IsLoggedIn := cookies.IsLoggedIn(r)
 		if !IsLoggedIn {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, "Not Logged in.", http.StatusBadRequest)
 			break
 		}
 		IsAdmin := dao.IsAdmin(r)
 		if !IsAdmin {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, "Not an admin.", http.StatusBadRequest)
 			break
 		}
 		NumberOfProblemsToUnlock, err := strconv.Atoi(r.FormValue("number_of_problems_to_unlock"))
 		if err != nil {
-			templating.ErrorPage(w, 400)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			break
 		}
 
@@ -155,23 +152,23 @@ func EditSkillHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		IsLoggedIn := cookies.IsLoggedIn(r)
 		if !IsLoggedIn {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, "Not logged in.", http.StatusBadRequest)
 			return
 		}
 		IsAdmin := dao.IsAdmin(r)
 		if !IsAdmin {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, "Not an admin.", http.StatusBadRequest)
 			return
 		}
 		skills, err := GetAllSkills()
 		if err != nil {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		id := r.URL.Path[len("/edit-skill/"):]
 		skill, err := GetSkill(id)
 		if err != nil {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		data := struct {
@@ -185,17 +182,17 @@ func EditSkillHandler(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		IsLoggedIn := cookies.IsLoggedIn(r)
 		if !IsLoggedIn {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, "Not Logged In!", http.StatusBadRequest)
 			return
 		}
 		IsAdmin := dao.IsAdmin(r)
 		if !IsAdmin {
-			templating.ErrorPage(w, 404)
+			templating.ErrorPage(w, "Not an admin.", http.StatusBadRequest)
 			return
 		}
 		NumberOfProblemsToUnlock, err := strconv.Atoi(r.FormValue("number_of_problems_to_unlock"))
 		if err != nil {
-			templating.ErrorPage(w, 400)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
