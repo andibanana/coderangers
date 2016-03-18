@@ -36,7 +36,7 @@ func AddProblem(problem problems.Problem) (err error) {
 		tx.Rollback()
 		return
 	}
-	if problem.UvaID != "" {
+	if problem.UvaID == "" {
 		_, err = tx.Exec("INSERT INTO inputoutput (problem_id, input_number, input, output) VALUES (?, ?, ?, ?)",
 			problemID, 1, problem.Input, problem.Output)
 

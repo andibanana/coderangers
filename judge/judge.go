@@ -430,6 +430,22 @@ func AddSamples() {
 	AddProblem(p)
 	p = problems.Problem{
 		Index: -1,
+		Title: "Caveman",
+		Description: "You are in a cave and there's echo everywhere. Each time you say something " +
+			"an echo is repeated three times. For each <line> of input, output the <line> and append EcHO ECHO ECHo.",
+		SkillID:      "A",
+		Difficulty:   1,
+		Input:        "Hello\nBye\nEchooooo\nNooooooooooooooooo\n",
+		Output:       "Hello EcHO ECHO ECHo\nBye EcHO ECHO ECHo\nEchooooo EcHO ECHO ECHo\nNooooooooooooooooo EcHO ECHO ECHo\n",
+		SampleInput:  "Hello\nBye\n",
+		SampleOutput: "Hello EcHO ECHO ECHo\nBye EcHO ECHO ECHo\n",
+		TimeLimit:    2,
+		MemoryLimit:  200,
+		Tags:         []string{"Subtract", "Math"},
+	}
+	AddProblem(p)
+	p = problems.Problem{
+		Index: -1,
 		Title: "Hashmat the Brave Warrior",
 		Description: "Hashmat is a brave warrior who with his group of " +
 			"young soldiers moves from one place to another to Fight against his opponents. " +

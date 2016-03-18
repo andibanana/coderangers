@@ -38,7 +38,7 @@ func AddSamples() {
 		ID:                       "A",
 		Title:                    "Introduction to Competitive Programming",
 		Description:              "Trivial problems focused on familiarizing yourself with the software",
-		NumberOfProblemsToUnlock: 3,
+		NumberOfProblemsToUnlock: 2,
 		//Prerequisites:			  []string{"a", "b", "c"},
 	}
 	addSkill(s)
