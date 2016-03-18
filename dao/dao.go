@@ -3,14 +3,22 @@ package dao
 import (
 	".././cookies"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 )
 
-const DatabaseURL = "file:database.sqlite?cache=shared&mode=rwc"
+const SQLiteDatabaseURL = "file:database.sqlite?cache=shared&mode=rwc"
+const MySQLDatabaseURL = "root:p@ssword@tcp(127.0.0.1:3306)/"
+const MySQLDB = "coderangers"
+const MySQL = false
 
 func Open() (*sql.DB, error) {
-	return sql.Open("sqlite3", DatabaseURL)
+	if MySQL {
+		return sql.Open("mysql", MySQLDatabaseURL+MySQLDB)
+	} else {
+		return sql.Open("sqlite3", SQLiteDatabaseURL)
+	}
 }
 
 func IsAdmin(req *http.Request) bool {
@@ -30,6 +38,21 @@ func IsAdmin(req *http.Request) bool {
 }
 
 func CreateDB() error {
+	var AUTOINCREMENT = "AUTOINCREMENT"
+	if MySQL {
+		AUTOINCREMENT = "AUTO_INCREMENT"
+		db, err := sql.Open("mysql", MySQLDatabaseURL)
+		if err != nil {
+			return err
+		}
+		defer db.Close()
+
+		_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + MySQLDB)
+		if err != nil {
+			return err
+		}
+	}
+
 	db, err := Open()
 	if err != nil {
 		return err
@@ -38,7 +61,7 @@ func CreateDB() error {
 
 	_, err = db.Exec(`
 		CREATE TABLE user_account (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			id INTEGER PRIMARY KEY ` + AUTOINCREMENT + `,
 					
 			username VARCHAR(50) UNIQUE NOT NULL,
 			hashed_password CHARACTER(60) NOT NULL,
@@ -52,12 +75,25 @@ func CreateDB() error {
 	}
 
 	_, err = db.Exec(`
+		CREATE TABLE skills (
+      id VARCHAR(20) PRIMARY KEY,
+      
+			title VARCHAR(100) NOT NULL,
+      description VARCHAR(200) NOT NULL,
+      number_of_problems_to_unlock INTEGER NOT NULL
+		)
+	`)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`
 		CREATE TABLE problems (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INTEGER PRIMARY KEY ` + AUTOINCREMENT + `,
 			
 			title VARCHAR(100) NOT NULL,
       description VARCHAR(200) NOT NULL,
-      skill_id STRING NOT NULL,
+      skill_id VARCHAR(20) NOT NULL,
       uva_id VARCHAR(100) NOT NULL,
       difficulty INTEGER,
       time_limit INTEGER,
@@ -75,7 +111,7 @@ func CreateDB() error {
 	_, err = db.Exec(`
 		CREATE TABLE tags (
       problem_id INTEGER NOT NULL,
-      tag STRING NOT NULL,
+      tag TEXT NOT NULL,
       
       FOREIGN KEY(problem_id) REFERENCES problems(id)
 		)
@@ -85,24 +121,11 @@ func CreateDB() error {
 	}
 
 	_, err = db.Exec(`
-		CREATE TABLE skills (
-      id STRING PRIMARY KEY,
-      
-			title VARCHAR(100) NOT NULL,
-      description VARCHAR(200) NOT NULL,
-      number_of_problems_to_unlock INTEGER NOT NULL
-		)
-	`)
-	if err != nil {
-		return err
-	}
-
-	_, err = db.Exec(`
 		CREATE TABLE prerequisites (
-      skill_id STRING NOT NULL,
-      prerequisite_id STRING NOT NULL,
+      skill_id VARCHAR(20) NOT NULL,
+      prerequisite_id VARCHAR(20) NOT NULL,
       
-      FOREIGN KEY(skill_id) REFERENCES skills(id)
+      FOREIGN KEY(skill_id) REFERENCES skills(id),
       FOREIGN KEY(prerequisite_id) REFERENCES skills(id)
 		)
 	`)
@@ -127,7 +150,7 @@ func CreateDB() error {
 	}
 	_, err = db.Exec(`
 		CREATE TABLE submissions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INTEGER PRIMARY KEY ` + AUTOINCREMENT + `,
       problem_id INTEGER,
       user_id INTEGER,
       
@@ -138,7 +161,7 @@ func CreateDB() error {
       runtime_error TEXT,
       runtime NUMERIC,
       
-      FOREIGN KEY(user_id) REFERENCES user_account(id)
+      FOREIGN KEY(user_id) REFERENCES user_account(id),
       FOREIGN KEY(problem_id) REFERENCES problems(id)
 		)
 	`)
@@ -148,7 +171,7 @@ func CreateDB() error {
 
 	_, err = db.Exec(`
 		CREATE TABLE badges (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id INTEGER PRIMARY KEY ` + AUTOINCREMENT + `,
       
 			title VARCHAR(100) NOT NULL,
       description VARCHAR(100) NOT NULL
