@@ -78,7 +78,7 @@ func CheckNewAchievementsInSkill(userID, submissionID int, skillID string) (achi
 	var problems []problems.Problem
 	if solved >= skill.NumberOfProblemsToUnlock {
 		var achievement Achievement
-		achievement.Image = skill.ID + ".png"
+		achievement.Image = "learned/" + skill.ID + ".png"
 		achievement.Title = "Learned skill " + skill.Title + " (" + skill.ID + ")"
 		achievement.Description = "Learned skill " + skill.Title + " (" + skill.ID + ")"
 		achievements = append(achievements, achievement)
@@ -87,6 +87,7 @@ func CheckNewAchievementsInSkill(userID, submissionID int, skillID string) (achi
 			return
 		}
 		if solved == len(problems) {
+			achievement.Image = "mastered/" + skill.ID + ".png"
 			achievement.Title = "Mastered skill " + skill.Title + " (" + skill.ID + ")"
 			achievement.Description = "Mastered skill " + skill.Title + " (" + skill.ID + ")"
 			achievements = append(achievements, achievement)
