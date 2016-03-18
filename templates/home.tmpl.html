@@ -34,7 +34,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
     		<h4>Level: {{xpToLevel .UserData.Experience}}</h4>
 
     		<div class="containerProgress">
-            <div id="progressBarSkill" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{.UserData.Experience}}/100 XP 
+            <div id="progressBar" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{.UserData.Experience}}/100 XP 
             </div></div>
           </div>
 
@@ -54,7 +54,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
   	<div class="profileBannerInfo">
   		<h2>{{.Skill.Title}}</h2>
       <div class="containerProgress">
-          <div id="progressBar" class="progressBar"><div id="progressBarText" class="progressBarText">{{.Skill.Solved}}/{{.Skill.NumberOfProblems}} Problems Solved
+          <div id="progressBarSkill" class="progressBar"><div id="progressBarText" class="progressBarText">{{.Skill.Solved}}/{{.Skill.NumberOfProblems}} Problems Solved
           </div></div>
       </div>
   		<h4>{{.Skill.Description}}</h4>
