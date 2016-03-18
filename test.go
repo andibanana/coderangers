@@ -10,6 +10,7 @@ import (
 	"./templating"
 	"./users"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -30,15 +31,12 @@ func page(content string) string {
 }
 
 func main() {
+	log.SetFlags(log.Llongfile)
 	err := dao.CreateDB()
-	fmt.Println(err)
+	log.Println(err)
 
 	if err == nil {
 		users.Register("admin", "admin", "frzsk@yahoo.com", true)
-		// users.RegisterAndFakeData("FCsean", "FCsean", false, 500, 50)
-		// users.RegisterAndFakeData("gopherzapper_", "gopherzapper_", false, 12300, 1230)
-		// users.RegisterAndFakeData("DarkMega12", "DarkMega12", false, 100000, 10000)
-		//users.RegisterAndFakeData("gmg", "gmg", false, 3230, 323)
 		skills.AddSamples()
 		judge.AddSamples()
 	}
