@@ -431,7 +431,7 @@ func GetSolvedInSkillWithoutSubmission(userID, submissionID int, skillID string)
 	}
 	defer db.Close()
 
-	err = db.QueryRow(`SELECT COUNT (DISTINCT problems.ID)
+	err = db.QueryRow(`SELECT COUNT(DISTINCT problems.ID)
                     FROM problems, submissions 
                     WHERE problems.ID = submissions.problem_id AND submissions.user_id = ? AND skill_id = ? AND submissions.ID != ? AND verdict = ?;`, userID, skillID,
 		submissionID, problems.Accepted).Scan(&solvedCount)
@@ -449,7 +449,7 @@ func GetSolvedInSkill(userID int, skillID string) (solvedCount int, err error) {
 	}
 	defer db.Close()
 
-	err = db.QueryRow(`SELECT COUNT (DISTINCT problems.ID)
+	err = db.QueryRow(`SELECT COUNT(DISTINCT problems.ID)
                     FROM problems, submissions 
                     WHERE problems.ID = submissions.problem_id AND submissions.user_id = ? AND skill_id = ? AND verdict = ?;`, userID, skillID,
 		problems.Accepted).Scan(&solvedCount)
