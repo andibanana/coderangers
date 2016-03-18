@@ -50,6 +50,21 @@ func IsAdmin(req *http.Request) bool {
 	return err == nil
 }
 
+func CheckRealUser(req *http.Request) bool {
+	userID, ok := cookies.GetUserID(req)
+	if !ok {
+		return false
+	}
+	db, err := Open()
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+
+	err = db.QueryRow("SELECT id FROM user_account WHERE id=?", userID).Scan(&userID)
+	return err == nil
+}
+
 func CreateDB() error {
 	var AUTOINCREMENT = "AUTOINCREMENT"
 	if MySQL {

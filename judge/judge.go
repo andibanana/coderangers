@@ -9,7 +9,6 @@ import (
 	".././users"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -112,7 +111,7 @@ func InitQueues() {
 		for s := range submissionQueue {
 			p, err := GetProblem(s.ProblemIndex)
 			if err != nil {
-				fmt.Println("ERR!!!!: ", err)
+				log.Println(err)
 			}
 
 			if p.UvaID == "" {
@@ -192,8 +191,14 @@ func (UvaJudge) checkVerdict(s *Submission) {
 					}
 					s.Verdict = verdict
 					s.Runtime = float64(submissions.Subs[i][3]) / 1000.00
-					UpdateVerdict(s.ID, verdict)
-					UpdateRuntime(s.ID, s.Runtime)
+					err = UpdateVerdict(s.ID, verdict)
+					if err != nil {
+						log.Println(err)
+					}
+					err = UpdateRuntime(s.ID, s.Runtime)
+					if err != nil {
+						log.Println(err)
+					}
 					sendNotification(*s, prob)
 				}
 				break
@@ -325,7 +330,7 @@ func (CodeRangerJudge) judge(s *Submission) {
 	output, err := s.run(p)
 	d := time.Now().Sub(t)
 	UpdateRuntime(s.ID, helper.Truncate(d.Seconds(), 3))
-	// fmt.Println(d)
+
 	if err != nil {
 		s.Verdict = err.Verdict
 		UpdateVerdict(s.ID, s.Verdict)
@@ -338,7 +343,7 @@ func (CodeRangerJudge) judge(s *Submission) {
 
 	if strings.Replace(output, "\r\n", "\n", -1) != strings.Replace(p.Output, "\r\n", "\n", -1) {
 		// whitespace checks..? floats? etc.
-		fmt.Println(output)
+		// fmt.Println(output)
 		s.Verdict = problems.WrongAnswer
 		UpdateVerdict(s.ID, problems.WrongAnswer)
 		sendNotification(*s, p)
@@ -359,7 +364,7 @@ func (s Submission) compile() *Error {
 
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println(stderr.String())
+		// fmt.Println(stderr.String())
 		return &Error{problems.CompileError, stderr.String()}
 	}
 
@@ -386,7 +391,7 @@ func (s Submission) run(p problems.Problem) (string, *Error) {
 		return "", &Error{problems.TimeLimitExceeded, ""}
 	case err := <-done:
 		if err != nil {
-			fmt.Println(stderr.String())
+			// fmt.Println(stderr.String())
 			return "", &Error{problems.RuntimeError, stderr.String()}
 		}
 	}

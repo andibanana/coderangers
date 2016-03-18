@@ -7,7 +7,6 @@ import (
 	".././users"
 	"errors"
 	"fmt"
-
 	"time"
 )
 
@@ -249,8 +248,6 @@ func UpdateVerdict(id int, verdict string) error {
 	_, err = db.Exec("UPDATE submissions SET verdict = ? WHERE id = ?", verdict, id)
 
 	if err != nil {
-		fmt.Println("UPDATE VERDICT: ", err)
-		fmt.Println(verdict)
 		return err
 	}
 
@@ -287,25 +284,28 @@ func updateUvaSubmissionID(id, submissionID int) error {
 	return nil
 }
 
-func GetProblems() (problemList []problems.Problem) {
+func GetProblems() (problemList []problems.Problem, err error) {
 	db, err := dao.Open()
 	if err != nil {
-		return nil
+		return
 	}
 	rows, err := db.Query("SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems")
 
 	if err != nil {
-		return nil
+		return
 	}
 
 	for rows.Next() {
 		var problem problems.Problem
-		rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
+		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty, &problem.SkillID, &problem.TimeLimit,
 			&problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput, &problem.UvaID)
 		problemList = append(problemList, problem)
+		if err != nil {
+			return
+		}
 	}
 
-	return problemList
+	return
 }
 
 func GetRelatedProblems(userID, problemID int) (relatedProblems []problems.Problem, err error) {

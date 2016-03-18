@@ -12,7 +12,7 @@ func LeaderboardsHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		users, err := GetTopUsers(100, 0)
 		if err != nil {
-			templating.ErrorPage(w, http.StatusNotFound)
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		data := struct {
@@ -26,6 +26,6 @@ func LeaderboardsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		templating.RenderPageWithBase(w, "leaderboards", data)
 	default:
-		templating.ErrorPage(w, http.StatusMethodNotAllowed)
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }

@@ -3,6 +3,7 @@ package templating
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"regexp"
 	"time"
@@ -72,7 +73,11 @@ func RenderPageWithBase(w http.ResponseWriter, templ string, data interface{}) {
 	}
 }
 
-func ErrorPage(w http.ResponseWriter, statusCode int) {
-	errorMessage := fmt.Sprintf("%d %s", statusCode, http.StatusText(statusCode))
+func ErrorPage(w http.ResponseWriter, errorMessage string, statusCode int) {
+	if len(errorMessage) != 0 {
+		errorMessage += "\n"
+	}
+	errorMessage += fmt.Sprintf("%d %s", statusCode, http.StatusText(statusCode))
+	log.Println(errorMessage)
 	http.Error(w, errorMessage, statusCode)
 }
