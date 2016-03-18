@@ -43,13 +43,13 @@ func GetAchievements(userID int) (achievements []Achievement, err error) {
 			return
 		}
 		if unlocked {
-			achievement.Image = "learned/" + skill.ID + ".png"
+			achievement.Image = "learned/" + id + ".png"
 			achievement.Title = "Learned skill " + title + " (" + id + ")"
 			achievement.Description = "Learned skill " + title + " (" + id + ")"
 			achievements = append(achievements, achievement)
 		}
 		if mastered {
-			achievement.Image = "mastered/" + skill.ID + ".png"
+			achievement.Image = "mastered/" + id + ".png"
 			achievement.Title = "Mastered skill " + title + " (" + id + ")"
 			achievement.Description = "Mastered skill " + title + " (" + id + ")"
 			achievements = append(achievements, achievement)
