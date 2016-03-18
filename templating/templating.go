@@ -13,12 +13,13 @@ var fmap template.FuncMap
 
 func InitTemplates() {
 	fmap = template.FuncMap{
-		"showDate":     func(date time.Time) string { return date.Format("Jan 2, 2006") },
-		"showDateTime": func(date time.Time) string { return date.Format(time.RFC850) },
-		"showISODate":  func(date time.Time) string { return date.Format("2006-01-02") },
-		"minus":        func(a, b int) int { return a - b },
-		"add":          func(a, b int) int { return a + b },
-		"xpToLevel":    func(xp int) int { return xp/100 + 1 },
+		"showDate":        func(date time.Time) string { return date.Format("Jan 2, 2006") },
+		"showDateTime":    func(date time.Time) string { return date.Format(time.RFC850) },
+		"showISODate":     func(date time.Time) string { return date.Format("2006-01-02") },
+		"minus":           func(a, b int) int { return a - b },
+		"add":             func(a, b int) int { return a + b },
+		"makeUvaExternal": func(a string) string { return a[:len(a)-2] },
+		"xpToLevel":       func(xp int) int { return xp/100 + 1 },
 		"fixNewLines": func(s string) template.HTML {
 			s = template.HTMLEscapeString(s)
 			s = regexp.MustCompile("\r?\n").ReplaceAllString(s, "<br>")

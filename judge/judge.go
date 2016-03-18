@@ -402,7 +402,6 @@ func AddSamples() {
 		TimeLimit:    5,
 		MemoryLimit:  200,
 		Tags:         []string{"Subtract", "Math"},
-		PDFLink:      "https://uva.onlinejudge.org/external/100/10055.pdf",
 	}
 	AddProblem(p)
 	p = problems.Problem{

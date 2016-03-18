@@ -34,5 +34,4 @@ type Problem struct {
 	MemoryLimit  int
 	Solved       bool
 	Tags         []string
-	PDFLink      string
 }
