@@ -3,14 +3,22 @@ package dao
 import (
 	".././cookies"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 )
 
-const DatabaseURL = "file:database.sqlite?cache=shared&mode=rwc"
+const SQLiteDatabaseURL = "file:database.sqlite?cache=shared&mode=rwc"
+const MySQLDatabaseURL = "root:p@ssword@tcp(127.0.0.1:3306)/"
+const MySQLDB = "coderangers"
+const MySQL = false
 
 func Open() (*sql.DB, error) {
-	return sql.Open("sqlite3", DatabaseURL)
+	if MySQL {
+		return sql.Open("mysql", MySQLDatabaseURL+MySQLDB)
+	} else {
+		return sql.Open("sqlite3", SQLiteDatabaseURL)
+	}
 }
 
 func IsAdmin(req *http.Request) bool {
@@ -30,6 +38,19 @@ func IsAdmin(req *http.Request) bool {
 }
 
 func CreateDB() error {
+	if MySQL {
+		db, err := sql.Open("mysql", MySQLDatabaseURL)
+		if err != nil {
+			return err
+		}
+		defer db.Close()
+
+		_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + MySQLDB)
+		if err != nil {
+			return err
+		}
+	}
+
 	db, err := Open()
 	if err != nil {
 		return err
