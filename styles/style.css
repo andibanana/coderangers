@@ -411,6 +411,68 @@ a:hover{
 	stroke: gray;
 }
 
+.containerSkillTreeInformation{
+	width: 340px;
+	position: fixed;
+	top: 75px;
+	right: 20px;
+	background-color: #DBDBDB;
+	display: none;
+}
+
+.skillTreeInformationHeader{
+	padding: 10px;
+	padding-top: 15px;
+	background-color: #232323;
+	color: #F2F0E9;
+}
+
+.skillTreeInformationHeaderLocked{
+	padding: 10px;
+	background-color: #CC3F3F;
+	color: #F2F0E9;
+	display: none;
+}
+
+.containerProgressSKI{
+	position: relative;
+    width: 100%;
+    height: 30px;
+    background-color: #2599B6;
+    margin-bottom: 5px;
+}
+
+.progressBarSKI{
+	position: absolute;
+    width: 10%;
+    height: 100%;
+    background-color: #2EC4E9;
+}
+
+.nudgeLeft{
+	padding-left: 10px;
+}
+
+.containerProgressFlexible {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background-color: #2599B6;
+    margin-bottom: 5px;
+}
+
+
+.progressBar {
+    position: absolute;
+    width: 10%;
+    height: 100%;
+    background-color: #2EC4E9;
+ }
+
+.skillTreeInfomrationContent{
+	padding: 10px;
+}
+
 .containerSkillTree{
 	display: flex;
 	flex-align: flex-start;
