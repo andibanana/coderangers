@@ -104,9 +104,6 @@ a{
 	margin-top:5px;
 }
 
-.signUpText{
-	font-size: 16px;
-}
 
 
 .Search {
@@ -118,6 +115,15 @@ a{
 */
 
 /* The Modal (background) */
+
+.signUpText:visited, .signUpText:active, .signUpText:link{
+	color:#F2F0E9;
+}
+
+.signUpText:hover{
+	color: #777777;
+}
+
 #submissionReportModal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
