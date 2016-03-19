@@ -8,12 +8,16 @@
     <table class="tableLeaderboard">
       <tr>
         <td>Rank</td>
+        <td>Level</td>
         <td>Username</td>
         <td>XP</td>
       </tr>
       {{ range  $index, $element := .Leaderboards }}
       <tr>
-        <td>{{add $index 1}}</td> <td><a href="/profile/{{.ID}}">{{$element.Username}}</a></td> <td>{{$element.Experience}}</td>
+        <td>{{add $index 1}}</td>
+        <td><img class="difficultyImageSmall2" src="/images/rank icons/{{xpToLevel $element.Experience}}.png" title="Level: {{xpToLevel $element.Experience}}"></td>
+        <td><a href="/profile/{{.ID}}">{{$element.Username}}</a></td>
+        <td>{{$element.Experience}}</td>
       </tr>
       {{ end }}
     </table>

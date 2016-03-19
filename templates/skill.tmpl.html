@@ -65,8 +65,9 @@
         <tr>
 <!--           <td>Status</td>
           <td>Skill ID</td> -->
-          <td>ID</td>
+          <!-- <td>ID</td> -->
           <td>Problem</td>
+          <td>Difficulty</td>
           <td>Status</td>
           {{ if $.IsAdmin}}
           <td>Edit</td>
@@ -78,8 +79,9 @@
           <tr class="{{if .Solved}}problemRowSolved{{else}}problemRowUnsolved{{end}}">
 <!--             <td>{{if $.IsLoggedIn}}{{.Solved}}{{end}}</td>
             <td>{{.SkillID}}</td> -->
-              <td>{{.Index}}</td>
+              <!-- <td>{{.Index}}</td> -->
               <td><a href="/view/{{.Index}}">{{.Title}}</a></td>
+              <td><img class="difficultyImageSmall2" src="/images/difficulty icons/{{.Difficulty}}.png"></td>
               <td>{{if .Solved}}Solved{{else}}Not Solved{{end}}</td>
               {{ if $.IsAdmin }}
                 <td><a href="/edit/{{.Index}}">Edit Problem</a></td>
