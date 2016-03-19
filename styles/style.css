@@ -458,25 +458,6 @@ a:hover{
 	align-self: flex-end;
 }
 
-
-/*.skillTreeNodeLocked path{
-	fill: gray;
-}
-
-.skillTreeNodeLocked polygon{
-	fill: gray;
-}*/
-
-.skillTreeLocked path, symbol{
-	-webkit-filter: grayscale(100%); /* Chrome, Safari, Opera */
-	 filter: grayscale(100%);
-}
-
-.skillTreeUnlocked{
-
-}
-
-
 .skillTreePathLocked{
 	stroke: gray;
 }

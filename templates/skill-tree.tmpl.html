@@ -11,7 +11,7 @@
 
 	//Color nodes (locked or unlocked)
 	{{range $key, $value := .UnlockedSkills}}
-		document.getElementById("Sym_" + {{$key}}).setAttribute("class", {{if $value}}"skillTreeUnlocked"{{else}}"skillTreeLocked"{{end}});
+		document.getElementById({{$key}}).setAttribute("filter", {{if $value}}""{{else}}"url(#css_grayscale)"{{end}});
 	{{end}}
 
 	//Color paths (locked or unlocked)
@@ -128,6 +128,9 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="800px"
 	 height="1000px" viewBox="0 0 800 1000" enable-background="new 0 0 800 1000" xml:space="preserve">
+<filter id="css_grayscale">
+  <feColorMatrix type="saturate" values="0"/>
+</filter>
 <symbol  id="Sym_D3" viewBox="0 -112.3 112.3 112.3">
 	<g id="Layer_3_10_">
 		<g>
