@@ -15,6 +15,10 @@
           <div class="problemInfoElementLarge">
             <!-- <a href="/skill/{{.Problem.SkillID}}"> --><img src="/images/skill icons/{{.Problem.SkillID}}.png" class="difficultyImageLarge" title="{{.Skill.Title}}"><!-- </a> --><span><strong>Skill</strong></span>
           </div>
+
+          <div class="problemInfoElementLarge">
+            <!-- <a href="/skill/{{.Problem.SkillID}}"> --><img src="/images/{{if .Problem.Solved}}solved{{else}}unsolved{{end}}.png" class="difficultyImageLarge" title="{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}"><!-- </a> --><span><strong>{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}</strong></span>
+          </div>
       	</div>
 
 		<!-- <p>Skill: {{.Skill.Title}}</p>
