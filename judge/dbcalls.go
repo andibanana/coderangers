@@ -313,18 +313,14 @@ func GetRelatedProblems(userID, problemID int) (relatedProblems []problems.Probl
 	if err != nil {
 		return
 	}
-	rows, err := db.Query(`
-    SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems WHERE id IN (
-
-      SELECT DISTINCT problem_id FROM tags WHERE problem_id != ? AND tag IN 
-      (SELECT DISTINCT tag FROM problems, tags WHERE problem_id = id AND id = ?)
-
-      EXCEPT
-
-      SELECT DISTINCT problem_id 
-      FROM submissions 
-      WHERE verdict = ? AND user_id = ?
-    );`, problemID, problemID, problems.Accepted, userID)
+	rows, err := db.Query(`SELECT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, uva_id FROM problems WHERE id IN (
+                          SELECT DISTINCT problem_id FROM tags WHERE problem_id != ? AND tag IN 
+                          (SELECT DISTINCT tag FROM problems, tags WHERE problem_id = id AND id = ?)
+                          AND problem_id NOT IN (
+                          SELECT DISTINCT problem_id 
+                          FROM submissions 
+                          WHERE verdict = ? AND user_id = ?)
+                        );`, problemID, problemID, problems.Accepted, userID)
 	if err != nil {
 		return
 	}
@@ -386,9 +382,9 @@ func GetUnsolvedTriedProblems(userID int) (unsolvedProblems []int, err error) {
 		return
 	}
 
-	rows, err := db.Query(`SELECT DISTINCT problem_id FROM submissions WHERE user_id = ?
-                  EXCEPT
-                  SELECT DISTINCT problem_id FROM submissions WHERE user_id = ? AND verdict = ?;`, userID, userID, problems.Accepted)
+	rows, err := db.Query(`SELECT DISTINCT problem_id FROM submissions WHERE user_id = ? AND 
+                        problem_id NOT IN (SELECT DISTINCT problem_id FROM submissions WHERE user_id = ? AND verdict = ?);`,
+		userID, userID, problems.Accepted)
 	for rows.Next() {
 		var problem int
 		err = rows.Scan(&problem)
