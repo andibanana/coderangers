@@ -1,7 +1,7 @@
 {{define "title"}}Home{{end}}
 {{define "script"}}
 
-document.getElementById("progressBar").style.width = {{.UserData.Experience}}/100*100 +'%'
+document.getElementById("progressBar").style.width = {{mod .UserData.Experience 30}}/30*100 +'%'
 
 document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.Skill.NumberOfProblems}}*100 +'%'
 
@@ -34,7 +34,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
     		<h4>Level: {{xpToLevel .UserData.Experience}}</h4>
 
     		<div class="containerProgress">
-            <div id="progressBar" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{.UserData.Experience}}/100 XP 
+            <div id="progressBar" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{mod .UserData.Experience 30}}/30 XP 
             </div></div>
           </div>
 

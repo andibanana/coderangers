@@ -8,7 +8,7 @@
 
      //document.getElementsByClassName("containerAchievements")[0].innerHTML = "<h2>None... For now...</h2>"
 
-     document.getElementById("containerProgress").style.width = {{.UserData.Experience}}/100*100 +'%'
+     document.getElementById("containerProgress").style.width = {{mod .UserData.Experience 30}}/30*100 +'%'
 
 {{end}}
 {{define "content"}}
@@ -24,7 +24,7 @@
 
       <h3 class="noMargin">Level: {{xpToLevel .UserData.Experience}}</h3>
       <div class="containerProgressFlexible">
-            <div id="containerProgress" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{.UserData.Experience}}/100 XP 
+            <div id="containerProgress" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{mod .UserData.Experience 30}}/30 XP 
             </div></div>
       </div>
 
