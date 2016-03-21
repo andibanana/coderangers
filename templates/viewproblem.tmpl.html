@@ -51,6 +51,15 @@
 
 
 		<form action="/submit/{{.Problem.Index}}" method="POST" {{if .Locked}} disabled {{end}}>
+      {{if not (eq .Problem.UvaID "")}}
+        <div>
+          <input type="radio" name="language" value="Java" required><label>Java</label>
+          <input type="radio" name="language" value="C"><label>C</label>
+        </div>
+      {{else}}
+      <input type="hidden" name="language" value="Java">
+      {{end}}
+      
 		  <textarea name="code" class="codeBox" {{if .Locked}} disabled {{end}}>{{if .Locked}}SKILL LOCKED - learn all requisite skills to solve this problem{{else}}[Place your code here]{{end}}</textarea> <br>
 		<input type="submit" class="orangeBtn" {{if .Locked}} disabled {{end}}>
 		</form>

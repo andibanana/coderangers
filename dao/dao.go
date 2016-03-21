@@ -182,7 +182,8 @@ func CreateDB() error {
       
       uva_submission_id INTEGER,
 			directory VARCHAR(100) NOT NULL,
-      verdict VARCHAR(100) NOT NULL,
+      verdict VARCHAR(20) NOT NULL,
+      language VARCHAR(5),
       timestamp DATETIME NOT NULL,
       runtime_error TEXT,
       runtime NUMERIC,

@@ -46,6 +46,7 @@ type Submission struct {
 	UvaSubmissionID int
 	Runtime         float64
 	ProblemTitle    string
+	Language        string
 }
 
 type VerdictData struct {
@@ -67,6 +68,11 @@ type UserSubmissions struct {
 }
 
 var UvaNodeDirectory string
+
+const (
+	Java = "Java"
+	C    = "C"
+)
 
 const (
 	UvaUsername = "CodeRanger2"
@@ -262,7 +268,14 @@ func (UvaJudge) judge(s *Submission) {
 	p, _ := GetProblem(s.ProblemIndex)
 
 	io.WriteString(stdin, "use uva "+UvaUsername+"\n")
-	str := "send " + p.UvaID + " " + filepath.Join(s.Directory, `Main.java`) + "\n"
+	var language string
+	if s.Language == Java {
+		language = "java"
+	} else {
+		language = "c"
+	}
+
+	str := "send " + p.UvaID + " " + filepath.Join(s.Directory, `Main.`+language) + "\n"
 
 	io.WriteString(stdin, str)
 	for !(strings.Contains(stdout.String(), "Send ok") || strings.Contains(stdout.String(), "send failed") ||

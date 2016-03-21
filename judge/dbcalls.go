@@ -155,8 +155,8 @@ func addSubmission(submission Submission, userID int) (int, error) {
 	if _, err := GetProblem(submission.ProblemIndex); err != nil {
 		return -1, errors.New("No such problem")
 	}
-	result, err := db.Exec("INSERT INTO submissions (problem_id, user_id, directory, verdict, timestamp) VALUES (?, ?, ?, ?, ?)",
-		submission.ProblemIndex, userID, submission.Directory, submission.Verdict, time.Now())
+	result, err := db.Exec("INSERT INTO submissions (problem_id, user_id, directory, verdict, timestamp, language) VALUES (?, ?, ?, ?, ?, ?)",
+		submission.ProblemIndex, userID, submission.Directory, submission.Verdict, time.Now(), submission.Language)
 
 	if err != nil {
 		return -1, err
@@ -177,15 +177,16 @@ func getSubmissions() (submissions []Submission, err error) {
 		return
 	}
 
-	rows, err := db.Query("SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0) FROM problems, submissions, user_account " +
-		"WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id " +
-		"ORDER BY timestamp DESC")
+	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0), language 
+                        FROM problems, submissions, user_account
+                        WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id
+                        ORDER BY timestamp DESC`)
 	if err != nil {
 		return
 	}
 	for rows.Next() {
 		var submission Submission
-		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime, &submission.UvaSubmissionID)
+		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime, &submission.UvaSubmissionID, &submission.Language)
 		if err != nil {
 			return
 		}
@@ -200,9 +201,10 @@ func GetSubmission(id int) (submission Submission) {
 	if err != nil {
 		return submission
 	}
-	db.QueryRow("SELECT submissions.id, problem_id, username, verdict, user_account.id, uva_submission_id, runtime FROM submissions, user_account "+
-		"WHERE user_account.id = submissions.user_id and submissions.id = ?", id).Scan(&submission.ID, &submission.ProblemIndex,
-		&submission.Username, &submission.Verdict, &submission.UserID, &submission.UvaSubmissionID, &submission.Runtime)
+	db.QueryRow(`SELECT submissions.id, problem_id, username, verdict, user_account.id, uva_submission_id, runtime, language 
+              FROM submissions, user_account 
+              WHERE user_account.id = submissions.user_id and submissions.id = ?`, id).Scan(&submission.ID, &submission.ProblemIndex,
+		&submission.Username, &submission.Verdict, &submission.UserID, &submission.UvaSubmissionID, &submission.Runtime, &submission.Language)
 
 	return submission
 }
@@ -441,7 +443,7 @@ func getSubmissionsReceivedAndInqueue() (submissions []Submission, err error) {
 	}
 
 	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), 
-                          IFNULL(uva_submission_id, 0), directory    
+                          IFNULL(uva_submission_id, 0), directory, language   
                          FROM problems, submissions, user_account 
                          WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id AND verdict IN (?, ?, ?, ?)
                          ORDER BY timestamp DESC`, problems.Received, problems.Inqueue, problems.Compiling, problems.Running)
@@ -452,7 +454,7 @@ func getSubmissionsReceivedAndInqueue() (submissions []Submission, err error) {
 	for rows.Next() {
 		var submission Submission
 		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID,
-			&submission.Runtime, &submission.UvaSubmissionID, &submission.Directory)
+			&submission.Runtime, &submission.UvaSubmissionID, &submission.Directory, &submission.Language)
 		if err != nil {
 			return
 		}

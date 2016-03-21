@@ -241,12 +241,18 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		d, _ := ioutil.TempDir(DIR, "")
-		ioutil.WriteFile(filepath.Join(d, "Main.java"), []byte(r.FormValue("code")), 0600)
+		lang := r.FormValue("language")
+		if lang == Java {
+			ioutil.WriteFile(filepath.Join(d, "Main.java"), []byte(r.FormValue("code")), 0600)
+		} else if lang == C {
+			ioutil.WriteFile(filepath.Join(d, "Main.c"), []byte(r.FormValue("code")), 0600)
+		}
 		s := &Submission{
 			UserID:       userID,
 			ProblemIndex: index,
 			Directory:    d,
 			Verdict:      problems.Received,
+			Language:     lang,
 		}
 		submissionID, err := addSubmission(*s, userID)
 		s.ID = submissionID
