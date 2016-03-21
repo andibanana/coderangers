@@ -92,6 +92,10 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
           <div class="problemInfoElement">
             <img src="/images/skill icons/{{.Problem.SkillID}}.png" class="difficultyImageSmall"><span><strong>Skill</strong></span>
           </div>
+
+          <div class="problemInfoElement">
+            <img src="/images/{{if .Problem.Solved}}solved{{else}}unsolved{{end}}.png" class="difficultyImageSmall"><span><strong>{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}</strong></span>
+          </div>
       </div>
 
       </div> 	
