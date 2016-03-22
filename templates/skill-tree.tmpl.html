@@ -68,6 +68,10 @@
     	if(!skills[i].unlocked){
     		document.getElementById("skillProbReqs").innerHTML = "Learn all the prequesite skills first";
     	}
+    	else if(skills[i].mastered){
+
+    		document.getElementById("skillProbReqs").innerHTML = "You have mastered this skill!";
+    	}
     	else if(skills[i].learned){
 
     		document.getElementById("skillProbReqs").innerHTML = "Solve " + (skills[i].numberOfProblems - skills[i].solved) + " more problems to master this skill";
