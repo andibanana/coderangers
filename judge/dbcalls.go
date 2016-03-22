@@ -171,7 +171,7 @@ func addSubmission(submission Submission, userID int) (int, error) {
 	return int(submissionID), nil
 }
 
-func getSubmissions() (submissions []Submission, err error) {
+func getSubmissions(limit, offset int) (submissions []Submission, count int, err error) {
 	db, err := dao.Open()
 	if err != nil {
 		return
@@ -180,7 +180,8 @@ func getSubmissions() (submissions []Submission, err error) {
 	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0), language 
                         FROM problems, submissions, user_account
                         WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id
-                        ORDER BY timestamp DESC`)
+                        ORDER BY timestamp DESC
+                        LIMIT ? OFFSET ?`, limit, offset)
 	if err != nil {
 		return
 	}
@@ -193,6 +194,12 @@ func getSubmissions() (submissions []Submission, err error) {
 		submissions = append(submissions, submission)
 	}
 
+	err = db.QueryRow(`SELECT COUNT(*) 
+                        FROM problems, submissions, user_account
+                        WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id`).Scan(&count)
+	if err != nil {
+		return
+	}
 	return
 }
 

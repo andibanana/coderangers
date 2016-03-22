@@ -5,6 +5,7 @@ import (
 	".././dao"
 	".././problems"
 	".././templating"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -208,8 +209,10 @@ func EditSkillHandler(w http.ResponseWriter, r *http.Request) {
 			NumberOfProblemsToUnlock: NumberOfProblemsToUnlock,
 			Prerequisites:            arrprereq,
 		}
-		editSkill(*skill, r.URL.Path[len("/edit-skill/"):])
-
+		err = editSkill(*skill, r.URL.Path[len("/edit-skill/"):])
+		if err != nil {
+			log.Println(err)
+		}
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
 }

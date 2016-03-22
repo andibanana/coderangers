@@ -34,10 +34,21 @@
   }
 {{end}}
 {{define "content"}}
-
+    
+    
+    
     <div class="containerContent">
     	<h1>Submissions</h1>
-
+      {{if not (eq (minus .Index 1) -1)}}
+        <a href="/submissions/{{minus .Index 1}}"><-Prev</a>
+      {{else}}
+        <span style="visibility:hidden;"><-Prev</span>
+      {{end}}
+      {{if not (eq (add .Index 1) .Max)}}
+        <a href="/submissions/{{add .Index 1}}">Next-></a>
+      {{else}}
+        <span style="visibility:hidden;">Next-></span>
+      {{end}}
       <table id="submissions">
         <tr>
           <td>ID</td>

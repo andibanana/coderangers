@@ -11,11 +11,14 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
 )
+
+const Limit = 25
 
 func stringToArray(input string) []string {
 	cleaned := strings.Replace(input, " ", "", -1)
@@ -287,7 +290,11 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		submissions, err := getSubmissions()
+		index, err := strconv.Atoi(r.URL.Path[len("/submissions/"):])
+		if err != nil {
+			index = 0
+		}
+		submissions, count, err := getSubmissions(Limit, index*Limit)
 		if err != nil {
 			log.Print(err)
 		}
@@ -295,10 +302,14 @@ func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 			Submissions []Submission
 			IsLoggedIn  bool
 			IsAdmin     bool
+			Max         int
+			Index       int
 		}{
 			submissions,
 			cookies.IsLoggedIn(r),
 			dao.IsAdmin(r),
+			(int(math.Ceil(float64(count) / Limit))),
+			index,
 		}
 		templating.RenderPageWithBase(w, "submissions", data)
 	default:
