@@ -116,6 +116,27 @@ a{
 
 /* The Modal (background) */
 
+
+a{
+	text-decoration: none;
+}
+
+a:visited, a:active, a:link{
+	color: #333333;;
+}
+
+a:hover{
+	color: #777777;
+}
+
+.nextBtn{
+	font-size: 18px;
+	color: white;
+	background: #CDCCC6;
+	padding: 5px 10px 5px 10px;
+	border-top: 10px;
+}
+
 .signUpText:visited, .signUpText:active, .signUpText:link{
 	color:#F2F0E9;
 }
@@ -211,34 +232,9 @@ a{
 	text-decoration: none;
 }
 
-a{
-	text-decoration: none;
-}
-
-a:visited, a:active, a:link{
-	color: #333333;;
-}
-
-a:hover{
-	color: #777777;
-}
-
 .noMargin{
 	margin: 0px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .difficultyImageSmall{
 	width: 35px;
@@ -375,6 +371,14 @@ a:hover{
     margin-bottom: 5px;
 }
 
+.containerProgressM {
+    position: relative;
+    width: 500px;
+    height: 30px;
+    background-color: #2599B6;
+    margin-bottom: 5px;
+}
+
 .containerProgressFlexible {
     position: relative;
     width: 100%;
@@ -436,6 +440,17 @@ a:hover{
 	margin-left: 15px;
 }
 
+.containerProfileBannerM{
+	display: flex;
+	flex-direction: row;
+	align-content: flex-end;
+	width: 95%;
+
+	background-color: #DBDBDB;
+	padding: 10px;
+	text-decoration: none;
+}
+
 .containerProfileBanner{
 	display: flex;
 	flex-direction: row;
@@ -444,11 +459,21 @@ a:hover{
 
 	background-color: #DBDBDB;
 	padding: 10px;
+	text-decoration: none;
 }
 
 .profileBannerInfo{
 	align-content: center;
 }
+
+.profileBannerInfoM{
+	width: 100%;
+}
+
+.profileBannerInfoM > h2, h4{
+	margin: 0px;
+}
+
 
 .profileBannerInfo > h2, h4{
 	margin: 0px;

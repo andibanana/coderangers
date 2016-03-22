@@ -40,14 +40,14 @@
     <div class="containerContent">
     	<h1>Submissions</h1>
       {{if not (eq (minus .Index 1) -1)}}
-        <a href="/submissions/{{minus .Index 1}}"><-Prev</a>
+        <a class="nextBtn" href="/submissions/{{minus .Index 1}}"><-Prev</a>
       {{else}}
-        <span style="visibility:hidden;"><-Prev</span>
+        <span class="nextBtn" style="visibility:hidden;"><-Prev</span>
       {{end}}
       {{if not (eq (add .Index 1) .Max)}}
-        <a href="/submissions/{{add .Index 1}}">Next-></a>
+        <a class="nextBtn" href="/submissions/{{add .Index 1}}">Next-></a>
       {{else}}
-        <span style="visibility:hidden;">Next-></span>
+        <span class="nextBtn" style="visibility:hidden;">Next-></span>
       {{end}}
       <table id="submissions">
         <tr>
