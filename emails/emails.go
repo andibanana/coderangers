@@ -6,6 +6,7 @@ import (
 	".././problems"
 	".././skills"
 	".././users"
+	"fmt"
 	"log"
 	"net/smtp"
 	"strconv"
@@ -18,7 +19,7 @@ func SendEmailsToInactive() (err error) {
 		return
 	}
 
-	rows, err := db.Query(`SELECT user_account.id, username, email, max(timestamp) FROM
+	rows, err := db.Query(`SELECT user_account.id, username, email, IFNULL(max(timestamp), "2006-01-02 15:04:05.999999999+08:00") FROM
                         user_account
                           LEFT JOIN
                         submissions
@@ -78,25 +79,27 @@ func SendEmailsToInactive() (err error) {
 					break
 				}
 			}
-			message := "<h1>Hi " + username + "</h1>"
+			message := `<img src="http://coderangers.pro/images/logoBlack.png" style="max-width:300px;">`
+			message += "<h1>Hi " + username + "</h1>"
 			message += "You've been inactive for a few days!<br>We want you back, here are a few things you can do!<br>"
 			if len(unsolvedProblems) != 0 {
 				var user users.UserData
 				problem, err = judge.GetProblem(unsolvedProblems[0])
-				message += `<h2>` + problem.Title + `</h2>`
+				message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/view/` + fmt.Sprintf("%d", problem.Index) + `"><h2>` + problem.Title + `</h2></a>`
 				message += `You can try to solve this problem!<br>`
 				user, err = judge.GetUserWhoRecentlySolvedProblem(unsolvedProblems[0], userID)
 				if err == nil && len(user.Username) != 0 {
-					message += user.Username + ` recently solved this.<br>`
+					message += `<a href="http://coderangers.pro/profile/` + fmt.Sprintf("%d", user.ID) + `">` + user.Username + `</a> recently solved this.<br>`
 				}
+				message += "</div>"
 			}
 			if suggestSkill {
-				message += "<h2>" + skill.Title + "</h2>"
-				message += skill.Description + "<br>"
+				message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/skill/` + skill.ID + `">` + `<div style="display:inline-block;"><img src="http://coderangers.pro/images/skill icons/` + skill.ID + `.png" style="vertical-align:middle;max-width:100px;"></div><div style="display:inline-block;vertical-align:middle;"><h2 style="display:inline;">` + skill.Title + "</h2><br></a>"
+				message += skill.Description + "<br></div><br>"
 				if skill.Learned {
 					message += "You should try to master this skill. Solve " + strconv.Itoa(skill.NumberOfProblems-skill.Solved) + " more problems to master the skill.<br>"
 				} else {
-					message += "You should learn this skill. Solve " + strconv.Itoa(skill.NumberOfProblemsToUnlock-skill.Solved) + " more problems to learn the skill.<br>"
+					message += "You should learn this skill. Solve " + strconv.Itoa(skill.NumberOfProblemsToUnlock-skill.Solved) + " more problems to learn the skill.<br></div>"
 				}
 			}
 			go SendEmail(email, "Hi "+username+"! You've been inactive for a few days!", message)
@@ -141,5 +144,6 @@ func SendEmail(to, subject, body string) (err error) {
 		[]string{to},
 		[]byte("Subject: "+subject+"\r\n"+mime+body+"\r\n"),
 	)
+	fmt.Println(to)
 	return
 }
