@@ -104,9 +104,9 @@ func editSkill(skill Skill, originalID string) error {
 		var values string
 		for i := 0; i < len(skill.Prerequisites); i++ {
 			if i == len(skill.Prerequisites)-1 {
-				values += " (" + skill.ID + ", " + skill.Prerequisites[i] + ");"
+				values += ` ("` + skill.ID + `", "` + skill.Prerequisites[i] + `");`
 			} else {
-				values += " (" + skill.ID + ", " + skill.Prerequisites[i] + "),"
+				values += ` ("` + skill.ID + `", "` + skill.Prerequisites[i] + `"),`
 			}
 		}
 		_, err = db.Exec("DELETE FROM prerequisites WHERE skill_id = ?", skill.ID)

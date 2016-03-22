@@ -31,7 +31,7 @@
           <td><a href="/view/{{.Index}}">{{.Title}}</a></td>
 
           {{ if $.IsAdmin }}
-          <td><a href="/edit/{{.Index}}">Edit Problem</a></td>
+          <td><a href="/edit-problem/{{.Index}}">Edit Problem</a></td>
           <td><form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form></td>
           {{end}}
 

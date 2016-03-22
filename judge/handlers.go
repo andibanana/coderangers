@@ -98,7 +98,10 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			MemoryLimit:  memory_limit,
 			Tags:         stringToArray(r.FormValue("tags")),
 		}
-		editProblem(*p)
+		err = editProblem(*p)
+		if err != nil {
+			log.Println(err)
+		}
 		http.Redirect(w, r, "/view/"+r.FormValue("problem_id"), http.StatusFound)
 	default:
 		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)

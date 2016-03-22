@@ -100,9 +100,9 @@ func editProblem(problem problems.Problem) error {
 	tags := "INSERT INTO tags (problem_id, tag) VALUES "
 	for i := 0; i < len(problem.Tags); i++ {
 		if i == len(problem.Tags)-1 {
-			tags += " (" + fmt.Sprint(problem.Index) + ", " + problem.Tags[i] + "); "
+			tags += ` (` + fmt.Sprint(problem.Index) + `, "` + problem.Tags[i] + `"); `
 		} else {
-			tags += " (" + fmt.Sprint(problem.Index) + ", " + problem.Tags[i] + "), "
+			tags += ` (` + fmt.Sprint(problem.Index) + `, "` + problem.Tags[i] + `"), `
 		}
 	}
 	if problem.Tags != nil {
