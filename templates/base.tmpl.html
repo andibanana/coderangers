@@ -71,9 +71,9 @@ kng hindi accepted check relatedproblem to suggest
 
           <div class="achievements" id="achievements">
             <h4 id="achievementsTitle">Achievements Unlocked:</h4>
-            <div id="achievementContent">
+            <div id="achievementContent" style="display:flex;">
               <div class="achievementItem">
-                <img src="/images/achievements/1.png" class="achievementImage">
+                <img src="/images/achievements/learned/A.png" class="achievementImage">
                 <h5>Awesomesauce</h5>
               </div>
             </div>
@@ -144,15 +144,18 @@ kng hindi accepted check relatedproblem to suggest
 
           if(data.Submission.Verdict == "accepted"){
             if(data.NewAchievements != null){
-              document.getElementById("achievementsTitle").innerHTML = "Achievement/s Unlocked:";
-              document.getElementById("achievementContent").innerHTML = 
-              "<div id=\"achievementContent\"> \
-                <div class=\"achievementItem\"> \
-                <img src=\"/images/achievements/" + data.NewAchievements[0].Image + "\" class=\"achievementImage\"> \
-                <h5>" + data.NewAchievements[0].Title + "</h5> \
-              </div> \
-              </div>";
-
+              document.getElementById("achievementsTitle").innerHTML = "Skills Learned/Mastered:";
+              var content = "";
+              for(var i = 0; i < data.NewAchievements.length; i++) {
+                content +=
+                "<div id=\"achievementContent\"> \
+                  <div class=\"achievementItem\"> \
+                  <img src=\"/images/achievements/" + data.NewAchievements[i].Image + "\" class=\"achievementImage\"> \
+                  <h5>" + data.NewAchievements[i].Title + "</h5> \
+                </div> \
+                </div>";
+              }
+              document.getElementById("achievementContent").innerHTML = content;
               document.getElementById("recommendationTitle").innerHTML = "";
               document.getElementById("recommendedProblemsContent").innerHTML = "";
 
