@@ -41,9 +41,9 @@ type Submission struct {
 	UserID          int
 	ID              int
 	ProblemIndex    int
-	Directory       string
+	Directory       string `json:"-"`
 	Verdict         string
-	UvaSubmissionID int
+	UvaSubmissionID int `json:"-"`
 	Runtime         float64
 	ProblemTitle    string
 	Language        string
@@ -197,10 +197,7 @@ func (UvaJudge) checkVerdict(s *Submission) {
 					}
 					s.Verdict = verdict
 					s.Runtime = float64(submissions.Subs[i][3]) / 1000.00
-					err = UpdateVerdict(s.ID, verdict)
-					if err != nil {
-						log.Println(err)
-					}
+					UpdateVerdict(s, verdict)
 					err = UpdateRuntime(s.ID, s.Runtime)
 					if err != nil {
 						log.Println(err)
@@ -260,7 +257,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 	if err != nil {
 		log.Println(err)
 	} else {
-		notifications.SendMessageTo(s.UserID, string(message))
+		notifications.SendMessageTo(s.UserID, string(message), notifications.Notifications)
 	}
 }
 
@@ -305,7 +302,7 @@ func (UvaJudge) judge(s *Submission) {
 				continue
 			}
 			updateUvaSubmissionID(s.ID, submissionID)
-			UpdateVerdict(s.ID, problems.Inqueue)
+			UpdateVerdict(s, problems.Inqueue)
 			s.UvaSubmissionID = submissionID
 			uvaQueue <- s
 			notgotten = false
@@ -327,18 +324,18 @@ func (CodeRangerJudge) judge(s *Submission) {
 	}
 
 	s.Verdict = problems.Compiling
-	// UpdateVerdict(s.ID, Compiling)
+	// UpdateVerdict(s, Compiling)
 
 	err = s.compile()
 	if err != nil {
 		s.Verdict = err.Verdict
-		UpdateVerdict(s.ID, s.Verdict)
+		UpdateVerdict(s, s.Verdict)
 		sendNotification(*s, p)
 		return
 	}
 
 	s.Verdict = problems.Running
-	UpdateVerdict(s.ID, problems.Running)
+	UpdateVerdict(s, problems.Running)
 	t := time.Now()
 	output, err := s.run(p)
 	d := time.Now().Sub(t)
@@ -346,26 +343,39 @@ func (CodeRangerJudge) judge(s *Submission) {
 
 	if err != nil {
 		s.Verdict = err.Verdict
-		UpdateVerdict(s.ID, s.Verdict)
+		UpdateVerdict(s, s.Verdict)
 		sendNotification(*s, p)
 		return
 	}
 
 	// s.Verdict = Judging
-	// UpdateVerdict(s.ID, Judging)
+	// UpdateVerdict(s, Judging)
 
 	if strings.Replace(output, "\r\n", "\n", -1) != strings.Replace(p.Output, "\r\n", "\n", -1) {
 		// whitespace checks..? floats? etc.
 		// fmt.Println(output)
 		s.Verdict = problems.WrongAnswer
-		UpdateVerdict(s.ID, problems.WrongAnswer)
+		UpdateVerdict(s, problems.WrongAnswer)
 		sendNotification(*s, p)
 		return
 	}
 
 	s.Verdict = problems.Accepted
-	UpdateVerdict(s.ID, problems.Accepted)
+	UpdateVerdict(s, problems.Accepted)
 	sendNotification(*s, p)
+}
+
+func UpdateVerdict(s *Submission, verdict string) {
+	err := UpdateVerdictInDB(s.ID, verdict)
+	if err != nil {
+		log.Println(err)
+	}
+	message, err := json.Marshal(s)
+	if err != nil {
+		log.Println(err)
+	} else {
+		notifications.SendMessageTo(s.UserID, string(message), notifications.Submissions)
+	}
 }
 
 func (s Submission) compile() *Error {

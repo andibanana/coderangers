@@ -28,10 +28,10 @@ type Problem struct {
 	SampleInput  string
 	SampleOutput string
 	UvaID        string
-	Input        string
-	Output       string
+	Input        string `json:"-"`
+	Output       string `json:"-"`
 	TimeLimit    int
 	MemoryLimit  int
 	Solved       bool
-	Tags         []string
+	Tags         []string `json:"-"`
 }

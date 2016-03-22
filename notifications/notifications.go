@@ -16,11 +16,13 @@ type SSEConn MsgChan
 type Conn struct {
 	SSEConn SSEConn
 	UserID  int
+	URL     string
 }
 
 type Message struct {
 	Message []byte
 	To      int
+	URL     string
 }
 
 type ConnsHandler struct {
@@ -29,6 +31,11 @@ type ConnsHandler struct {
 	connSet      map[int]map[Conn]bool
 	broadcasts   chan Message
 }
+
+const (
+	Notifications = "notifications"
+	Submissions   = "submissions-listener"
+)
 
 func NewSSEConnsHandler() (handler *ConnsHandler) {
 	handler = &ConnsHandler{
@@ -49,10 +56,10 @@ func (handler *ConnsHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request
 		templating.ErrorPage(rw, "Streaming unsupported!", http.StatusInternalServerError)
 		return
 	}
-
 	messageChan := make(SSEConn)
 	var conn Conn
 	conn.UserID, ok = cookies.GetUserID(req)
+	conn.URL = req.URL.Path[1:]
 	if !ok {
 		templating.ErrorPage(rw, "Streaming unsupported!", http.StatusInternalServerError)
 		return
@@ -95,7 +102,9 @@ func (handler *ConnsHandler) handleConns() {
 			delete(handler.connSet[conn.UserID], conn)
 		case msg := <-handler.broadcasts:
 			for conn, _ := range handler.connSet[msg.To] {
-				conn.SSEConn <- msg.Message
+				if conn.URL == msg.URL {
+					conn.SSEConn <- msg.Message
+				}
 			}
 		}
 	}
@@ -110,9 +119,10 @@ func InitHandler() *ConnsHandler {
 	return handler
 }
 
-func SendMessageTo(userID int, stringMsg string) {
+func SendMessageTo(userID int, stringMsg string, url string) {
 	var message Message
 	message.Message = []byte(stringMsg)
 	message.To = userID
+	message.URL = url
 	handler.broadcasts <- message
 }

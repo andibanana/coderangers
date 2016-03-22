@@ -65,7 +65,8 @@ func main() {
 	mux.HandleFunc("/edit-skill/", skills.EditSkillHandler)
 
 	mux.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
-	mux.HandleFunc("/notifications", notifications.InitHandler().ServeHTTP)
+	mux.HandleFunc("/"+notifications.Notifications, notifications.InitHandler().ServeHTTP)
+	mux.HandleFunc("/"+notifications.Submissions, notifications.InitHandler().ServeHTTP)
 	mux.HandleFunc("/profile", users.ViewProfileHandler)
 	mux.HandleFunc("/profile/", users.ViewUserProfileHandler)
 	mux.HandleFunc("/skill/", skills.SkillHandler)

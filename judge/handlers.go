@@ -3,10 +3,12 @@ package judge
 import (
 	".././cookies"
 	".././dao"
+	".././notifications"
 	".././problems"
 	".././skills"
 	".././templating"
 	".././users"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -256,6 +258,18 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		submissionID, err := addSubmission(*s, userID)
 		s.ID = submissionID
+		s.ProblemTitle = problem.Title
+		user, err := users.GetUserData(userID)
+		if err != nil {
+			log.Println(err)
+		}
+		s.Username = user.Username
+		message, err := json.Marshal(s)
+		if err != nil {
+			log.Println(err)
+		} else {
+			notifications.SendMessageTo(s.UserID, string(message), notifications.Submissions)
+		}
 		if err != nil {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return

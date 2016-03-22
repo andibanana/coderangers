@@ -1,11 +1,44 @@
 {{define "title"}}Submissions{{end}}
-{{define "script"}}{{end}}
+{{define "script"}}
+  var evtSource = new EventSource('/submissions-listener');
+  var eventList = document.getElementById('event-list');
+  evtSource.onmessage = function(e) {
+    var newElement = document.createElement('li');
+    var data = JSON.parse(e.data);
+    //console.log(data);
+    var table = document.getElementById("submissions");
+    var found = false;
+    var username;
+    for (var i = 0, row; i < table.rows.length; i++) {
+      //iterate through rows
+      //rows would be accessed using the "row" variable assigned in the for loop
+      if (data.ID == table.rows[i].cells[0].innerHTML) {
+        found = true;
+        table.rows[i].cells[3].innerHTML = data.Verdict;
+        table.rows[i].cells[4].innerHTML = data.Runtime;
+      }
+    }
+    if (!found) {
+      var row = table.insertRow(1);
+      var cell0 = row.insertCell(0);
+      var cell1 = row.insertCell(1);
+      var cell2 = row.insertCell(2);
+      var cell3 = row.insertCell(3);
+      var cell4 = row.insertCell(4);
+      cell0.innerHTML = data.ID;
+      cell1.innerHTML = data.ProblemTitle;
+      cell2.innerHTML = data.Username;
+      cell3.innerHTML = data.Verdict;
+      cell4.innerHTML = data.Runtime;
+    }
+  }
+{{end}}
 {{define "content"}}
 
     <div class="containerContent">
     	<h1>Submissions</h1>
 
-      <table>
+      <table id="submissions">
         <tr>
           <td>ID</td>
           <td>Problem Title</td>

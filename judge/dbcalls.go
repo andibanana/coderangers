@@ -241,7 +241,7 @@ func acceptedAlready(userID, problemID int) bool {
 	return true
 }
 
-func UpdateVerdict(id int, verdict string) error {
+func UpdateVerdictInDB(id int, verdict string) error {
 	db, err := dao.Open()
 	if err != nil {
 		return err

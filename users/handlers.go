@@ -124,7 +124,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		} else {
-			notifications.SendMessageTo(userID, string(message))
+			notifications.SendMessageTo(userID, string(message), notifications.Notifications)
 		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	default:
