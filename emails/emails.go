@@ -117,7 +117,9 @@ func SendEmailsEvery(interval time.Duration) {
 			select {
 			case <-ticker.C:
 				err := SendEmailsToInactive()
-				log.Println(err)
+				if err != nil {
+					log.Println(err)
+				}
 			case <-quit:
 				ticker.Stop()
 				return
@@ -144,6 +146,6 @@ func SendEmail(to, subject, body string) (err error) {
 		[]string{to},
 		[]byte("Subject: "+subject+"\r\n"+mime+body+"\r\n"),
 	)
-	fmt.Println(to)
+
 	return
 }
