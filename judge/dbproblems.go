@@ -18,7 +18,7 @@ func AddSamples() {
 		SampleOutput: "Hello, Sean\nHello, Matthew\n",
 		TimeLimit:    2,
 		MemoryLimit:  200,
-		Tags:         []string{"Subtract", "Math"},
+		//Tags:         []string{"Subtract", "Math"},
 	}
 	AddProblem(p)
 	p = problems.Problem{
@@ -34,7 +34,7 @@ func AddSamples() {
 		SampleOutput: "Hello EcHO ECHO ECHo\nBye EcHO ECHO ECHo\n",
 		TimeLimit:    2,
 		MemoryLimit:  200,
-		Tags:         []string{"Subtract", "Math"},
+		//Tags:         []string{"Subtract", "Math"},
 	}
 	AddProblem(p)
 	//B
@@ -120,6 +120,21 @@ func AddSamples() {
 	p.UvaID = "10424"
 	AddProblem(p)
 
+	p.Title = "Back to High School Physics"
+	p.Difficulty = 0
+	p.UvaID = "10071"
+	AddProblem(p)
+
+	p.Title = "Above Average"
+	p.Difficulty = 1
+	p.UvaID = "10370"
+	AddProblem(p)
+
+	p.Title = "Peter's Smokes"
+	p.Difficulty = 1
+	p.UvaID = "10346"
+	AddProblem(p)
+
 	//C2
 	p.SkillID = "C2"
 
@@ -156,6 +171,11 @@ func AddSamples() {
 	p.Title = "Guessing Game"
 	p.Difficulty = 2
 	p.UvaID = "10530"
+	AddProblem(p)
+
+	p.Title = "Permutation Arrays"
+	p.Difficulty = 2
+	p.UvaID = "482"
 	AddProblem(p)
 
 	//D1
@@ -206,6 +226,11 @@ func AddSamples() {
 	p.UvaID = "11455"
 	AddProblem(p)
 
+	p.Title = "Perfection"
+	p.Difficulty = 1
+	p.UvaID = "382"
+	AddProblem(p)
+
 	//D2
 	p.SkillID = "D2"
 
@@ -232,6 +257,21 @@ func AddSamples() {
 	p.Title = "WERTYU"
 	p.Difficulty = 1
 	p.UvaID = "10082"
+	AddProblem(p)
+
+	p.Title = "Soundex"
+	p.Difficulty = 2
+	p.UvaID = "10260"
+	AddProblem(p)
+
+	p.Title = "Group Reverse"
+	p.Difficulty = 2
+	p.UvaID = "11192"
+	AddProblem(p)
+
+	p.Title = "Newspaper"
+	p.Difficulty = 2
+	p.UvaID = "11340"
 	AddProblem(p)
 
 	//D3
@@ -262,27 +302,226 @@ func AddSamples() {
 	p.UvaID = "340"
 	AddProblem(p)
 
+	p.Title = "The Blocks Problem"
+	p.Difficulty = 1
+	p.UvaID = "101"
+	AddProblem(p)
+
+	p.Title = "Odd Sum"
+	p.Difficulty = 1
+	p.UvaID = "10783"
+	AddProblem(p)
+
 	//E
 	p.SkillID = "E"
 
 	p.Title = "Google is Feeling Lucky"
-	p.Difficulty = 1
+	p.Difficulty = 2
 	p.UvaID = "12015"
 	AddProblem(p)
 
 	p.Title = "Greedy Gift Givers"
-	p.Difficulty = 1
+	p.Difficulty = 2
 	p.UvaID = "119"
 	AddProblem(p)
 
 	p.Title = "Train Tracks"
-	p.Difficulty = 1
+	p.Difficulty = 3
 	p.UvaID = "11586"
 	AddProblem(p)
 
 	p.Title = "Burger Time?"
-	p.Difficulty = 1
+	p.Difficulty = 3
 	p.UvaID = "11661"
+	AddProblem(p)
+
+	p.Title = "To Carry or not to Carry"
+	p.Difficulty = 1
+	p.UvaID = "10469"
+	AddProblem(p)
+
+	p.Title = "Numbering Roads"
+	p.Difficulty = 2
+	p.UvaID = "11723"
+	AddProblem(p)
+
+	p.Title = "Brick Game"
+	p.Difficulty = 2
+	p.UvaID = "11875"
+	AddProblem(p)
+
+	p.Title = "The 3n + 1 problem"
+	p.Difficulty = 0
+	p.UvaID = "100"
+	AddProblem(p)
+
+	p.Title = "Primary Arithmetic"
+	p.Difficulty = 1
+	p.UvaID = "10035"
+	AddProblem(p)
+
+	p.Title = "Box of Bricks"
+	p.Difficulty = 1
+	p.UvaID = "591"
+	AddProblem(p)
+
+	//F1
+	p.SkillID = "F1"
+
+	p.Title = "Average Speed"
+	p.Difficulty = 3
+	p.UvaID = "10281"
+	AddProblem(p)
+
+	p.Title = "Etruscan Warriors Never Play Chess"
+	p.Difficulty = 3
+	p.UvaID = "11614"
+	AddProblem(p)
+
+	p.Title = "Code Refactoring"
+	p.Difficulty = 3
+	p.UvaID = "10879"
+	AddProblem(p)
+
+	p.Title = "Different Digits"
+	p.Difficulty = 3
+	p.UvaID = "12527"
+	AddProblem(p)
+
+	p.Title = "Feynman"
+	p.Difficulty = 2
+	p.UvaID = "12149"
+	AddProblem(p)
+
+	p.Title = "Pizza Cutting"
+	p.Difficulty = 1
+	p.UvaID = "10079"
+	AddProblem(p)
+
+	p.Title = "Pi"
+	p.Difficulty = 2
+	p.UvaID = "412"
+	AddProblem(p)
+
+	p.Title = "LCM Cardinality"
+	p.Difficulty = 3
+	p.UvaID = "10892"
+	AddProblem(p)
+
+	p.Title = "Prime Distance"
+	p.Difficulty = 3
+	p.UvaID = "10140"
+	AddProblem(p)
+
+	p.Title = "Goldbach's Conjecture"
+	p.Difficulty = 1
+	p.UvaID = "543"
+	AddProblem(p)
+
+	p.Title = "Goldbach's Conjecture (II)"
+	p.Difficulty = 2
+	p.UvaID = "686"
+	AddProblem(p)
+
+	//F2
+	p.SkillID = "F2"
+
+	p.Title = "Error Correction"
+	p.Difficulty = 1
+	p.UvaID = "541"
+	AddProblem(p)
+
+	p.Title = "Rotated square"
+	p.Difficulty = 3
+	p.UvaID = "10855"
+	AddProblem(p)
+
+	p.Title = "Spiral Tap"
+	p.Difficulty = 3
+	p.UvaID = "10920"
+	AddProblem(p)
+
+	p.Title = "Jolly Jumpers"
+	p.Difficulty = 1
+	p.UvaID = "10038"
+	AddProblem(p)
+
+	p.Title = "Machined Surfaces"
+	p.Difficulty = 2
+	p.UvaID = "414"
+	AddProblem(p)
+
+	p.Title = "Mirror, Mirror"
+	p.Difficulty = 3
+	p.UvaID = "466"
+	AddProblem(p)
+
+	p.Title = "Add bricks in the wall"
+	p.Difficulty = 3
+	p.UvaID = "11040"
+	AddProblem(p)
+
+	p.Title = "Symmetric Matrix"
+	p.Difficulty = 3
+	p.UvaID = "11349"
+	AddProblem(p)
+
+	p.Title = "Have Fun with Matrices"
+	p.Difficulty = 3
+	p.UvaID = "11360"
+	AddProblem(p)
+
+	//F3
+	p.SkillID = "F3"
+
+	p.Title = "A Match Making Problem"
+	p.Difficulty = 3
+	p.UvaID = "12210"
+	AddProblem(p)
+
+	p.Title = "Work Reduction"
+	p.Difficulty = 3
+	p.UvaID = "10670"
+	AddProblem(p)
+
+	p.Title = "Minimal coverage"
+	p.Difficulty = 3
+	p.UvaID = "10020"
+	AddProblem(p)
+
+	p.Title = "All in All"
+	p.Difficulty = 1
+	p.UvaID = "10340"
+	AddProblem(p)
+
+	p.Title = "Dragon of Loowater"
+	p.Difficulty = 2
+	p.UvaID = "11292"
+	AddProblem(p)
+
+	p.Title = "Station Balance"
+	p.Difficulty = 3
+	p.UvaID = "410"
+	AddProblem(p)
+
+	p.Title = "The Bus Driver Problem"
+	p.Difficulty = 3
+	p.UvaID = "11389"
+	AddProblem(p)
+
+	p.Title = "Scarecrow"
+	p.Difficulty = 3
+	p.UvaID = "12405"
+	AddProblem(p)
+
+	p.Title = "Commando War"
+	p.Difficulty = 3
+	p.UvaID = "11729"
+	AddProblem(p)
+
+	p.Title = "ShellSort"
+	p.Difficulty = 2
+	p.UvaID = "10152"
 	AddProblem(p)
 
 }
