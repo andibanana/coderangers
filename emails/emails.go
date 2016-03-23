@@ -109,7 +109,7 @@ func SendEmailsToInactive() (err error) {
 }
 
 func SendEmailsEvery(interval time.Duration) {
-	SendEmailsToInactive()
+	//SendEmailsToInactive()
 	ticker := time.NewTicker(interval)
 	quit := make(chan struct{})
 	go func() {

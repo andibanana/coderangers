@@ -81,7 +81,7 @@ func main() {
 	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./images"))))
 	// http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts"))))
 
-	emails.SendEmailsEvery(3 * 24 * time.Hour)
+	emails.SendEmailsEvery(24 * time.Hour)
 
 	fmt.Println("serving")
 	log.Println("Start")
