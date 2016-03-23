@@ -32,8 +32,14 @@ func page(content string) string {
 
 func main() {
 	log.SetFlags(log.Llongfile)
-	err := dao.CreateDB()
-	log.Println(err)
+	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal("error log file", err)
+	}
+	defer f.Close()
+	log.SetOutput(f)
+	err = dao.CreateDB()
+	fmt.Println(err)
 
 	if err == nil {
 		users.Register("admin", "admin", "frzsk@yahoo.com", true)
@@ -78,6 +84,7 @@ func main() {
 	emails.SendEmailsEvery(3 * 24 * time.Hour)
 
 	fmt.Println("serving")
+	log.Println("Start")
 	http.ListenAndServe(":80", mux)
 	db, _ := dao.Open()
 	db.Close()

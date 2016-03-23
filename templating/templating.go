@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"runtime/debug"
 	"time"
 )
 
@@ -79,6 +80,7 @@ func ErrorPage(w http.ResponseWriter, errorMessage string, statusCode int) {
 		errorMessage += "\n"
 	}
 	errorMessage += fmt.Sprintf("%d %s", statusCode, http.StatusText(statusCode))
+	debug.PrintStack()
 	log.Println(errorMessage)
 	http.Error(w, errorMessage, statusCode)
 }

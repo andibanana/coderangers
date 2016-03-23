@@ -1,4 +1,7 @@
+test
 test.exe
+log.txt
+stderr.txt
 database.sqlite
 submissions/
 **/Thumbs.db
