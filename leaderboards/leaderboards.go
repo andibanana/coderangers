@@ -23,7 +23,7 @@ func GetTopUsers(limit, offset int) (users []User, err error) {
                           (SELECT DISTINCT problem_id, difficulty, user_id, verdict FROM problems LEFT JOIN submissions ON problems.id = submissions.problem_id 
                           WHERE verdict = ?) AS submitted 
                         ON submitted.user_id = user_account.id 
-                        GROUP BY user_id
+                        GROUP BY user_account.id
                         ORDER BY experience DESC
                         LIMIT ? OFFSET ?;`, problems.Accepted, limit, offset)
 
