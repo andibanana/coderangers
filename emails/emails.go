@@ -8,6 +8,7 @@ import (
 	".././users"
 	"fmt"
 	"log"
+	"math"
 	"net/smtp"
 	"strconv"
 	"time"
@@ -41,10 +42,15 @@ func SendEmailsToInactive() (err error) {
 		}
 		submittime, err = time.Parse("2006-01-02 15:04:05.999999999Z07:00", timestamp)
 		if err != nil {
-			return
+			submittime, err = time.Parse("2006-01-02 15:04:05", timestamp)
+			if err != nil {
+				return
+			}
+			submittime.Add(8 * time.Hour)
 		}
 		duration := time.Since(submittime)
-		if duration.Hours()/24 >= 3 {
+		var days = int(math.Floor(duration.Hours() / 24))
+		if days%7 == 3 || (days != 0 && days%7 == 0) {
 			var unsolvedProblems []int
 			var userDataOnSkill map[string]*skills.Skill
 			var problem problems.Problem
