@@ -45,11 +45,11 @@ func AddProblem(problem problems.Problem) (err error) {
 	}
 
 	tags := "INSERT INTO tags (problem_id, tag) VALUES "
-	for i := 0; i < len(problem.Tags); i++ {
+	for i, tag := range problem.Tags {
 		if i == len(problem.Tags)-1 {
-			tags += " (" + fmt.Sprint(problemID) + `, "` + problem.Tags[i] + `"); `
+			tags += " (" + fmt.Sprint(problemID) + `, "` + tag + `"); `
 		} else {
-			tags += " (" + fmt.Sprint(problemID) + `, "` + problem.Tags[i] + `"), `
+			tags += " (" + fmt.Sprint(problemID) + `, "` + tag + `"), `
 		}
 	}
 	if problem.Tags != nil {
@@ -98,11 +98,11 @@ func editProblem(problem problems.Problem) error {
 	}
 
 	tags := "INSERT INTO tags (problem_id, tag) VALUES "
-	for i := 0; i < len(problem.Tags); i++ {
+	for i, tag := range problem.Tags {
 		if i == len(problem.Tags)-1 {
-			tags += ` (` + fmt.Sprint(problem.Index) + `, "` + problem.Tags[i] + `"); `
+			tags += ` (` + fmt.Sprint(problem.Index) + `, "` + tag + `"); `
 		} else {
-			tags += ` (` + fmt.Sprint(problem.Index) + `, "` + problem.Tags[i] + `"), `
+			tags += ` (` + fmt.Sprint(problem.Index) + `, "` + tag + `"), `
 		}
 	}
 	if problem.Tags != nil {
@@ -117,7 +117,7 @@ func editProblem(problem problems.Problem) error {
 	return nil
 }
 
-func deleteProblem(problemID int) {
+func deleteProblem(problemID int) (err error) {
 
 	db, err := dao.Open()
 	if err != nil {
@@ -143,7 +143,7 @@ func deleteProblem(problemID int) {
 		return
 	}
 
-	tx.Commit()
+	return tx.Commit()
 }
 
 func addSubmission(submission Submission, userID int) (int, error) {
@@ -203,49 +203,52 @@ func getSubmissions(limit, offset int) (submissions []Submission, count int, err
 	return
 }
 
-func GetSubmission(id int) (submission Submission) {
+func GetSubmission(id int) (submission Submission, err error) {
 	db, err := dao.Open()
 	if err != nil {
-		return submission
+		return
 	}
-	db.QueryRow(`SELECT submissions.id, problem_id, username, verdict, user_account.id, uva_submission_id, runtime, language 
+	err = db.QueryRow(`SELECT submissions.id, problem_id, username, verdict, user_account.id, uva_submission_id, runtime, language 
               FROM submissions, user_account 
               WHERE user_account.id = submissions.user_id and submissions.id = ?`, id).Scan(&submission.ID, &submission.ProblemIndex,
 		&submission.Username, &submission.Verdict, &submission.UserID, &submission.UvaSubmissionID, &submission.Runtime, &submission.Language)
 
-	return submission
+	return
 }
 
-func usedSubmissionID(id int) bool {
+func usedSubmissionID(id int) (bool, error) {
 	db, err := dao.Open()
 	if err != nil {
-		return true
+		return true, err
 	}
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM submissions WHERE uva_submission_id = ?", id).Scan(&count)
+	err = db.QueryRow("SELECT COUNT(*) FROM submissions WHERE uva_submission_id = ?", id).Scan(&count)
+	if err != nil {
+		return false, err
+	}
 	if count == 0 {
-		return false
+		return false, err
 	} else {
-		return true
+		return true, err
 	}
 }
 
-func acceptedAlready(userID, problemID int) bool {
+func acceptedAlready(userID, problemID int) (bool, error) {
 	db, err := dao.Open()
 	if err != nil {
-		return false
+		return false, err
 	}
 
 	var count int
-	db.QueryRow("SELECT COUNT(*) FROM submissions, user_account "+
+	err = db.QueryRow("SELECT COUNT(*) FROM submissions, user_account "+
 		"WHERE user_account.id = submissions.user_id AND verdict = ?"+
 		"AND submissions.problem_id = ? AND user_id = ?", problems.Accepted, problemID, userID).Scan(&count)
 
-	if count == 0 {
-		return false
+	if err != nil || count == 0 {
+		return false, err
 	}
 
-	return true
+	return true, err
 }
 
 func UpdateVerdictInDB(id int, verdict string) error {

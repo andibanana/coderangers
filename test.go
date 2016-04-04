@@ -42,9 +42,15 @@ func main() {
 	fmt.Println(err)
 
 	if err == nil {
-		users.Register("admin", "admin", "frzsk@yahoo.com", true)
+		_, err = users.Register("admin", "admin", "frzsk@yahoo.com", true)
+		if err != nil {
+			log.Println(err)
+		}
 		skills.AddSamples()
-		judge.AddSamples()
+		err = judge.AddSamples()
+		if err != nil {
+			log.Println(err)
+		}
 	}
 	templating.InitTemplates()
 	wd, _ := os.Getwd()

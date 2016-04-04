@@ -152,7 +152,10 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			MemoryLimit:  memory_limit,
 			Tags:         tags,
 		}
-		AddProblem(*p)
+		err = AddProblem(*p)
+		if err != nil {
+			log.Println(err)
+		}
 		http.Redirect(w, r, "/problems/", http.StatusFound)
 	default:
 		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
@@ -167,7 +170,10 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		deleteProblem(problemID)
+		err = deleteProblem(problemID)
+		if err != nil {
+			log.Println(err)
+		}
 		http.Redirect(w, r, "/problems/", http.StatusFound)
 	default:
 		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
@@ -190,12 +196,10 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		var userID int
 		if cookies.IsLoggedIn(r) {
 			userID, _ = cookies.GetUserID(r)
-			users.AddViewedProblem(userID, index)
-		}
-		submitted, verdictData := getProblemStatistics(index)
-		rate := float64(verdictData.Accepted) / float64(submitted) * 100
-		if verdictData.Accepted == 0 {
-			rate = 0
+			err = users.AddViewedProblem(userID, index)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 		skill, err := skills.GetSkill(problem.SkillID)
 		if err != nil {
@@ -204,19 +208,13 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		unlockedSkills, err := skills.GetUnlockedSkills(userID)
 		data := struct {
-			Problem     problems.Problem
-			Submitted   int
-			Rate        float64
-			VerdictData VerdictData
-			Skill       skills.Skill
-			Locked      bool
-			IsAdmin     bool
-			IsLoggedIn  bool
+			Problem    problems.Problem
+			Skill      skills.Skill
+			Locked     bool
+			IsAdmin    bool
+			IsLoggedIn bool
 		}{
 			problem,
-			submitted,
-			rate,
-			verdictData,
 			skill,
 			!unlockedSkills[skill.ID],
 			dao.IsAdmin(r),
@@ -263,6 +261,9 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			Language:     lang,
 		}
 		submissionID, err := addSubmission(*s, userID)
+		if err != nil {
+			log.Println(err)
+		}
 		s.ID = submissionID
 		s.ProblemTitle = problem.Title
 		user, err := users.GetUserData(userID)
@@ -366,8 +367,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		var problem problems.Problem
 		var suggestProblem = false
-		for i := 0; i < len(unsolvedProblems); i++ {
-			problem, err = GetProblem(unsolvedProblems[i])
+		for _, unsolved := range unsolvedProblems {
+			problem, err = GetProblem(unsolved)
 			if err != nil {
 				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 				return

@@ -298,10 +298,18 @@ func (UvaJudge) judge(s *Submission) {
 			submissions := new(UvaSubmissions)
 			err = json.NewDecoder(resp.Body).Decode(submissions)
 			submissionID := submissions.Subs[0][0]
-			if usedSubmissionID(submissionID) { // if the submission is used already that means uhunt is not updated yet. try again.
+			used, err := usedSubmissionID(submissionID)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			if used { // if the submission is used already that means uhunt is not updated yet. try again.
 				continue
 			}
-			updateUvaSubmissionID(s.ID, submissionID)
+			err = updateUvaSubmissionID(s.ID, submissionID)
+			if err != nil {
+				log.Println(err)
+			}
 			UpdateVerdict(s, problems.Inqueue)
 			s.UvaSubmissionID = submissionID
 			uvaQueue <- s

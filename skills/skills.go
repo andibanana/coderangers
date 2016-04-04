@@ -52,11 +52,11 @@ func addSkill(skill Skill) error {
 
 	if skill.Prerequisites != nil {
 		var values string
-		for i := 0; i < len(skill.Prerequisites); i++ {
+		for i, prereq := range skill.Prerequisites {
 			if i == len(skill.Prerequisites)-1 {
-				values += " (\"" + skill.ID + "\", \"" + skill.Prerequisites[i] + "\");"
+				values += " (\"" + skill.ID + "\", \"" + prereq + "\");"
 			} else {
-				values += " (\"" + skill.ID + "\", \"" + skill.Prerequisites[i] + "\"),"
+				values += " (\"" + skill.ID + "\", \"" + prereq + "\"),"
 			}
 		}
 		_, err = db.Exec("INSERT INTO prerequisites (skill_id, prerequisite_id) VALUES " + values)
@@ -102,11 +102,11 @@ func editSkill(skill Skill, originalID string) error {
 
 	if skill.Prerequisites != nil {
 		var values string
-		for i := 0; i < len(skill.Prerequisites); i++ {
+		for i, prereq := range skill.Prerequisites {
 			if i == len(skill.Prerequisites)-1 {
-				values += ` ("` + skill.ID + `", "` + skill.Prerequisites[i] + `");`
+				values += ` ("` + skill.ID + `", "` + prereq + `");`
 			} else {
-				values += ` ("` + skill.ID + `", "` + skill.Prerequisites[i] + `"),`
+				values += ` ("` + skill.ID + `", "` + prereq + `"),`
 			}
 		}
 		_, err = db.Exec("DELETE FROM prerequisites WHERE skill_id = ?", skill.ID)
