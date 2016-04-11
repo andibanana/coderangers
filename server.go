@@ -1,14 +1,14 @@
 package main
 
 import (
-	"./dao"
-	"./emails"
-	"./judge"
-	"./leaderboards"
-	"./notifications"
-	"./skills"
-	"./templating"
-	"./users"
+	"coderangers/dao"
+	"coderangers/emails"
+	"coderangers/judge"
+	"coderangers/leaderboards"
+	"coderangers/notifications"
+	"coderangers/skills"
+	"coderangers/templating"
+	"coderangers/users"
 	"fmt"
 	"log"
 	"net/http"

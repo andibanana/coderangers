@@ -1,8 +1,8 @@
 package leaderboards
 
 import (
-	".././dao"
-	".././problems"
+	"coderangers/dao"
+	"coderangers/problems"
 )
 
 type User struct {

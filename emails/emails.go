@@ -1,11 +1,11 @@
 package emails
 
 import (
-	".././dao"
-	".././judge"
-	".././problems"
-	".././skills"
-	".././users"
+	"coderangers/dao"
+	"coderangers/judge"
+	"coderangers/problems"
+	"coderangers/skills"
+	"coderangers/users"
 	"fmt"
 	"log"
 	"math"

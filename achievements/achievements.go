@@ -1,9 +1,9 @@
 package achievements
 
 import (
-	".././dao"
-	".././problems"
-	".././skills"
+	"coderangers/dao"
+	"coderangers/problems"
+	"coderangers/skills"
 )
 
 type Achievement struct {

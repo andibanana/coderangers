@@ -1,12 +1,12 @@
 package judge
 
 import (
-	".././achievements"
-	".././helper"
-	".././notifications"
-	".././problems"
-	".././skills"
-	".././users"
+	"coderangers/achievements"
+	"coderangers/helper"
+	"coderangers/notifications"
+	"coderangers/problems"
+	"coderangers/skills"
+	"coderangers/users"
 	"bytes"
 	"encoding/json"
 	"io"

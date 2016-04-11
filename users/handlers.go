@@ -1,11 +1,11 @@
 package users
 
 import (
-	".././achievements"
-	".././cookies"
-	".././dao"
-	".././notifications"
-	".././templating"
+	"coderangers/achievements"
+	"coderangers/cookies"
+	"coderangers/dao"
+	"coderangers/notifications"
+	"coderangers/templating"
 	"encoding/json"
 	"log"
 	"net/http"

@@ -1,8 +1,8 @@
 package notifications
 
 import (
-	".././cookies"
-	".././templating"
+	"coderangers/cookies"
+	"coderangers/templating"
 	"fmt"
 	"net/http"
 	// "time"

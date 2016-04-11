@@ -1,10 +1,10 @@
 package skills
 
 import (
-	".././cookies"
-	".././dao"
-	".././problems"
-	".././templating"
+	"coderangers/cookies"
+	"coderangers/dao"
+	"coderangers/problems"
+	"coderangers/templating"
 	"log"
 	"net/http"
 	"strconv"

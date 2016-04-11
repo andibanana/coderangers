@@ -1,9 +1,9 @@
 package leaderboards
 
 import (
-	".././cookies"
-	".././dao"
-	".././templating"
+	"coderangers/cookies"
+	"coderangers/dao"
+	"coderangers/templating"
 	"net/http"
 )
 

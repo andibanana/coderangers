@@ -1,13 +1,13 @@
 package judge
 
 import (
-	".././cookies"
-	".././dao"
-	".././notifications"
-	".././problems"
-	".././skills"
-	".././templating"
-	".././users"
+	"coderangers/cookies"
+	"coderangers/dao"
+	"coderangers/notifications"
+	"coderangers/problems"
+	"coderangers/skills"
+	"coderangers/templating"
+	"coderangers/users"
 	"encoding/json"
 	"io/ioutil"
 	"log"

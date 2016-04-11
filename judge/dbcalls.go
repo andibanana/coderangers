@@ -1,10 +1,10 @@
 package judge
 
 import (
-	".././dao"
-	".././problems"
-	".././skills"
-	".././users"
+	"coderangers/dao"
+	"coderangers/problems"
+	"coderangers/skills"
+	"coderangers/users"
 	"errors"
 	"fmt"
 	"time"

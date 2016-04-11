@@ -1,8 +1,8 @@
 package users
 
 import (
-	".././dao"
-	".././problems"
+	"coderangers/dao"
+	"coderangers/problems"
 )
 
 const (

@@ -1,6 +1,6 @@
 package judge
 
-import ".././problems"
+import "coderangers/problems"
 
 func AddSamples() (err error) {
 	p := problems.Problem{

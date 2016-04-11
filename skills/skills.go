@@ -1,8 +1,8 @@
 package skills
 
 import (
-	".././dao"
-	".././problems"
+	"coderangers/dao"
+	"coderangers/problems"
 	"errors"
 )
 

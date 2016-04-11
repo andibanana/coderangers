@@ -1,7 +1,7 @@
 package users
 
 import (
-	".././dao"
+	"coderangers/dao"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
