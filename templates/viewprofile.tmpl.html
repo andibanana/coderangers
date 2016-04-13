@@ -12,70 +12,75 @@
 
 {{end}}
 {{define "content"}}
-<div class="containerContent">
+<div class="containerContent flexHack">
   <h1>Personal Record</h1>
-  <br>
+  <hr>
+    <br>
   <div class="containerProfileInfo">
-    <div class="profileInfo1">
-  
-      <h2 class="noMargin">{{.UserData.Username}}</h2>
-      <h4 class="noMargin">ID: PDR-42095K</h4>
-      <h4 class="noMargin">F/N: 452-32B9</h4>
-      <img class="rankImageLarge" src="/images/rank icons/{{xpToLevel .UserData.Experience}}.png">
+    <div class="profileInfoParent">
+      <div class="profileInfo1">
+    
+        <h2 class="noMargin">{{.UserData.Username}}</h2>
+        <h4 class="noMargin">ID: PDR-42095K</h4>
+        <h4 class="noMargin">F/N: 452-32B9</h4>
+        <img class="rankImageLarge" src="/images/rank icons/{{xpToLevel .UserData.Experience}}.png">
 
-      <h3 class="noMargin">Level: {{xpToLevel .UserData.Experience}}</h3>
-      <div class="containerProgressFlexible">
-            <div id="containerProgress" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{mod .UserData.Experience 30}}/30 XP 
-            </div></div>
+        <h3 class="noMargin">Level: {{xpToLevel .UserData.Experience}}</h3>
+        <div class="containerProgressFlexible">
+              <div id="containerProgress" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{mod .UserData.Experience 30}}/30 XP 
+              </div></div>
+        </div>
+
+        <table class="hiddenTable">
+          <tr>
+            <td></td>
+            <td align="right"></td>
+          </tr>
+          <tr>
+            <td>Experience</td>
+            <td align="right">{{.UserData.Experience}}</td>
+          </tr>
+          <tr>
+            <td>Problems Solved</td>
+            <td align="right">{{.UserData.Accepted}}</td>
+          </tr>
+          <tr>
+            <td>Problems Attempted</td>
+            <td align="right">{{.UserData.Attempted}}</td>
+          </tr>
+          <tr>
+            <td>Submitted Solutions</td>
+            <td align="right">{{.UserData.Submitted}}</td>
+          </tr>
+        </table>
+
       </div>
 
-      <table class="hiddenTable">
-        <tr>
-          <td></td>
-          <td align="right"></td>
-        </tr>
-        <tr>
-          <td>Experience</td>
-          <td align="right">{{.UserData.Experience}}</td>
-        </tr>
-        <tr>
-          <td>Problems Solved</td>
-          <td align="right">{{.UserData.Accepted}}</td>
-        </tr>
-        <tr>
-          <td>Problems Attempted</td>
-          <td align="right">{{.UserData.Attempted}}</td>
-        </tr>
-        <tr>
-          <td>Submitted Solutions</td>
-          <td align="right">{{.UserData.Submitted}}</td>
-        </tr>
-      </table>
 
-    </div>
+      </div>
 
+      <div class="profileInfo2">
+      <h1 class="noMargin">Skills Learned/Mastered</h1>
 
-    </div>
+        <div class="containerAchievements">
+              {{if .Achievements}}
+                {{range .Achievements}}
+                <div class="achievementItem">
+                  <div>
+                    <img src="/images/achievements/{{.Image}}" class="achievementImage"><br>
+                    {{.Title}}
+                  </div>
+                </div>
+                {{end}}
+              {{else}}
+                <h2>None... For now...</h2>
+              {{end}}
+        </div>
+
+  </div>
+</div>
 
   </div>
 
-  <div class="profileInfo2">
-    <h1>Skills Learned/Mastered</h1>
-
-      <div class="containerAchievements">
-            {{if .Achievements}}
-              {{range .Achievements}}
-              <div class="achievementItem">
-                <div>
-                  <img src="/images/achievements/{{.Image}}" class="achievementImage"><br>
-                  {{.Title}}
-                </div>
-              </div>
-              {{end}}
-            {{else}}
-              <h2>None... For now...</h2>
-            {{end}}
-      </div>
-
-</div>
+  
 {{end}}

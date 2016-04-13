@@ -245,6 +245,10 @@ a:hover{
 	width: 35px;
 }
 
+.difficultyImageSmall2{
+	width: 35px;
+}
+
 .difficultyImageLarge{
 	width: 50px;
 	margin-bottom: 5px;
@@ -359,7 +363,7 @@ a:hover{
 	color: #333333;
 	display: flex;
 	flex-direction: column;
-	margin-top: 130px;
+	margin-top: 0px;
 
 }
 
@@ -398,7 +402,7 @@ a:hover{
 
 .containerProfileInfo{
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	align-items: flex-start;
 }
 
@@ -408,6 +412,11 @@ a:hover{
     height: 30px;
     background-color: #8FABB6;
     margin-bottom: 5px;
+}
+
+.profileInfoParent{
+	display: flex;
+	flex-direction: row;
 }
 
 .containerProgressM {
