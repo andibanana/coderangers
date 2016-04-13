@@ -82,8 +82,8 @@ kng hindi accepted check relatedproblem to suggest
           <br>
           <h4>Profile</h4>
 
-          <div class="XPNotif">
-            You have earned 5xp
+          <div class="XPNotif" id="XPNotif">
+            <!-- You have earned 5xp -->
           </div>
 
            <a href="/profile">
@@ -183,6 +183,18 @@ kng hindi accepted check relatedproblem to suggest
               document.getElementById("recommendationTitle").innerHTML = "";
               document.getElementById("recommendedProblemsContent").innerHTML = "";
 
+              if(data.RelatedProblems != null){
+                document.getElementById("recommendationTitle").innerHTML = "Stuck? Try this instead:";
+                document.getElementById("recommendedProblemsContent").innerHTML = 
+                "<h3><span id=\"problemName\"><a href=\"/view/" +
+                data.RelatedProblems[0].Index + "\">" + data.RelatedProblems[0].Title +
+                "</a></span><br></h3> \
+                Difficulty: " + data.RelatedProblems[0].Difficulty + "<br> \
+                Description: " + data.RelatedProblems[0].Description.substring(0,150) + "...";
+              }else{
+                document.getElementById("recommendedProblemsContent").innerHTML = "";
+              }
+
             }else{
               document.getElementById("achievementContent").innerHTML = "None";
               }
@@ -191,7 +203,7 @@ kng hindi accepted check relatedproblem to suggest
               document.getElementById("recommendedProblemsContent").innerHTML = "";
 
           }else{
-            if(data.NewAchievements != null){
+            if(data.RelatedProblems != null){
             document.getElementById("recommendationTitle").innerHTML = "Stuck? Try this instead:";
             document.getElementById("recommendedProblemsContent").innerHTML = 
             "<h3><span id=\"problemName\"><a href=\"/view/" +
@@ -205,6 +217,60 @@ kng hindi accepted check relatedproblem to suggest
 
             document.getElementById("achievementsTitle").innerHTML = "";
             document.getElementById("achievementContent").innerHTML = "";
+          }
+
+          if(data.FirstTime && data.Submission.Verdict == "accepted"){
+            document.getElementById("XPNotif").innerHTML = "You have earned " + data.Problem.Difficulty + " XP!";
+
+            document.getElementById("levelM").innerHTML = "Level: " + (Math.floor(data.User.Experience/30) + 1);
+            
+
+
+
+            
+
+            var width;
+            var xp = data.User.Experience - data.Problem.Difficulty;
+            var finalXP = data.User.Experience;
+
+            var inc = data.Problem.Difficulty/50;
+            var delay = 3;
+            var id, id2;
+
+            function delay(){
+
+            }
+            function frame(){
+              if(xp >= finalXP){
+                clearInterval(id)
+              }else{
+                document.getElementById("progressBarM").style.backgroundColor = "orange";
+
+                console.log(xp);
+                xp+=inc;
+                width = (xp % 30)/30*100;
+                document.getElementById("progressBarM").style.width = width +'%'
+                document.getElementById("progressBarTextSkillM").innerHTML = (Math.floor(xp) % 30) + "/30 XP";
+              }
+            }
+
+            id2 = setInterval(delay, 1000);
+            id = setInterval(frame, 10);
+
+
+
+            width = (data.User.Experience % 30) - data.Problem.Difficulty/30*100;
+
+
+
+
+
+            document.getElementById("rankImageM").src = "/images/rank icons/" + (Math.floor(data.User.Experience/30) + 1) + ".png";
+
+          }else if(!data.FirstTime && data.Submission.Verdict == "Accepted"){
+            document.getElementById("XPNotif").innerHTML = "No XP earned, you have already solved this problem before";
+          }else{
+            document.getElementById("XPNotif").innerHTML = "No XP earned";
           }
 
           document.getElementById("usernameM").innerHTML = data.User.Username;
@@ -252,7 +318,7 @@ kng hindi accepted check relatedproblem to suggest
           }
         }
 
-        var modal = document.getElementById("submissionReportModal");
+        /*var modal = document.getElementById("submissionReportModal");
 
           // Get the button that opens the modal
           var btn = document.getElementById("myBtn");
@@ -265,7 +331,7 @@ kng hindi accepted check relatedproblem to suggest
            }*/
 
           //modal.style.display = "block";
-          var modalOk = document.getElementsByClassName("modalOkayButton")[0];
+          /*var modalOk = document.getElementsByClassName("modalOkayButton")[0];
           modalOk.onclick = function() {
               modal.style.display = "none";
           }
@@ -279,7 +345,7 @@ kng hindi accepted check relatedproblem to suggest
               if (event.target == modal) {
                   modal.style.display = "none";
               }
-          }
+          }*/
 
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "/connect", true);
