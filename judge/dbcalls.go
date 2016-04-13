@@ -460,6 +460,45 @@ func GetProblem(index int) (problems.Problem, error) {
 	return problem, nil
 }
 
+func GetUserProblem(index, userID int) (problems.Problem, error) {
+	db, err := dao.Open()
+	var problem problems.Problem
+	if err != nil {
+		return problem, err
+	}
+	err = db.QueryRow(`SELECT problems.id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output, 
+                    IFNULL(input, ""), IFNULL(output, ""), uva_id, verdict IS NOT NULL
+                    FROM problems 
+                    LEFT JOIN inputoutput ON (problems.id = inputoutput.problem_id)
+                    LEFT JOIN (SELECT DISTINCT problem_id, user_id, verdict FROM submissions WHERE verdict = ? AND user_id = ?) AS submissions 
+                    ON (problems.id = submissions.problem_id)
+                    WHERE problems.id = ?;`, problems.Accepted, userID, index).Scan(&problem.Index, &problem.Title, &problem.Description,
+		&problem.Difficulty, &problem.SkillID, &problem.TimeLimit, &problem.MemoryLimit, &problem.SampleInput,
+		&problem.SampleOutput, &problem.Input, &problem.Output, &problem.UvaID, &problem.Solved)
+
+	if err != nil {
+		return problem, errors.New("No such problem")
+	}
+
+	rows, err := db.Query("SELECT tag FROM tags WHERE problem_id = ?", index)
+
+	if err != nil {
+		return problem, err
+	}
+	var tags []string
+	var tag string
+	for rows.Next() {
+		rows.Scan(&tag)
+		tags = append(tags, tag)
+	}
+	if len(tags) > 0 {
+		problem.Tags = tags
+	} else {
+		problem.Tags = nil
+	}
+	return problem, nil
+}
+
 func GetUnsolvedTriedProblems(userID int) (unsolvedProblems []int, err error) {
 	db, err := dao.Open()
 	if err != nil {
