@@ -63,6 +63,7 @@ func main() {
 
 	mux.HandleFunc("/", judge.HomeHandler)
 	mux.HandleFunc("/problems", judge.ProblemsHandler)
+	mux.HandleFunc("/random-problem", judge.RandomHandler)
 	mux.HandleFunc("/add-problem", judge.AddHandler)
 	mux.HandleFunc("/edit-problem/", judge.EditHandler)
 	mux.HandleFunc("/delete", judge.DeleteHandler)

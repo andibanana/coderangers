@@ -408,23 +408,25 @@ func GetUnsolvedTriedProblems(userID int) (unsolvedProblems []int, err error) {
 	return
 }
 
-func GetUnsolvedProblems(userID int) (unsolvedProblems []int, err error) {
+func GetUnsolvedProblems(userID int) (unsolvedProblems []problems.Problem, err error) {
 	db, err := dao.Open()
 	if err != nil {
 		return
 	}
 
-	rows, err := db.Query(`SELECT DISTINCT id FROM problems 
-                        WHERE id NOT IN(SELECT DISTINCT problem_id AS id 
-                        FROM submissions 
-                        WHERE user_id = ? AND verdict = ?);`,
+	rows, err := db.Query(`SELECT DISTINCT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output  FROM problems 
+                        WHERE id NOT IN 
+                          (SELECT DISTINCT problem_id AS id 
+                          FROM submissions 
+                          WHERE user_id = ? AND verdict = ?);`,
 		userID, problems.Accepted)
 	if err != nil {
 		return
 	}
 	for rows.Next() {
-		var problem int
-		err = rows.Scan(&problem)
+		var problem problems.Problem
+		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty,
+			&problem.SkillID, &problem.TimeLimit, &problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput)
 		if err != nil {
 			return
 		}
@@ -469,6 +471,26 @@ func getSubmissionsReceivedAndInqueue() (submissions []Submission, err error) {
 			return
 		}
 		submissions = append(submissions, submission)
+	}
+	return
+}
+
+func getUnsolvedUnlockedProblem(userID int) (unlockedUnsolvedProblems []problems.Problem, err error) {
+	unsolvedProblems, err := GetUnsolvedProblems(userID)
+	if err != nil {
+		return
+	}
+	unlockedSkills, err := skills.GetUnlockedSkills(userID)
+	if err != nil {
+		return
+	}
+	for _, unsolved := range unsolvedProblems {
+		if err != nil {
+			return
+		}
+		if unlockedSkills[unsolved.SkillID] {
+			unlockedUnsolvedProblems = append(unlockedUnsolvedProblems, unsolved)
+		}
 	}
 	return
 }
