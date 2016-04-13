@@ -190,17 +190,24 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		problem, err := GetProblem(index)
-		if err != nil {
-			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+		var problem problems.Problem
 		var userID int
 		if cookies.IsLoggedIn(r) {
 			userID, _ = cookies.GetUserID(r)
 			err = users.AddViewedProblem(userID, index)
 			if err != nil {
 				log.Println(err)
+			}
+			problem, err = GetUserProblem(index, userID)
+			if err != nil {
+				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+		} else {
+			problem, err = GetProblem(index)
+			if err != nil {
+				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+				return
 			}
 		}
 		skill, err := skills.GetSkill(problem.SkillID)
@@ -213,7 +220,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		code, err := getLastCodeInSubmission(userID, index)
+		code, language, err := getLastCodeInSubmission(userID, index)
 		if err != nil {
 			log.Println(err)
 		}
@@ -224,6 +231,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			IsAdmin    bool
 			IsLoggedIn bool
 			Code       string
+			Language   string
 		}{
 			problem,
 			skill,
@@ -231,6 +239,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			dao.IsAdmin(r),
 			cookies.IsLoggedIn(r),
 			code,
+			language,
 		}
 
 		templating.RenderPageWithBase(w, "viewproblem", data)

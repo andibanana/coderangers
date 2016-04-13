@@ -93,7 +93,7 @@ func SendEmailsToInactive() (err error) {
 				problem, err = judge.GetProblem(unsolvedProblems[0])
 				message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/view/` + fmt.Sprintf("%d", problem.Index) + `"><h2>` + problem.Title + `</h2></a>`
 				message += `You can try to solve this problem!<br>`
-				user, err = judge.GetUserWhoRecentlySolvedProblem(unsolvedProblems[0], userID)
+				user, err = judge.GetUserWhoRecentlySolvedProblem(userID, unsolvedProblems[0])
 				if err == nil && len(user.Username) != 0 {
 					message += `<a href="http://coderangers.pro/profile/` + fmt.Sprintf("%d", user.ID) + `">` + user.Username + `</a> recently solved this.<br>`
 				}

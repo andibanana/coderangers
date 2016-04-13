@@ -68,6 +68,9 @@ const (
 	UvaUserID   = "821610"
 )
 
+//Test darkmega12 705026
+//Running CodeRanger2 821610
+
 type UserSubmissions struct {
 	Submissions UvaSubmissions `json:"821610"`
 }
@@ -233,6 +236,10 @@ func sendNotification(s Submission, prob problems.Problem) {
 	var err error
 	if s.Verdict == problems.Accepted {
 		newAchievements, err = achievements.CheckNewAchievementsInSkill(s.UserID, s.ID, prob.SkillID)
+		if err != nil {
+			log.Println(err)
+		}
+		relatedProblems, err = getUnsolvedUnlockedProblem(s.UserID)
 		if err != nil {
 			log.Println(err)
 		}
