@@ -81,6 +81,11 @@ kng hindi accepted check relatedproblem to suggest
 
           <br>
           <h4>Profile</h4>
+
+          <div class="XPNotif">
+            You have earned 5xp
+          </div>
+
            <a href="/profile">
             <div class="containerProfileBannerM">
                 <img id="rankImageM" src="/images/rank icons/1.png" class="rankImage2">
@@ -98,6 +103,15 @@ kng hindi accepted check relatedproblem to suggest
             </div>
          </a>
 
+         <div class="recommendedProblems" id="recommendedProblems">
+            <h4 id="recommendationTitle"><!-- Stuck? Maybe you could try this instead: --></h4>
+            <div id="recommendedProblemsContent">
+              <h3><span id="problemName"><a href="/view/1">Best Sharpshooter Class Build</a></span><br></h3>
+                Difficulty: 5<br>
+                Description: Lorem ipsuisdfsaf dsfas dfsaf sg fhdha  afgasdfsadf fdsafsdf...
+            </div>
+          </div>
+
           <div class="achievements" id="achievements">
             <h4 id="achievementsTitle">Achievements Unlocked:</h4>
             <div id="achievementContent" style="display:flex;">
@@ -107,15 +121,6 @@ kng hindi accepted check relatedproblem to suggest
               </div>
             </div>
           </div> 
-
-          <div class="recommendedProblems" id="recommendedProblems">
-            <h4 id="recommendationTitle">Stuck? Maybe you could try this instead:</h4>
-            <div id="recommendedProblemsContent">
-              <h3><span id="problemName"><a href="/view/1">Best Sharpshooter Class Build</a></span><br></h3>
-                Difficulty: 5<br>
-                Description: Lorem ipsuisdfsaf dsfas dfsaf sg fhdha  afgasdfsadf fdsafsdf...
-            </div>
-          </div>
 
         </div>
 
@@ -140,7 +145,7 @@ kng hindi accepted check relatedproblem to suggest
             location.reload();
             return;
           }
-          //alert(e.data);
+          alert(e.data);
 
           if(data.Submission.Verdict == "accepted"){
             document.getElementById("headerMessage").innerHTML = "Accepted";
@@ -152,7 +157,7 @@ kng hindi accepted check relatedproblem to suggest
           }
 
           // data.Problem.Title
-          document.getElementById("problemName").innerHTML = "<a href=/view/" + data.Problem.Index + "\">" + data.Problem.Title + "</a>";
+          document.getElementById("problemName").innerHTML = '<a href="/view/' + data.Problem.Index + '">' + data.Problem.Title + "</a>";
           document.getElementById("submissionId").innerHTML = "Submission ID: " + data.Submission.ID;
           document.getElementById("difficulty").innerHTML = "Difficulty: " + data.Problem.Difficulty;
           document.getElementById("verdict").innerHTML = "Verdict: " + data.Submission.Verdict;
@@ -192,7 +197,6 @@ kng hindi accepted check relatedproblem to suggest
                 Difficulty: " + data.RelatedProblems[0].Difficulty + "<br> \
                 Description: " + data.RelatedProblems[0].Description.substring(0,150) + "...";
               }else{
-                document.getElementById("recommendationTitle").innerHTML = "No similar problems to recommend";
                 document.getElementById("recommendedProblemsContent").innerHTML = "";
               }
 
