@@ -242,7 +242,7 @@ func GetSubmission(id int) (submission Submission, err error) {
 	if err != nil {
 		return
 	}
-	err = db.QueryRow(`SELECT submissions.id, problem_id, username, verdict, user_account.id, uva_submission_id, runtime, language 
+	err = db.QueryRow(`SELECT submissions.id, problem_id, username, verdict, user_account.id, IFNULL(uva_submission_id, 0), runtime, language 
               FROM submissions, user_account 
               WHERE user_account.id = submissions.user_id and submissions.id = ?`, id).Scan(&submission.ID, &submission.ProblemIndex,
 		&submission.Username, &submission.Verdict, &submission.UserID, &submission.UvaSubmissionID, &submission.Runtime, &submission.Language)

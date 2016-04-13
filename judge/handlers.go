@@ -214,7 +214,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		code, err := getLastCodeInSubmission(userID, index)
-		if err == nil {
+		if err != nil {
 			log.Println(err)
 		}
 		data := struct {

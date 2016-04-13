@@ -4,8 +4,9 @@ import (
 	"coderangers/cookies"
 	"coderangers/templating"
 	"fmt"
+	"log"
 	"net/http"
-	// "time"
+	"strconv"
 )
 
 var handler *ConnsHandler
@@ -125,4 +126,22 @@ func SendMessageTo(userID int, stringMsg string, url string) {
 	message.To = userID
 	message.URL = url
 	handler.broadcasts <- message
+}
+
+func ViewedHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		index, err := strconv.Atoi(r.FormValue("submission_id"))
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		err = SetViewedNotification(index)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
 }

@@ -256,3 +256,23 @@ func CreateDB() error {
 
 	return err
 }
+
+func AddTables() (err error) {
+	db, err := Open()
+
+	_, err = db.Exec(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      submission_id INTEGER,
+      user_id INTEGER,
+      viewed boolean,
+      
+      FOREIGN KEY(submission_id) REFERENCES submissions(id),
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    )
+  `)
+	if err != nil {
+		return err
+	}
+
+	return
+}
