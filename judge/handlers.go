@@ -231,7 +231,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			IsAdmin    bool
 			IsLoggedIn bool
 			Code       string
-      Language   string
+			Language   string
 		}{
 			problem,
 			skill,
@@ -239,7 +239,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			dao.IsAdmin(r),
 			cookies.IsLoggedIn(r),
 			code,
-      language,
+			language,
 		}
 
 		templating.RenderPageWithBase(w, "viewproblem", data)
