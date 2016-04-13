@@ -45,4 +45,19 @@
 		<input type="submit" class="orangeBtn" {{if .Locked}} disabled {{end}}>
 		</form>
     </div>
+    
+    <script src="/js/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="/js/codemirror/lib/codemirror.css">
+    <script src="/js/codemirror/mode/clike/clike.js"></script>
+    <script src="/js/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="/js/codemirror/addon/edit/closebrackets.js"></script>
+    <script>
+      var editor = CodeMirror.fromTextArea(document.getElementsByName("code")[0], {
+        lineNumbers: true,
+        matchBrackets: true,
+        mode: "text/x-java",
+        matchBrackets: true,
+        autoCloseBrackets: true,
+      });
+    </script>
 {{end}}
