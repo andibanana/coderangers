@@ -320,6 +320,41 @@ func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func MySubmissionsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		index, err := strconv.Atoi(r.URL.Path[len("/my-submissions/"):])
+		if err != nil {
+			index = 0
+		}
+		if !cookies.IsLoggedIn(r) {
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		}
+		userID, _ := cookies.GetUserID(r)
+		submissions, count, err := getUserSubmissions(userID, Limit, index*Limit)
+		if err != nil {
+			log.Print(err)
+		}
+		data := struct {
+			Submissions []Submission
+			IsLoggedIn  bool
+			IsAdmin     bool
+			Max         int
+			Index       int
+		}{
+			submissions,
+			cookies.IsLoggedIn(r),
+			dao.IsAdmin(r),
+			(int(math.Ceil(float64(count) / Limit))),
+			index,
+		}
+		templating.RenderPageWithBase(w, "my-submissions", data)
+	default:
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
+	}
+}
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":

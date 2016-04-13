@@ -5,7 +5,6 @@
     <div class="containerContent">
 
 		<h1>{{.Problem.Title}}</h1>
-<!-- <<<<<<< HEAD -->
 
 		<div class="infoHeaderLarge">
           <div class="problemInfoElementLarge">
@@ -20,24 +19,6 @@
             <!-- <a href="/skill/{{.Problem.SkillID}}"> --><img src="/images/{{if .Problem.Solved}}solved{{else}}unsolved{{end}}.png" class="difficultyImageLarge" title="{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}"><!-- </a> --><span><strong>{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}</strong></span>
           </div>
       	</div>
-
-		<!-- <p>Skill: {{.Skill.Title}}</p>
-		<p>Difficulty: {{.Problem.Difficulty}}</p> -->
-<!-- =======
-		<p>Skill: {{.Skill.Title}} <img style="vertical-align:middle;max-width:30px;" src="/images/skill icons/{{.Skill.ID}}.png"></p>
-		<p>Difficulty: {{.Problem.Difficulty}}</p>
->>>>>>> 46582cb6f4d559b1770d5e776c060f92c26928bf -->
-		
-<!-- 		<h3>Submitted: {{.Submitted}}</h3>
-		<h3>Accepted: {{.VerdictData.Accepted}}</h3>
-		<h3>Rate: {{.Rate}}%</h3> -->
-
-		<!-- <h3>Chart Data</h3>
-		<h4>Accepted: {{.VerdictData.Accepted}}</h4>
-		<h4>Wrong Answer: {{.VerdictData.WrongAnswer}}</h4>
-		<h4>Compile Error: {{.VerdictData.CompileError}}</h4>
-		<h4>Runtime Error: {{.VerdictData.RuntimeError}}</h4>
-		<h4>Time Limit Exceeded: {{.VerdictData.TimeLimitExceeded}}</h4> -->
 
     {{if eq .Problem.UvaID "" }}
 		<p style="width:800px">{{.Problem.Description}}</p>
