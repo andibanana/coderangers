@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const Limit = 25
@@ -280,6 +281,7 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			Directory:    d,
 			Verdict:      problems.Received,
 			Language:     lang,
+			Timestamp:    time.Now(),
 		}
 		submissionID, err := addSubmission(*s, userID)
 		if err != nil {
