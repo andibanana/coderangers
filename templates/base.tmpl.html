@@ -101,7 +101,7 @@ kng hindi accepted check relatedproblem to suggest
               </div>
               
             </div>
-         </a>
+         </a><br>
 
          <div class="recommendedProblems" id="recommendedProblems">
             <h4 id="recommendationTitle"><!-- Stuck? Maybe you could try this instead: --></h4>
@@ -183,27 +183,13 @@ kng hindi accepted check relatedproblem to suggest
               document.getElementById("recommendationTitle").innerHTML = "";
               document.getElementById("recommendedProblemsContent").innerHTML = "";
 
-              if(data.RelatedProblems != null){
-                document.getElementById("recommendationTitle").innerHTML = "Stuck? Try this instead:";
-                document.getElementById("recommendedProblemsContent").innerHTML = 
-                "<h3><span id=\"problemName\"><a href=\"/view/" +
-                data.RelatedProblems[0].Index + "\">" + data.RelatedProblems[0].Title +
-                "</a></span><br></h3> \
-                Difficulty: " + data.RelatedProblems[0].Difficulty + "<br> \
-                Description: " + data.RelatedProblems[0].Description.substring(0,150) + "...";
-              }else{
-                document.getElementById("recommendedProblemsContent").innerHTML = "";
-              }
-
             }else{
-              document.getElementById("achievementContent").innerHTML = "None";
-              }
-
-              document.getElementById("recommendationTitle").innerHTML = "";
-              document.getElementById("recommendedProblemsContent").innerHTML = "";
+              document.getElementById("achievementsTitle").innerHTML = "";
+              document.getElementById("achievementContent").innerHTML = "";
+            }
 
           }else{
-            if(data.RelatedProblems != null){
+            /*if(data.RelatedProblems != null){
             document.getElementById("recommendationTitle").innerHTML = "Stuck? Try this instead:";
             document.getElementById("recommendedProblemsContent").innerHTML = 
             "<h3><span id=\"problemName\"><a href=\"/view/" +
@@ -213,22 +199,48 @@ kng hindi accepted check relatedproblem to suggest
                 Description: " + data.RelatedProblems[0].Description.substring(0,150) + "...";
               }else{
                 document.getElementById("recommendedProblemsContent").innerHTML = "";
-              }
+              }*/
 
             document.getElementById("achievementsTitle").innerHTML = "";
             document.getElementById("achievementContent").innerHTML = "";
           }
+
+          if(data.RelatedProblems != null){
+            console.log("hallu");
+
+            if(data.Submission.Verdict == "accepted"){
+              document.getElementById("recommendationTitle").innerHTML = "Try this problem next!";
+            }else{
+              document.getElementById("recommendationTitle").innerHTML = "Stuck? Try this instead:";
+            }
+            
+            if(data.RelatedProblems[0].Description == ""){
+              document.getElementById("recommendedProblemsContent").innerHTML = 
+              "<h3><span id=\"problemName\"><a href=\"/view/" +
+              data.RelatedProblems[0].Index + "\">" + data.RelatedProblems[0].Title +
+              "</a></span><br></h3> \
+              Difficulty: " + data.RelatedProblems[0].Difficulty + "<br> \
+              Description: " + "(Problem description in attached document)";
+            }else{
+              document.getElementById("recommendedProblemsContent").innerHTML = 
+              "<h3><span id=\"problemName\"><a href=\"/view/" +
+              data.RelatedProblems[0].Index + "\">" + data.RelatedProblems[0].Title +
+              "</a></span><br></h3> \
+              Difficulty: " + data.RelatedProblems[0].Difficulty + "<br> \
+              Description: " + data.RelatedProblems[0].Description.substring(0,150) + "...";
+            }
+            
+          }else{
+            document.getElementById("recommendedProblemsContent").innerHTML = "";
+            document.getElementById("recommendationTitle").innerHTML = "";
+          }
+
 
           if(data.FirstTime && data.Submission.Verdict == "accepted"){
             document.getElementById("XPNotif").innerHTML = "You have earned " + data.Problem.Difficulty + " XP!";
 
             document.getElementById("levelM").innerHTML = "Level: " + (Math.floor(data.User.Experience/30) + 1);
             
-
-
-
-            
-
             var width;
             var xp = data.User.Experience - data.Problem.Difficulty;
             var finalXP = data.User.Experience;
@@ -256,14 +268,7 @@ kng hindi accepted check relatedproblem to suggest
 
             id2 = setInterval(delay, 1000);
             id = setInterval(frame, 10);
-
-
-
             width = (data.User.Experience % 30) - data.Problem.Difficulty/30*100;
-
-
-
-
 
             document.getElementById("rankImageM").src = "/images/rank icons/" + (Math.floor(data.User.Experience/30) + 1) + ".png";
 
