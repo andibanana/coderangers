@@ -40,6 +40,7 @@ func main() {
 	log.SetOutput(f)
 	err = dao.CreateDB()
 	fmt.Println(err)
+	fmt.Println(dao.AddTables())
 
 	if err == nil {
 		_, err = users.Register("admin", "admin", "frzsk@yahoo.com", true)
@@ -81,6 +82,8 @@ func main() {
 	mux.HandleFunc("/leaderboards", leaderboards.LeaderboardsHandler)
 	mux.HandleFunc("/"+notifications.Notifications, notifications.InitHandler().ServeHTTP)
 	mux.HandleFunc("/"+notifications.Submissions, notifications.InitHandler().ServeHTTP)
+	mux.HandleFunc("/viewed-notification", notifications.ViewedHandler)
+
 	mux.HandleFunc("/profile", users.ViewProfileHandler)
 	mux.HandleFunc("/profile/", users.ViewUserProfileHandler)
 	mux.HandleFunc("/skill/", skills.SkillHandler)

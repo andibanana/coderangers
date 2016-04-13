@@ -133,6 +133,7 @@ kng hindi accepted check relatedproblem to suggest
       {{template "script" .}}
         var evtSource = new EventSource('/notifications');
         var eventList = document.getElementById('event-list');
+        var submissionID;
         evtSource.onmessage = function(e) {
           var newElement = document.createElement('li');
           var data = JSON.parse(e.data);
@@ -158,6 +159,8 @@ kng hindi accepted check relatedproblem to suggest
           document.getElementById("verdict").innerHTML = "Verdict: " + data.Submission.Verdict;
           document.getElementById("runtime").innerHTML = "Runtime: " + data.Submission.Runtime;
 
+          submissionID = data.Submission.ID;
+          
           if(data.Submission.Verdict == "accepted"){
             if(data.NewAchievements != null){
               document.getElementById("achievementsTitle").innerHTML = "Skills Learned/Mastered:";
@@ -233,6 +236,10 @@ kng hindi accepted check relatedproblem to suggest
           window.onclick = function(event) {
               if (event.target == modal) {
                   modal.style.display = "none";
+                  var xhttp = new XMLHttpRequest();
+                  xhttp.open("POST", "/viewed-notification", true);
+                  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                  xhttp.send("submission_id="+submissionID);
               }
           }
         }

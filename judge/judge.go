@@ -267,6 +267,10 @@ func sendNotification(s Submission, prob problems.Problem) {
 		log.Println(err)
 	} else {
 		notifications.SendMessageTo(s.UserID, string(message), notifications.Notifications)
+		err = notifications.AddNotification(s.ID)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
 
