@@ -248,6 +248,12 @@ func sendNotification(s Submission, prob problems.Problem) {
 		if err != nil {
 			log.Println(err)
 		}
+		if len(relatedProblems) == 0 {
+			relatedProblems, err = getUnsolvedUnlockedProblem(s.UserID)
+			if err != nil {
+				log.Println(err)
+			}
+		}
 	}
 	user, err := users.GetUserData(s.UserID)
 	if err != nil {
