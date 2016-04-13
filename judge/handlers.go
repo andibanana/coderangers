@@ -209,18 +209,28 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		unlockedSkills, err := skills.GetUnlockedSkills(userID)
+		if err != nil {
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		code, err := getLastCodeInSubmission(userID, index)
+		if err == nil {
+			log.Println(err)
+		}
 		data := struct {
 			Problem    problems.Problem
 			Skill      skills.Skill
 			Locked     bool
 			IsAdmin    bool
 			IsLoggedIn bool
+			Code       string
 		}{
 			problem,
 			skill,
 			!unlockedSkills[skill.ID],
 			dao.IsAdmin(r),
 			cookies.IsLoggedIn(r),
+			code,
 		}
 
 		templating.RenderPageWithBase(w, "viewproblem", data)

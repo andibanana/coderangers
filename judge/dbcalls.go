@@ -7,6 +7,8 @@ import (
 	"coderangers/users"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
 	"time"
 )
 
@@ -245,6 +247,40 @@ func GetSubmission(id int) (submission Submission, err error) {
               WHERE user_account.id = submissions.user_id and submissions.id = ?`, id).Scan(&submission.ID, &submission.ProblemIndex,
 		&submission.Username, &submission.Verdict, &submission.UserID, &submission.UvaSubmissionID, &submission.Runtime, &submission.Language)
 
+	return
+}
+
+func getLastSubmission(userID, problemID int) (submission Submission, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+	err = db.QueryRow(`SELECT id, problem_id, user_id, verdict, directory, language FROM submissions
+                  WHERE user_id = ? AND problem_id = ?
+                  ORDER BY timestamp DESC
+                  LIMIT 1;`, userID, problemID).Scan(&submission.ID, &submission.ProblemIndex, &submission.UserID,
+		&submission.Verdict, &submission.Directory, &submission.Language)
+
+	return
+}
+
+func getLastCodeInSubmission(userID, problemID int) (code string, err error) {
+	submission, err := getLastSubmission(userID, problemID)
+	if err != nil {
+		return
+	}
+	var language string
+	if submission.Language == Java {
+		language = "java"
+	} else {
+		language = "c"
+	}
+
+	bytes, err := ioutil.ReadFile(filepath.Join(submission.Directory, `Main.`+language))
+	if err != nil {
+		return
+	}
+	code = string(bytes)
 	return
 }
 
