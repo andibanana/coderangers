@@ -41,8 +41,8 @@
 		<form action="/submit/{{.Problem.Index}}" method="POST" {{if .Locked}} disabled {{end}}>
       {{if not (eq .Problem.UvaID "")}}
         <div>
-          <input type="radio" name="language" value="Java" required {{if eq .Language "java"}}checked{{end}}><label>Java</label>
-          <input type="radio" name="language" value="C" {{if eq .Language "c"}}checked{{end}}><label>C</label>
+          <input type="radio" name="language" value="Java" onclick="setEditorJava()" required {{if eq .Language "java"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>Java</label>
+          <input type="radio" name="language" value="C" onclick="setEditorC()" {{if eq .Language "c"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>C</label>
         </div>
       {{else}}
       <input type="hidden" name="language" value="Java">
@@ -66,5 +66,46 @@
         matchBrackets: true,
         autoCloseBrackets: true,
       });
+      var c = 
+      `#include <stdio.h>
+      
+int main() {
+    
+    return 0;
+}
+      `;
+      var java =
+      `import java.util.Scanner;
+
+public class Main {
+
+  public static void main(String[] args) {
+    Scanner in = new Scanner(System.in);
+  }
+}
+      `;
+      function setEditorJava() {
+        if (language == "java"){
+          editor.setValue(code);
+        } else {
+          editor.setValue(java);
+        }
+        editor.setOption("mode", "text/x-java");
+      }
+      function setEditorC() {
+        if (language == "c"){
+          editor.setValue(code);
+        } else {
+          editor.setValue(c);
+        }
+        editor.setOption("mode", "text/x-c");
+      }
+      var code;
+      {{if not (eq .Language "")}}
+        editor.setOption("mode", "text/x-{{.Language}}")
+        editor.setValue({{.Code}});
+        code = {{.Code}};
+        language = {{.Language}};
+      {{end}}
     </script>
 {{end}}
