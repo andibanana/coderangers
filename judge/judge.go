@@ -240,6 +240,10 @@ func sendNotification(s Submission, prob problems.Problem) {
 	if err != nil {
 		log.Println(err)
 	}
+	firstTime, err := firstTimeSolved(s.UserID, prob.Index)
+	if err != nil {
+		log.Println(err)
+	}
 	skill.NumberOfProblems = len(problemList)
 	data := struct {
 		Submission      Submission
@@ -248,6 +252,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 		Skill           skills.Skill
 		RelatedProblems []problems.Problem
 		NewAchievements []achievements.Achievement
+		FirstTime       bool
 	}{
 		s,
 		prob,
@@ -255,6 +260,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 		skill,
 		relatedProblems,
 		newAchievements,
+		firstTime,
 	}
 	message, err := json.Marshal(data)
 	if err != nil {

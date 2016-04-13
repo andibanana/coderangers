@@ -265,22 +265,26 @@ func usedSubmissionID(id int) (bool, error) {
 	}
 }
 
-func acceptedAlready(userID, problemID int) (bool, error) {
+func firstTimeSolved(userID, problemID int) (bool, error) {
 	db, err := dao.Open()
 	if err != nil {
 		return false, err
 	}
 
 	var count int
-	err = db.QueryRow("SELECT COUNT(*) FROM submissions, user_account "+
-		"WHERE user_account.id = submissions.user_id AND verdict = ?"+
-		"AND submissions.problem_id = ? AND user_id = ?", problems.Accepted, problemID, userID).Scan(&count)
+	err = db.QueryRow(`SELECT COUNT(*) FROM submissions 
+                    WHERE verdict = ? AND 
+                    submissions.problem_id = ? AND user_id = ?`, problems.Accepted, problemID, userID).Scan(&count)
 
-	if err != nil || count == 0 {
+	if err != nil {
 		return false, err
 	}
 
-	return true, err
+	if count == 1 {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func UpdateVerdictInDB(id int, verdict string) error {
