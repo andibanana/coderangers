@@ -264,12 +264,11 @@ func getLastSubmission(userID, problemID int) (submission Submission, err error)
 	return
 }
 
-func getLastCodeInSubmission(userID, problemID int) (code string, err error) {
+func getLastCodeInSubmission(userID, problemID int) (code string, language string, err error) {
 	submission, err := getLastSubmission(userID, problemID)
 	if err != nil {
 		return
 	}
-	var language string
 	if submission.Language == Java {
 		language = "java"
 	} else {

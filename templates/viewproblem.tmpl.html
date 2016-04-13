@@ -41,8 +41,8 @@
 		<form action="/submit/{{.Problem.Index}}" method="POST" {{if .Locked}} disabled {{end}}>
       {{if not (eq .Problem.UvaID "")}}
         <div>
-          <input type="radio" name="language" value="Java" required><label>Java</label>
-          <input type="radio" name="language" value="C"><label>C</label>
+          <input type="radio" name="language" value="Java" required {{if eq .Language "java"}}checked{{end}}><label>Java</label>
+          <input type="radio" name="language" value="C" {{if eq .Language "c"}}checked{{end}}><label>C</label>
         </div>
       {{else}}
       <input type="hidden" name="language" value="Java">
