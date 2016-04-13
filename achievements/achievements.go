@@ -10,9 +10,10 @@ type Achievement struct {
 	Title       string
 	Description string
 	Image       string
+	Link        string
 }
 
-func GetAchievements(userID int) (achievements []Achievement, err error) {
+func GetAchievements(userID int) (achievements []Achievement, unearned []Achievement, err error) {
 	db, err := dao.Open()
 	if err != nil {
 		return
@@ -42,18 +43,32 @@ func GetAchievements(userID int) (achievements []Achievement, err error) {
 		if err != nil {
 			return
 		}
-		if unlocked {
-			achievement.Image = "learned/" + id + ".png"
-			achievement.Title = "Learned skill " + title + " (" + id + ")"
-			achievement.Description = "Learned skill " + title + " (" + id + ")"
-			achievements = append(achievements, achievement)
-		}
+		achievement.Link = "/skill/" + id
 		if mastered {
 			achievement.Image = "mastered/" + id + ".png"
 			achievement.Title = "Mastered skill " + title + " (" + id + ")"
 			achievement.Description = "Mastered skill " + title + " (" + id + ")"
 			achievements = append(achievements, achievement)
+			continue
 		}
+		if unlocked {
+			achievement.Image = "learned/" + id + ".png"
+			achievement.Title = "Learned skill " + title + " (" + id + ")"
+			achievement.Description = "Learned skill " + title + " (" + id + ")"
+			achievements = append(achievements, achievement)
+
+			achievement.Image = "unearned/" + id + ".png"
+			achievement.Title = "Mastered skill " + title + " (" + id + ")"
+			achievement.Description = "Mastered skill " + title + " (" + id + ")"
+			unearned = append(unearned, achievement)
+			continue
+		}
+
+		achievement.Image = "learned/" + id + ".png"
+		achievement.Title = "Learned skill " + title + " (" + id + ")"
+		achievement.Description = "Learned skill " + title + " (" + id + ")"
+		unearned = append(unearned, achievement)
+
 	}
 	return
 
