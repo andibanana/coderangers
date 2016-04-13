@@ -15,14 +15,17 @@ func LeaderboardsHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		ID, _ := cookies.GetUserID(r)
 		data := struct {
 			Leaderboards []User
 			IsAdmin      bool
 			IsLoggedIn   bool
+			UserID       int
 		}{
 			users,
 			dao.IsAdmin(r),
 			cookies.IsLoggedIn(r),
+			ID,
 		}
 		templating.RenderPageWithBase(w, "leaderboards", data)
 	default:
