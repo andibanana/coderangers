@@ -92,6 +92,7 @@ func main() {
 	mux.HandleFunc("/skill-tree/", skills.SkillTreeHandler)
 	mux.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir("./styles"))))
 	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./images"))))
+	mux.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./js"))))
 	// http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts"))))
 
 	emails.SendEmailsEvery(24 * time.Hour)

@@ -241,6 +241,10 @@ a:hover{
 	margin-bottom: 5px;
 }
 
+.difficultyImageSmallNoMargin{
+	width: 35px;
+}
+
 .difficultyImageSmall2{
 	width: 35px;
 }
@@ -249,6 +253,12 @@ a:hover{
 	width: 50px;
 	margin-bottom: 5px;
 }
+
+.difficultyImageLargeNoMargin{
+	width: 50px;
+	margin-bottom: 0px;
+}
+
 .problemInfo{
 	display: flex;
 	flex-direction: column;
@@ -256,6 +266,16 @@ a:hover{
 	width: 100%;
 	float: right;
 	word-wrap: normal
+}
+
+.left{
+	flex-grow: 1;
+}
+
+.vProblemOtherInfo{
+	display: flex;
+	flex-direction: row;
+	align-self: flex-end;
 }
 
 .icons{
@@ -271,7 +291,6 @@ a:hover{
 	margin-top: 10px;
 	margin-right: 30px;
 	font-size: 12px;
-
 }
 
 .problemInfoElementLarge{
@@ -283,6 +302,30 @@ a:hover{
 	font-size: 15px;
 }
 
+.problemInfoElementLargeSmallMargin{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 10px;
+	margin-right: 10px;
+	font-size: 15px;
+	margin-bottom: 0px;
+}
+
+.problemInfoElement2{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	font-size: 12px;
+	margin-right: 10px;
+}
+
+.vProblemTitleHeader{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-right: 10px;
+}
 
 
 .infoHeader{
@@ -320,7 +363,7 @@ a:hover{
 	color: #333333;
 	display: flex;
 	flex-direction: column;
-	margin-top: 130px;
+	margin-top: 0px;
 
 }
 
@@ -359,7 +402,7 @@ a:hover{
 
 .containerProfileInfo{
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	align-items: flex-start;
 }
 
@@ -367,15 +410,20 @@ a:hover{
     position: relative;
     width: 500px;
     height: 30px;
-    background-color: #2599B6;
+    background-color: #8FABB6;
     margin-bottom: 5px;
+}
+
+.profileInfoParent{
+	display: flex;
+	flex-direction: row;
 }
 
 .containerProgressM {
     position: relative;
     width: 500px;
     height: 30px;
-    background-color: #2599B6;
+    background-color: #8FABB6;
     margin-bottom: 5px;
 }
 
@@ -383,7 +431,7 @@ a:hover{
     position: relative;
     width: 100%;
     height: 30px;
-    background-color: #2599B6;
+    background-color: #8FABB6;
     margin-bottom: 5px;
 }
 
@@ -426,11 +474,11 @@ a:hover{
 	margin-top: 40px;
 	flex-direction: row;
 	align-items: center;
-	width: 800px;
+	width: 640px;
 }
 
 .homePageWelcomeImage{
-	height: 180px;
+	height: 140px;
 	width: auto;
 }
 
@@ -479,6 +527,11 @@ a:hover{
 	margin: 0px;
 }
 
+.sProblemHome{
+	display:flex;
+	align-items: center;
+}
+
 .test{
 	align-self: flex-end;
 }
@@ -514,7 +567,7 @@ a:hover{
 	position: relative;
     width: 100%;
     height: 30px;
-    background-color: #2599B6;
+    background-color: #8FABB6;
     margin-bottom: 5px;
 }
 
@@ -533,7 +586,7 @@ a:hover{
     position: relative;
     width: 100%;
     height: 30px;
-    background-color: #2599B6;
+    background-color: #8FABB6;
     margin-bottom: 5px;
 }
 
@@ -896,6 +949,10 @@ td:nth-child(1){
 	width: 100%;
 }
 
+.currentUserLeaderboard{
+	background: red !important;
+}
+
 
 /* Add PT Sans FONT */
 /* cyrillic-ext */
@@ -930,4 +987,3 @@ td:nth-child(1){
   src: local('PT Sans'), local('PTSans-Regular'), url(http://fonts.gstatic.com/s/ptsans/v8/ATKpv8nLYAKUYexo8iqqrg.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
-

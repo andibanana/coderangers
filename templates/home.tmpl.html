@@ -29,7 +29,14 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
   <a href="/view/{{.Problem.Index}}" >
   <div class="containerProfileBanner">
     <div class="profileBannerInfo">
-      <h2 class="noMargin">{{.Problem.Title}}</h2>
+
+        <div class="sProblemHome">
+          <div class="problemInfoElement2">
+            <img src="/images/skill icons/{{.Problem.SkillID}}.png" class="difficultyImageSmall">
+          </div>
+          <h2 class="noMargin">{{.Problem.Title}}</h2>
+      </div>
+
       <div class="problemInfo">
                
       </div>
@@ -38,7 +45,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
       <div>{{.Problem.Description}}</div>
 
 
-      <div class="infoHeader">
+      <!-- <div class="infoHeader">
           <div class="problemInfoElement">
             <img src="/images/difficulty icons/{{.Problem.Difficulty}}.png" class="difficultyImageSmall"><span><strong>Difficulty</strong></span>
           </div>
@@ -50,7 +57,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
           <div class="problemInfoElement">
             <img src="/images/{{if .Problem.Solved}}solved{{else}}unsolved{{end}}.png" class="difficultyImageSmall"><span><strong>{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}</strong></span>
           </div>
-      </div>
+      </div> -->
 
       </div>  
   </div>
@@ -60,7 +67,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
   {{if .SuggestSkill}}
 
 
-  <h1>Skills/Skill Tree</h1>
+  <h1>Skills</h1>
   The more subject areas you people are familiar know the better chance we have at succeeding here
   <a href="/skill/{{.Skill.ID}}" >
   <div class="containerProfileBanner">
