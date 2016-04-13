@@ -5,7 +5,7 @@
 2. Set your `GOPATH` environment variable to an empty folder where you want 
    your Go code and libraries to be stored.
 
-3. Clone the CodRangers repo into the src folder of your `GOPATH`.
+3. Clone the CodeRangers repo into the src folder of your `GOPATH`.
      - `git clone https://github.com/andibanana/coderangers`
 
 4. Get the dependencies.
