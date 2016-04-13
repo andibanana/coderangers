@@ -22,59 +22,13 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
 
   </div>
 
-
-  <h1>Profile</h1>
-  See how well you are doing so far
-
-  <a href="/profile">
-    <div class="containerProfileBanner">
-    		<img src="/images/rank icons/{{xpToLevel .UserData.Experience}}.png" class="rankImage2">
-    	<div class="profileBannerInfo">
-    		<h2>{{.UserData.Username}}</h2>
-    		<h4>Level: {{xpToLevel .UserData.Experience}}</h4>
-
-    		<div class="containerProgress">
-            <div id="progressBar" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{mod .UserData.Experience 30}}/30 XP 
-            </div></div>
-          </div>
-
-    	</div>
-    	
-    </div>
-  </a>
-
-  {{if .SuggestSkill}}
-
-
-  <h1>Skills/Skill Tree</h1>
-  The more subject areas you people are familiar know the better chance we have at succeeding here
-  <a href="/skill/{{.Skill.ID}}" >
-  <div class="containerProfileBanner">
-  		<img src="/images/skill icons/{{.Skill.ID}}.png" class="rankImage">
-  	<div class="profileBannerInfo">
-  		<h2>{{.Skill.Title}}</h2>
-      <div class="containerProgress">
-          <div id="progressBarSkill" class="progressBar"><div id="progressBarText" class="progressBarText">{{.Skill.Solved}}/{{.Skill.NumberOfProblems}} Problems Solved
-          </div></div>
-      </div>
-  		<h4>{{.Skill.Description}}</h4>
-
-  		{{if .Skill.Learned}}Try to master this skill. Solve {{minus .Skill.NumberOfProblems .Skill.Solved}} more problems to master the skill.
-    	{{else}}Learn this skill. Solve {{minus .Skill.NumberOfProblemsToUnlock .Skill.Solved}} more problems to learn the skill.{{end}}
-
-  	</div>
-  	
-  </div>
-  </a>
-  {{end}} 
-  
   {{if .SuggestProblem}}
 
   <h1>Problem</h1>
   Command has requested this particular problem be prioritized
   <a href="/view/{{.Problem.Index}}" >
   <div class="containerProfileBanner">
-  	<div class="profileBannerInfo">
+    <div class="profileBannerInfo">
       <h2 class="noMargin">{{.Problem.Title}}</h2>
       <div class="problemInfo">
                
@@ -98,10 +52,58 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
           </div>
       </div>
 
-      </div> 	
+      </div>  
   </div>
   </a>
   {{end}} 
+
+  {{if .SuggestSkill}}
+
+
+  <h1>Skills/Skill Tree</h1>
+  The more subject areas you people are familiar know the better chance we have at succeeding here
+  <a href="/skill/{{.Skill.ID}}" >
+  <div class="containerProfileBanner">
+      <img src="/images/skill icons/{{.Skill.ID}}.png" class="rankImage">
+    <div class="profileBannerInfo">
+      <h2>{{.Skill.Title}}</h2>
+      <div class="containerProgress">
+          <div id="progressBarSkill" class="progressBar"><div id="progressBarText" class="progressBarText">{{.Skill.Solved}}/{{.Skill.NumberOfProblems}} Problems Solved
+          </div></div>
+      </div>
+      <h4>{{.Skill.Description}}</h4>
+
+      {{if .Skill.Learned}}Try to master this skill. Solve {{minus .Skill.NumberOfProblems .Skill.Solved}} more problems to master the skill.
+      {{else}}Learn this skill. Solve {{minus .Skill.NumberOfProblemsToUnlock .Skill.Solved}} more problems to learn the skill.{{end}}
+
+    </div>
+    
+  </div>
+  </a>
+  {{end}} 
+
+
+  <h1>Profile</h1>
+  See how well you are doing so far
+
+  <a href="/profile">
+    <div class="containerProfileBanner">
+    		<img src="/images/rank icons/{{xpToLevel .UserData.Experience}}.png" class="rankImage2">
+    	<div class="profileBannerInfo">
+    		<h2>{{.UserData.Username}}</h2>
+    		<h4>Level: {{xpToLevel .UserData.Experience}}</h4>
+
+    		<div class="containerProgress">
+            <div id="progressBar" class="progressBar"><div id="progressBarTextSkill" class="progressBarText">{{mod .UserData.Experience 30}}/30 XP 
+            </div></div>
+          </div>
+
+    	</div>
+    	
+    </div>
+  </a>
+  
+  
   
   <br><br>
 
