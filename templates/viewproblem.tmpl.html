@@ -4,20 +4,27 @@
 
     <div class="containerContent">
 
-		<h1>{{.Problem.Title}}</h1>
+      <div class="vProblemTitleHeader">
+        <div class="problemInfoElementLargeSmallMargin">
+            <!-- <a href="/skill/{{.Problem.SkillID}}"> --><img src="/images/{{if .Problem.Solved}}solved{{else}}unsolved{{end}}.png" class="difficultyImageSmallNoMargin" title="{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}"><!-- </a> -->
+        </div>
+        <h1 class="left">{{.Problem.Title}}</h1>
 
+        <div class="vProblemOtherInfo">
+          <div class="problemInfoElement">
+            <img src="/images/difficulty icons/{{.Problem.Difficulty}}.png" class="difficultyImageSmall"><span><strong>Difficulty</strong></span>
+          </div>
+
+          <div class="problemInfoElement">
+            <!-- <a href="/skill/{{.Problem.SkillID}}"> --><img src="/images/skill icons/{{.Problem.SkillID}}.png" class="difficultyImageSmall" title="{{.Skill.Title}}"><!-- </a> --><span><strong>Skill</strong></span>
+          </div>
+        </div>
+
+      </div>
+      <hr>
 		<div class="infoHeaderLarge">
-          <div class="problemInfoElementLarge">
-            <img src="/images/difficulty icons/{{.Problem.Difficulty}}.png" class="difficultyImageLarge"><span><strong>Difficulty</strong></span>
-          </div>
+          
 
-          <div class="problemInfoElementLarge">
-            <!-- <a href="/skill/{{.Problem.SkillID}}"> --><img src="/images/skill icons/{{.Problem.SkillID}}.png" class="difficultyImageLarge" title="{{.Skill.Title}}"><!-- </a> --><span><strong>Skill</strong></span>
-          </div>
-
-          <div class="problemInfoElementLarge">
-            <!-- <a href="/skill/{{.Problem.SkillID}}"> --><img src="/images/{{if .Problem.Solved}}solved{{else}}unsolved{{end}}.png" class="difficultyImageLarge" title="{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}"><!-- </a> --><span><strong>{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}</strong></span>
-          </div>
       	</div>
 
     {{if eq .Problem.UvaID "" }}
