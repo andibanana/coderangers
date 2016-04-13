@@ -213,6 +213,20 @@ func (UvaJudge) checkVerdict(s *Submission) {
 	}
 }
 
+func ResendNotification(submissionID int) {
+	sub, err := GetSubmission(submissionID)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	prob, err := GetProblem(sub.ProblemIndex)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	sendNotification(sub, prob)
+}
+
 func sendNotification(s Submission, prob problems.Problem) {
 	var relatedProblems []problems.Problem
 	var newAchievements []achievements.Achievement
@@ -267,7 +281,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 		log.Println(err)
 	} else {
 		notifications.SendMessageTo(s.UserID, string(message), notifications.Notifications)
-		err = notifications.AddNotification(s.ID)
+		err = notifications.AddNotification(s.ID, s.UserID)
 		if err != nil {
 			log.Println(err)
 		}

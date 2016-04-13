@@ -1,6 +1,7 @@
 package main
 
 import (
+	"coderangers/connections"
 	"coderangers/dao"
 	"coderangers/emails"
 	"coderangers/judge"
@@ -84,6 +85,7 @@ func main() {
 	mux.HandleFunc("/"+notifications.Submissions, notifications.InitHandler().ServeHTTP)
 	mux.HandleFunc("/viewed-notification", notifications.ViewedHandler)
 
+	mux.HandleFunc("/connect", connections.CheckHandler)
 	mux.HandleFunc("/profile", users.ViewProfileHandler)
 	mux.HandleFunc("/profile/", users.ViewUserProfileHandler)
 	mux.HandleFunc("/skill/", skills.SkillHandler)

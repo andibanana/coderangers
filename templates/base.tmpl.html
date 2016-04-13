@@ -230,6 +230,10 @@ kng hindi accepted check relatedproblem to suggest
           var modalOk = document.getElementsByClassName("modalOkayButton")[0];
           modalOk.onclick = function() {
               modal.style.display = "none";
+              var xhttp = new XMLHttpRequest();
+              xhttp.open("POST", "/viewed-notification", true);
+              xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+              xhttp.send("submission_id="+submissionID);
           }
 
           // When the user clicks anywhere outside of the modal, close it
@@ -273,7 +277,9 @@ kng hindi accepted check relatedproblem to suggest
               }
           }
 
-
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/connect", true);
+        xhttp.send();
       </script>
 </body>
 </html>

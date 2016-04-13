@@ -263,9 +263,11 @@ func AddTables() (err error) {
 	_, err = db.Exec(`
     CREATE TABLE IF NOT EXISTS notifications (
       submission_id INTEGER,
+      user_id INTEGER,
       viewed boolean,
       
-      FOREIGN KEY(submission_id) REFERENCES submissions(id)
+      FOREIGN KEY(submission_id) REFERENCES submissions(id),
+      FOREIGN KEY(user_id) REFERENCES users(id)
     )
   `)
 	if err != nil {
