@@ -203,6 +203,38 @@ func getSubmissions(limit, offset int) (submissions []Submission, count int, err
 	return
 }
 
+func getUserSubmissions(userID, limit, offset int) (submissions []Submission, count int, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+
+	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0), language 
+                        FROM problems, submissions, user_account
+                        WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id AND submissions.user_id = ? 
+                        ORDER BY timestamp DESC
+                        LIMIT ? OFFSET ?`, userID, limit, offset)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var submission Submission
+		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime, &submission.UvaSubmissionID, &submission.Language)
+		if err != nil {
+			return
+		}
+		submissions = append(submissions, submission)
+	}
+
+	err = db.QueryRow(`SELECT COUNT(*) 
+                        FROM problems, submissions, user_account
+                        WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id`).Scan(&count)
+	if err != nil {
+		return
+	}
+	return
+}
+
 func GetSubmission(id int) (submission Submission, err error) {
 	db, err := dao.Open()
 	if err != nil {
@@ -233,22 +265,26 @@ func usedSubmissionID(id int) (bool, error) {
 	}
 }
 
-func acceptedAlready(userID, problemID int) (bool, error) {
+func firstTimeSolved(userID, problemID int) (bool, error) {
 	db, err := dao.Open()
 	if err != nil {
 		return false, err
 	}
 
 	var count int
-	err = db.QueryRow("SELECT COUNT(*) FROM submissions, user_account "+
-		"WHERE user_account.id = submissions.user_id AND verdict = ?"+
-		"AND submissions.problem_id = ? AND user_id = ?", problems.Accepted, problemID, userID).Scan(&count)
+	err = db.QueryRow(`SELECT COUNT(*) FROM submissions 
+                    WHERE verdict = ? AND 
+                    submissions.problem_id = ? AND user_id = ?`, problems.Accepted, problemID, userID).Scan(&count)
 
-	if err != nil || count == 0 {
+	if err != nil {
 		return false, err
 	}
 
-	return true, err
+	if count == 1 {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func UpdateVerdictInDB(id int, verdict string) error {
@@ -408,23 +444,25 @@ func GetUnsolvedTriedProblems(userID int) (unsolvedProblems []int, err error) {
 	return
 }
 
-func GetUnsolvedProblems(userID int) (unsolvedProblems []int, err error) {
+func GetUnsolvedProblems(userID int) (unsolvedProblems []problems.Problem, err error) {
 	db, err := dao.Open()
 	if err != nil {
 		return
 	}
 
-	rows, err := db.Query(`SELECT DISTINCT id FROM problems 
-                        WHERE id NOT IN(SELECT DISTINCT problem_id AS id 
-                        FROM submissions 
-                        WHERE user_id = ? AND verdict = ?);`,
+	rows, err := db.Query(`SELECT DISTINCT id, title, description, difficulty, skill_id, time_limit, memory_limit, sample_input, sample_output  FROM problems 
+                        WHERE id NOT IN 
+                          (SELECT DISTINCT problem_id AS id 
+                          FROM submissions 
+                          WHERE user_id = ? AND verdict = ?);`,
 		userID, problems.Accepted)
 	if err != nil {
 		return
 	}
 	for rows.Next() {
-		var problem int
-		err = rows.Scan(&problem)
+		var problem problems.Problem
+		err = rows.Scan(&problem.Index, &problem.Title, &problem.Description, &problem.Difficulty,
+			&problem.SkillID, &problem.TimeLimit, &problem.MemoryLimit, &problem.SampleInput, &problem.SampleOutput)
 		if err != nil {
 			return
 		}
@@ -469,6 +507,26 @@ func getSubmissionsReceivedAndInqueue() (submissions []Submission, err error) {
 			return
 		}
 		submissions = append(submissions, submission)
+	}
+	return
+}
+
+func getUnsolvedUnlockedProblem(userID int) (unlockedUnsolvedProblems []problems.Problem, err error) {
+	unsolvedProblems, err := GetUnsolvedProblems(userID)
+	if err != nil {
+		return
+	}
+	unlockedSkills, err := skills.GetUnlockedSkills(userID)
+	if err != nil {
+		return
+	}
+	for _, unsolved := range unsolvedProblems {
+		if err != nil {
+			return
+		}
+		if unlockedSkills[unsolved.SkillID] {
+			unlockedUnsolvedProblems = append(unlockedUnsolvedProblems, unsolved)
+		}
 	}
 	return
 }

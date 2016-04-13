@@ -1,13 +1,13 @@
 package judge
 
 import (
+	"bytes"
 	"coderangers/achievements"
 	"coderangers/helper"
 	"coderangers/notifications"
 	"coderangers/problems"
 	"coderangers/skills"
 	"coderangers/users"
-	"bytes"
 	"encoding/json"
 	"io"
 	"log"
@@ -63,6 +63,11 @@ type UvaSubmissions struct {
 	Subs  [][]int `json:"subs"`
 }
 
+const (
+	UvaUsername = "CodeRanger2"
+	UvaUserID   = "821610"
+)
+
 type UserSubmissions struct {
 	Submissions UvaSubmissions `json:"821610"`
 }
@@ -72,11 +77,6 @@ var UvaNodeDirectory string
 const (
 	Java = "Java"
 	C    = "C"
-)
-
-const (
-	UvaUsername = "CodeRanger2"
-	UvaUserID   = "821610"
 )
 
 const (
@@ -138,7 +138,10 @@ func InitQueues() {
 	cmd.Dir = UvaNodeDirectory
 	cmd.Stdout = &stdout
 	stdin, _ = cmd.StdinPipe()
-	cmd.Start()
+	err := cmd.Start()
+	if err != nil {
+		log.Fatal("npm not found!")
+	}
 	io.WriteString(stdin, "add uva "+UvaUsername+" "+UvaUsername+"\n")
 	if strings.Contains(stdout.String(), "is not recognized as an internal or external command,") ||
 		strings.Contains(stdout.String(), "command not found") {
@@ -237,6 +240,10 @@ func sendNotification(s Submission, prob problems.Problem) {
 	if err != nil {
 		log.Println(err)
 	}
+	firstTime, err := firstTimeSolved(s.UserID, prob.Index)
+	if err != nil {
+		log.Println(err)
+	}
 	skill.NumberOfProblems = len(problemList)
 	data := struct {
 		Submission      Submission
@@ -245,6 +252,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 		Skill           skills.Skill
 		RelatedProblems []problems.Problem
 		NewAchievements []achievements.Achievement
+		FirstTime       bool
 	}{
 		s,
 		prob,
@@ -252,6 +260,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 		skill,
 		relatedProblems,
 		newAchievements,
+		firstTime,
 	}
 	message, err := json.Marshal(data)
 	if err != nil {

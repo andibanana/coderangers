@@ -9,9 +9,11 @@ import (
 	"coderangers/templating"
 	"coderangers/users"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"math"
+	"math/rand"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -318,6 +320,41 @@ func SubmissionsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func MySubmissionsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		index, err := strconv.Atoi(r.URL.Path[len("/my-submissions/"):])
+		if err != nil {
+			index = 0
+		}
+		if !cookies.IsLoggedIn(r) {
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		}
+		userID, _ := cookies.GetUserID(r)
+		submissions, count, err := getUserSubmissions(userID, Limit, index*Limit)
+		if err != nil {
+			log.Print(err)
+		}
+		data := struct {
+			Submissions []Submission
+			IsLoggedIn  bool
+			IsAdmin     bool
+			Max         int
+			Index       int
+		}{
+			submissions,
+			cookies.IsLoggedIn(r),
+			dao.IsAdmin(r),
+			(int(math.Ceil(float64(count) / Limit))),
+			index,
+		}
+		templating.RenderPageWithBase(w, "my-submissions", data)
+	default:
+		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
+	}
+}
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
@@ -360,23 +397,14 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		unsolvedProblems, err := GetUnsolvedProblems(userID)
-		if err != nil {
-			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+
+		suggestProblem := false
 		var problem problems.Problem
-		var suggestProblem = false
-		for _, unsolved := range unsolvedProblems {
-			problem, err = GetProblem(unsolved)
-			if err != nil {
-				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			if unlockedSkills[problem.SkillID] {
-				suggestProblem = true
-				break
-			}
+
+		unsolvedUnlockedProblems, err := getUnsolvedUnlockedProblem(userID)
+		if len(unsolvedUnlockedProblems) != 0 {
+			problem = unsolvedUnlockedProblems[rand.Intn(len(unsolvedUnlockedProblems))]
+			suggestProblem = true
 		}
 		data := struct {
 			IsLoggedIn     bool
@@ -398,5 +426,35 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		templating.RenderPageWithBase(w, "home", data)
 	default:
 		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
+	}
+}
+
+func RandomHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		if !cookies.IsLoggedIn(r) {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, "")
+			return
+		}
+		userID, _ := cookies.GetUserID(r)
+		unsolvedUnlockedProblems, err := getUnsolvedUnlockedProblem(userID)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, "")
+		}
+		if len(unsolvedUnlockedProblems) != 0 {
+			problem := unsolvedUnlockedProblems[rand.Intn(len(unsolvedUnlockedProblems))]
+			message, err := json.Marshal(problem)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprint(w, "")
+				return
+			}
+			fmt.Fprint(w, string(message))
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, "")
+		}
 	}
 }
