@@ -236,6 +236,10 @@ func sendNotification(s Submission, prob problems.Problem) {
 		if err != nil {
 			log.Println(err)
 		}
+		relatedProblems, err = getUnsolvedUnlockedProblem(s.UserID)
+		if err != nil {
+			log.Println(err)
+		}
 	} else {
 		relatedProblems, err = GetRelatedProblems(s.UserID, s.ProblemIndex)
 		if err != nil {
