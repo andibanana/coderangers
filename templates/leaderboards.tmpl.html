@@ -13,7 +13,7 @@
         <td>XP</td>
       </tr>
       {{ range  $index, $element := .Leaderboards }}
-      <tr>
+      <tr {{if eq $.UserID $element.ID}}class="currentUserLeaderboard"{{else}}{{end}}>
         <td>{{add $index 1}}</td>
         <td><img class="difficultyImageSmall2" src="/images/rank icons/{{xpToLevel $element.Experience}}.png" title="Level: {{xpToLevel $element.Experience}}"></td>
         <td><a href="/profile/{{.ID}}">{{$element.Username}}</a></td>
