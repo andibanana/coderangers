@@ -47,6 +47,7 @@ type Submission struct {
 	Runtime         float64
 	ProblemTitle    string
 	Language        string
+	Timestamp       time.Time
 }
 
 type VerdictData struct {

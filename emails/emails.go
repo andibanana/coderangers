@@ -2,6 +2,7 @@ package emails
 
 import (
 	"coderangers/dao"
+	"coderangers/helper"
 	"coderangers/judge"
 	"coderangers/problems"
 	"coderangers/skills"
@@ -40,13 +41,10 @@ func SendEmailsToInactive() (err error) {
 		if err != nil {
 			return
 		}
-		submittime, err = time.Parse("2006-01-02 15:04:05.999999999Z07:00", timestamp)
+		submittime, err = helper.ParseTime(timestamp)
 		if err != nil {
-			submittime, err = time.Parse("2006-01-02 15:04:05", timestamp)
-			if err != nil {
-				return
-			}
-			submittime.Add(8 * time.Hour)
+			log.Println(err)
+			return
 		}
 		duration := time.Since(submittime)
 		var days = int(math.Floor(duration.Hours() / 24))

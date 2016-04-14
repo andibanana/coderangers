@@ -2,6 +2,7 @@ package judge
 
 import (
 	"coderangers/dao"
+	"coderangers/helper"
 	"coderangers/problems"
 	"coderangers/skills"
 	"coderangers/users"
@@ -9,7 +10,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
-	"time"
 )
 
 func AddProblem(problem problems.Problem) (err error) {
@@ -158,7 +158,7 @@ func addSubmission(submission Submission, userID int) (int, error) {
 		return -1, errors.New("No such problem")
 	}
 	result, err := db.Exec("INSERT INTO submissions (problem_id, user_id, directory, verdict, timestamp, language) VALUES (?, ?, ?, ?, ?, ?)",
-		submission.ProblemIndex, userID, submission.Directory, submission.Verdict, time.Now(), submission.Language)
+		submission.ProblemIndex, userID, submission.Directory, submission.Verdict, submission.Timestamp, submission.Language)
 
 	if err != nil {
 		return -1, err
@@ -179,7 +179,7 @@ func getSubmissions(limit, offset int) (submissions []Submission, count int, err
 		return
 	}
 
-	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0), language 
+	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0), language, timestamp 
                         FROM problems, submissions, user_account
                         WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id
                         ORDER BY timestamp DESC
@@ -189,7 +189,13 @@ func getSubmissions(limit, offset int) (submissions []Submission, count int, err
 	}
 	for rows.Next() {
 		var submission Submission
-		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime, &submission.UvaSubmissionID, &submission.Language)
+		var timestamp string
+		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID,
+			&submission.Runtime, &submission.UvaSubmissionID, &submission.Language, &timestamp)
+		if err != nil {
+			return
+		}
+		submission.Timestamp, err = helper.ParseTime(timestamp)
 		if err != nil {
 			return
 		}
@@ -211,7 +217,7 @@ func getUserSubmissions(userID, limit, offset int) (submissions []Submission, co
 		return
 	}
 
-	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0), language 
+	rows, err := db.Query(`SELECT submissions.id, problem_id, title, username, verdict, user_account.id, IFNULL(runtime, 0), IFNULL(uva_submission_id, 0), language, timestamp 
                         FROM problems, submissions, user_account
                         WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id AND submissions.user_id = ? 
                         ORDER BY timestamp DESC
@@ -221,7 +227,13 @@ func getUserSubmissions(userID, limit, offset int) (submissions []Submission, co
 	}
 	for rows.Next() {
 		var submission Submission
-		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID, &submission.Runtime, &submission.UvaSubmissionID, &submission.Language)
+		var timestamp string
+		err = rows.Scan(&submission.ID, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &submission.Verdict, &submission.UserID,
+			&submission.Runtime, &submission.UvaSubmissionID, &submission.Language, &timestamp)
+		if err != nil {
+			return
+		}
+		submission.Timestamp, err = helper.ParseTime(timestamp)
 		if err != nil {
 			return
 		}
