@@ -74,40 +74,38 @@ kng hindi accepted check relatedproblem to suggest
 
         <div class="status">
           <h3><span id="problemName"><a href="/view/1">ADVENT Dark Events</a></span><br></h3>
-          <span id="submissionId">Submission ID: 10</span><br>
-          <span id="difficulty">Difficulty: 5</span><br>
-          <span id="runtime">Runtime: 21ms</span><br>
-          <span id="verdict">Verdict: Accepted</span><br>
-
+          <span id="submissionId"><!-- Submission ID: 10 --></span><br>
+          <span id="verdict"><!-- Runtime: 21ms --></span><br>
+          <hr>
           <br>
-          <h4>Profile</h4>
+          <h4 id="prof1">Profile</h4>
 
           <div class="XPNotif" id="XPNotif">
             <!-- You have earned 5xp -->
           </div>
 
            <a href="/profile">
-            <div class="containerProfileBannerM">
+            <div class="containerProfileBannerM" id="prof3">
                 <img id="rankImageM" src="/images/rank icons/1.png" class="rankImage2">
               <div class="profileBannerInfoM">
-                <h2 id="usernameM">JM</h2>
-                <h4 id="levelM">Level: 1</h4>
+                <h2 id="usernameM"><!-- JM --></h2>
+                <h4 id="levelM"><!-- Level: 1 --></h4>
 
                 <div class="containerProgressFlexible">
-                    <div id="progressBarM" class="progressBar"><div id="progressBarTextSkillM" class="progressBarText">22/30 XP 
+                    <div id="progressBarM" class="progressBar"><div id="progressBarTextSkillM" class="progressBarText"><!-- 22/30 XP  -->
                     </div></div>
                   </div>
 
               </div>
               
             </div>
-         </a><br>
+         </a><br id=prof4>
 
          <div class="recommendedProblems" id="recommendedProblems">
             <h4 id="recommendationTitle"><!-- Stuck? Maybe you could try this instead: --></h4>
             <div id="recommendedProblemsContent">
               <h3><span id="problemName"><a href="/view/1">Best Sharpshooter Class Build</a></span><br></h3>
-                Difficulty: 5<br>
+                <br>
                 Description: Lorem ipsuisdfsaf dsfas dfsaf sg fhdha  afgasdfsadf fdsafsdf...
             </div>
           </div>
@@ -160,9 +158,9 @@ kng hindi accepted check relatedproblem to suggest
           // data.Problem.Title
           document.getElementById("problemName").innerHTML = '<a href="/view/' + data.Problem.Index + '">' + data.Problem.Title + "</a>";
           document.getElementById("submissionId").innerHTML = "Submission ID: " + data.Submission.ID;
-          document.getElementById("difficulty").innerHTML = "Difficulty: " + data.Problem.Difficulty;
+          //document.getElementById("difficulty").innerHTML = "Difficulty: " + data.Problem.Difficulty;
           document.getElementById("verdict").innerHTML = "Verdict: " + data.Submission.Verdict;
-          document.getElementById("runtime").innerHTML = "Runtime: " + data.Submission.Runtime;
+          //document.getElementById("runtime").innerHTML = "Runtime: " + data.Submission.Runtime;
 
           submissionID = data.Submission.ID;
           
@@ -206,7 +204,6 @@ kng hindi accepted check relatedproblem to suggest
           }
 
           if(data.RelatedProblems != null){
-            console.log("hallu");
 
             if(data.Submission.Verdict == "accepted"){
               document.getElementById("recommendationTitle").innerHTML = "Try this problem next!";
@@ -218,15 +215,15 @@ kng hindi accepted check relatedproblem to suggest
               document.getElementById("recommendedProblemsContent").innerHTML = 
               "<h3><span id=\"problemName\"><a href=\"/view/" +
               data.RelatedProblems[0].Index + "\">" + data.RelatedProblems[0].Title +
-              "</a></span><br></h3> \
-              Difficulty: " + data.RelatedProblems[0].Difficulty + "<br> \
+              "</a></span><br></h3>"
+               + " \
               Description: " + "(Problem description in attached document)";
             }else{
               document.getElementById("recommendedProblemsContent").innerHTML = 
               "<h3><span id=\"problemName\"><a href=\"/view/" +
               data.RelatedProblems[0].Index + "\">" + data.RelatedProblems[0].Title +
-              "</a></span><br></h3> \
-              Difficulty: " + data.RelatedProblems[0].Difficulty + "<br> \
+              "</a></span><br></h3>"
+               + " \
               Description: " + data.RelatedProblems[0].Description.substring(0,150) + "...";
             }
             
@@ -237,6 +234,11 @@ kng hindi accepted check relatedproblem to suggest
 
 
           if(data.FirstTime && data.Submission.Verdict == "accepted"){
+            document.getElementById("prof1").style.display = "block";
+            document.getElementById("XPNotif").style.display = "block";
+            document.getElementById("prof3").style.display = "block";
+            document.getElementById("prof4").style.display = "block";
+
             document.getElementById("XPNotif").innerHTML = "You have earned " + data.Problem.Difficulty + " XP!";
 
             document.getElementById("levelM").innerHTML = "Level: " + (Math.floor(data.User.Experience/30) + 1);
@@ -266,23 +268,37 @@ kng hindi accepted check relatedproblem to suggest
               }
             }
 
+
+
             id2 = setInterval(delay, 1000);
             id = setInterval(frame, 10);
             width = (data.User.Experience % 30) - data.Problem.Difficulty/30*100;
 
             document.getElementById("rankImageM").src = "/images/rank icons/" + (Math.floor(data.User.Experience/30) + 1) + ".png";
 
-          }else if(!data.FirstTime && data.Submission.Verdict == "Accepted"){
-            document.getElementById("XPNotif").innerHTML = "No XP earned, you have already solved this problem before";
-          }else{
-            document.getElementById("XPNotif").innerHTML = "No XP earned";
-          }
-
           document.getElementById("usernameM").innerHTML = data.User.Username;
           document.getElementById("levelM").innerHTML = "Level: " + (Math.floor(data.User.Experience/30) + 1);
           document.getElementById("progressBarTextSkillM").innerHTML = (data.User.Experience % 30) + "/30 XP";
           document.getElementById("progressBarM").style.width = (data.User.Experience % 30)/30*100 +'%'
           document.getElementById("rankImageM").src = "/images/rank icons/" + (Math.floor(data.User.Experience/30) + 1) + ".png";
+
+          }else if(!data.FirstTime && data.Submission.Verdict == "Accepted"){
+            /*document.getElementById("XPNotif").innerHTML = "No XP earned, you have already solved this problem before";*/
+            document.getElementById("prof1").style.display = "none";
+            document.getElementById("XPNotif").style.display = "none";
+            document.getElementById("prof3").style.display = "none";
+            document.getElementById("prof4").style.display = "block";
+
+          }else{
+            document.getElementById("prof1").style.display = "none";
+            document.getElementById("XPNotif").style.display = "none";
+            document.getElementById("prof3").style.display = "none";
+            document.getElementById("prof4").style.display = "block";
+          }
+
+
+
+
 
           var modal = document.getElementById("submissionReportModal");
 
