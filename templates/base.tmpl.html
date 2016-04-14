@@ -123,7 +123,8 @@ kng hindi accepted check relatedproblem to suggest
         </div>
 
           <div class="modalFooter" id="modalFooter">
-            <button type="button" class="orangeBtn modalOkayButton">Okay</button>
+            <button type="button" class="orangeBtn modalOkayButton" id="modalOkBtn">Okay</button>
+            <button type="button" class="blueBtn modalOkayButton marginRightHack" id="modalTryBtn">Try Again</button>
           </div>
 
         <div id="recommendations"></div>
@@ -149,10 +150,12 @@ kng hindi accepted check relatedproblem to suggest
           if(data.Submission.Verdict == "accepted"){
             document.getElementById("headerMessage").innerHTML = "Accepted";
             document.getElementById("modalHeader").style.backgroundColor = "#66CC99";
+            document.getElementById("modalTryBtn").innerHTML = "Next Prob";
             }
           else{
             document.getElementById("headerMessage").innerHTML = "Rejected";
             document.getElementById("modalHeader").style.backgroundColor = "#CC3F3F";
+            document.getElementById("modalTryBtn").innerHTML = "Try Again";
           }
 
           // data.Problem.Title
@@ -318,9 +321,19 @@ kng hindi accepted check relatedproblem to suggest
               modal.style.display = "none";
           }
 
-          var modalOk = document.getElementsByClassName("modalOkayButton")[0];
+          var modalOk = document.getElementById("modalOkBtn");
           modalOk.onclick = function() {
               modal.style.display = "none";
+              var xhttp = new XMLHttpRequest();
+              xhttp.open("POST", "/viewed-notification", true);
+              xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+              xhttp.send("submission_id="+submissionID);
+          }
+
+          var modalTryAgain = document.getElementById("modalTryBtn");
+          modalTryAgain.onclick = function() {
+              modal.style.display = "none";
+              window.location.href = "/view/" + data.RelatedProblems[0].Index;
               var xhttp = new XMLHttpRequest();
               xhttp.open("POST", "/viewed-notification", true);
               xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -339,34 +352,7 @@ kng hindi accepted check relatedproblem to suggest
           }
         }
 
-        /*var modal = document.getElementById("submissionReportModal");
-
-          // Get the button that opens the modal
-          var btn = document.getElementById("myBtn");
-
-          // Get the <span> element that closes the modal
-          var span = document.getElementsByClassName("close")[0];
-
-          /*btn.onclick = function() {
-             modal.style.display = "block";
-           }*/
-
-          //modal.style.display = "block";
-          /*var modalOk = document.getElementsByClassName("modalOkayButton")[0];
-          modalOk.onclick = function() {
-              modal.style.display = "none";
-          }
-
-          span.onclick = function() {
-              modal.style.display = "none";
-          }
-
-          // When the user clicks anywhere outside of the modal, close it
-          window.onclick = function(event) {
-              if (event.target == modal) {
-                  modal.style.display = "none";
-              }
-          }*/
+        
 
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "/connect", true);

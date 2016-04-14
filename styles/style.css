@@ -638,6 +638,16 @@ a:hover{
 	margin-top:5px;
 }
 
+.blueBtn{
+	background: #2599B6;
+	color: #FFFFFF;
+	border: none;
+	height: 40px;
+	width: 125px;
+	font-size: 19px;
+	margin-top:5px;
+}
+
 .textBox{
 	height: 35px;
 	width: 75%;
@@ -950,7 +960,13 @@ td:nth-child(1){
 }
 
 .currentUserLeaderboard{
-	background: red !important;
+	background: #FFD8A1 !important;
+	font-weight: bold;
+}
+
+/*Hacks*/
+.marginRightHack{
+	margin-right: 10px;
 }
 
 
