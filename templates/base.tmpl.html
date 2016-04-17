@@ -251,17 +251,23 @@ kng hindi accepted check relatedproblem to suggest
             var finalXP = data.User.Experience;
 
             var inc = data.Problem.Difficulty/50;
-            var delay = 3;
+            var delayTime = 3;
             var id, id2;
 
+            document.getElementById("progressBarM").style.backgroundColor = "orange";
             function delay(){
-
+              delayTime -= 1;
+              if(delayTime <= 0){
+                clearInterval(id2)
+                id = setInterval(frame, 10);
+              }
+              
             }
             function frame(){
               if(xp >= finalXP){
                 clearInterval(id)
               }else{
-                document.getElementById("progressBarM").style.backgroundColor = "orange";
+                
 
                 console.log(xp);
                 xp+=inc;
@@ -271,10 +277,9 @@ kng hindi accepted check relatedproblem to suggest
               }
             }
 
-
-
-            id2 = setInterval(delay, 1000);
             id = setInterval(frame, 10);
+            //id2 = setInterval(delay, 1000);
+            
             width = (data.User.Experience % 30) - data.Problem.Difficulty/30*100;
 
             document.getElementById("rankImageM").src = "/images/rank icons/" + (Math.floor(data.User.Experience/30) + 1) + ".png";
