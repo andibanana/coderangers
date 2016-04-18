@@ -338,7 +338,12 @@ kng hindi accepted check relatedproblem to suggest
           var modalTryAgain = document.getElementById("modalTryBtn");
           modalTryAgain.onclick = function() {
               modal.style.display = "none";
-              window.location.href = "/view/" + data.RelatedProblems[0].Index;
+              if(data.Submission.Verdict == "accepted"){
+                window.location.href = "/view/" + data.RelatedProblems[0].Index;
+              }else{
+                window.location.href = "/view/" + data.Problem.Index;
+              }
+              
               var xhttp = new XMLHttpRequest();
               xhttp.open("POST", "/viewed-notification", true);
               xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
