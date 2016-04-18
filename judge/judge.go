@@ -9,7 +9,9 @@ import (
 	"coderangers/skills"
 	"coderangers/users"
 	"encoding/json"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os/exec"
@@ -125,7 +127,11 @@ func InitQueues() {
 			}
 
 			if p.UvaID == "" {
-				go codeRangerJudge.judge(s)
+				if s.Language == Java {
+					go codeRangerJudge.judge(s)
+				} else {
+					codeRangerJudge.judge(s)
+				}
 			} else {
 				uvaJudge.judge(s)
 			}
@@ -388,8 +394,11 @@ func (CodeRangerJudge) judge(s *Submission) {
 	t := time.Now()
 	output, err := s.run(p)
 	d := time.Now().Sub(t)
-	UpdateRuntime(s.ID, helper.Truncate(d.Seconds(), 3))
-
+	if s.Runtime != 0 {
+		UpdateRuntime(s.ID, s.Runtime)
+	} else {
+		UpdateRuntime(s.ID, helper.Truncate(d.Seconds(), 3))
+	}
 	if err != nil {
 		s.Verdict = err.Verdict
 		UpdateVerdict(s, s.Verdict)
@@ -429,11 +438,17 @@ func UpdateVerdict(s *Submission, verdict string) {
 
 func (s Submission) compile() *Error {
 	var stderr bytes.Buffer
-
-	cmd := exec.Command("javac", "Main.java")
-	cmd.Dir = s.Directory
-	cmd.Stderr = &stderr
-
+	var cmd *exec.Cmd
+	switch s.Language {
+	case Java:
+		cmd = exec.Command("javac", "Main.java")
+		cmd.Dir = s.Directory
+		cmd.Stderr = &stderr
+	case C:
+		cmd = exec.Command("gcc", "Main.c")
+		cmd.Dir = s.Directory
+		cmd.Stderr = &stderr
+	}
 	err := cmd.Run()
 	if err != nil {
 		// fmt.Println(stderr.String())
@@ -443,29 +458,95 @@ func (s Submission) compile() *Error {
 	return nil
 }
 
-func (s Submission) run(p problems.Problem) (string, *Error) {
+func (s *Submission) run(p problems.Problem) (string, *Error) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	cmd := exec.Command("java", "-Djava.security.manager", "Main") // "-Xmx20m"
-	cmd.Dir = s.Directory
-	cmd.Stdin = strings.NewReader(p.Input)
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	switch s.Language {
+	case Java:
+		cmd := exec.Command("java", "-Djava.security.manager", "Main") // "-Xmx20m"
+		cmd.Dir = s.Directory
+		cmd.Stdin = strings.NewReader(p.Input)
+		cmd.Stdout = &stdout
+		cmd.Stderr = &stderr
 
-	cmd.Start()
-	timeout := time.After(time.Duration(p.TimeLimit) * time.Second)
-	done := make(chan error)
-	go func() { done <- cmd.Wait() }()
-	select {
-	case <-timeout:
-		cmd.Process.Kill()
-		return "", &Error{problems.TimeLimitExceeded, ""}
-	case err := <-done:
-		if err != nil {
-			// fmt.Println(stderr.String())
-			return "", &Error{problems.RuntimeError, stderr.String()}
+		cmd.Start()
+		timeout := time.After(time.Duration(p.TimeLimit) * time.Second)
+		done := make(chan error)
+		go func() { done <- cmd.Wait() }()
+		select {
+		case <-timeout:
+			cmd.Process.Kill()
+			return "", &Error{problems.TimeLimitExceeded, ""}
+		case err := <-done:
+			if err != nil {
+				// fmt.Println(stderr.String())
+				return "", &Error{problems.RuntimeError, stderr.String()}
+			}
 		}
+	case C:
+		cmd := exec.Command("isolate", "--init")
+		cmd.Stdout = &stdout
+		err := cmd.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+		for stdout.String() == "" {
+
+		}
+		var dir = filepath.Join(strings.Replace(stdout.String(), "\n", "", -1), "box")
+		cmd = exec.Command("mv", filepath.Join(s.Directory, "a.out"), dir)
+
+		err = cmd.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+		cmd.Wait()
+		ioutil.WriteFile(filepath.Join(dir, "in.txt"), []byte(p.Input), 0600)
+		cmd = exec.Command("isolate", "--time="+fmt.Sprintf("%d", p.TimeLimit), "--mem=262144",
+			"--meta=meta.txt", "--stdin=in.txt", "--stdout=out.txt", "--run", "a.out")
+		stdout.Reset()
+		cmd.Dir = dir
+		cmd.Stdout = &stdout
+		cmd.Stderr = &stderr
+		err = cmd.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+		cmd.Wait()
+		bytes, err := ioutil.ReadFile(filepath.Join(dir, "meta.txt"))
+		if err != nil {
+			log.Println(err)
+		}
+		meta := string(bytes)
+		for _, elem := range strings.Split(meta, "\n") {
+			pair := strings.Split(elem, ":")
+			if pair[0] == "exitcode" && pair[1] != "0" {
+				return "", &Error{problems.RuntimeError, ""}
+			}
+			if pair[0] == "time-wall" {
+				s.Runtime, err = strconv.ParseFloat(pair[1], 64)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+		}
+		if strings.Contains(stdout.String(), "Time limit exceeded") || strings.Contains(stderr.String(), "Time limit exceeded") {
+			return "", &Error{problems.TimeLimitExceeded, ""}
+		}
+		bytes, err = ioutil.ReadFile(filepath.Join(dir, "out.txt"))
+		if err != nil {
+			log.Println(err)
+		}
+		out := string(bytes)
+		cmd = exec.Command("isolate", "--cleanup")
+		err = cmd.Start()
+		if err != nil {
+			log.Println(err)
+		}
+		cmd.Wait()
+		return out, nil
+
 	}
 
 	return stdout.String(), nil

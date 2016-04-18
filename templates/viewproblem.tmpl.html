@@ -37,15 +37,11 @@
 
 
 		<form action="/submit/{{.Problem.Index}}" method="POST" {{if .Locked}} disabled {{end}}>
-      {{if not (eq .Problem.UvaID "")}}
-        <div>
-          <input id="JavaButton" type="radio" name="language" value="Java" onchange="setEditorJava()" required {{if eq .Language "java"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>Java</label>
-          <input type="radio" name="language" value="C" onchange="setEditorC()" {{if eq .Language "c"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>C</label>
-        </div>
-      {{else}}
-      <input type="hidden" name="language" value="Java">
-      {{end}}
-      
+      <div>
+        <input id="JavaButton" type="radio" name="language" value="Java" onchange="setEditorJava()" required {{if eq .Language "java"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>Java</label>
+        <input type="radio" name="language" value="C" onchange="setEditorC()" {{if eq .Language "c"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>C</label>
+      </div>
+    
 		  <textarea name="code" class="codeBox" placeholder="{{if .Locked}}SKILL LOCKED - learn all requisite skills to solve this problem{{else}}[Place your code here]{{end}}" {{if .Locked}} disabled {{end}}>{{if .Locked}}SKILL LOCKED - learn all requisite skills to solve this problem{{else}}{{.Code}}{{end}}</textarea> <br>
 		<input type="submit" class="orangeBtn" {{if .Locked}} disabled {{end}}>
 		</form>
