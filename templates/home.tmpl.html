@@ -15,8 +15,20 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
 
   	<div class="homePageWelcomeText">
   		<h1>Welcome back, {{.UserData.Username}}!</h1>
-  		<div>Nodes that are grayed out in the skill tree are locked. You will need to learn all the connecting nodes above it in order to solve the problems there.</div>
+      {{if $.HasRecommend}}
+        <div>According to our sources, {{$.OtherUser.Username}} has recently finished the <a href="/view/{{.Unsolved}}">{{$.RecommendProblem.Title}}</a> problem. How about you?</div>
+      {{ else }}
+        <div>{{$.Message}}</div>
+      {{end}}
+      <!--
+        Possible messages for this place:
+        "Just like the old saying goes, coding a day keeps the doctor away. So keep Practicing!"
+        "Statistics says that coding everyday increases one's coding skills, 99.9% of the time"
 
+
+        "According to our sources, *insert name* has finished the *insert problem* problem. Have you?"
+        ""
+      -->
   	</div>
 
 

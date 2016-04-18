@@ -416,6 +416,32 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			problem = unsolvedUnlockedProblems[rand.Intn(len(unsolvedUnlockedProblems))]
 			suggestProblem = true
 		}
+
+		/* kiel added code */
+		hasRecommendedProblem := false
+
+		homeMessage := [2]string {
+				"Just like the old saying goes, coding a day keeps the doctor away. So keep Practicing!", 
+				"Statistics says that coding everyday increases one's coding skills, 99.9 percent of the time",
+			}
+		message := homeMessage[rand.Intn(len(homeMessage))]
+
+		unsolvedProblems, err := GetUnsolvedTriedProblems(userID)
+		if err != nil {
+				return
+			}
+		recommendProblem, err := GetProblem(unsolvedProblems[0])
+		if err != nil {
+				return
+			}
+		unsolvedproblem := unsolvedProblems[0]
+		user, err := GetUserWhoRecentlySolvedProblem(unsolvedProblems[0], userID)
+		if err != nil {
+			return
+		}
+		if len(unsolvedProblems) != 0 {
+			hasRecommendedProblem = true
+		}
 		data := struct {
 			IsLoggedIn     bool
 			IsAdmin        bool
@@ -424,6 +450,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			UserData       users.UserData
 			SuggestProblem bool
 			Problem        problems.Problem
+			HasRecommend   bool
+			RecommendProblem problems.Problem
+			Unsolved 	   int
+			OtherUser	   users.UserData
+			Message 	   string
+
 		}{
 			cookies.IsLoggedIn(r),
 			dao.IsAdmin(r),
@@ -432,6 +464,11 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			userData,
 			suggestProblem,
 			problem,
+			hasRecommendedProblem,
+			recommendProblem,
+			unsolvedproblem,
+			user,
+			message,
 		}
 		templating.RenderPageWithBase(w, "home", data)
 	default:
