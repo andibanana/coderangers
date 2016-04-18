@@ -87,24 +87,30 @@ func SkillTreeHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		for index, _ := range skillsData {
+		var recommended Skill
+		for index, skill := range skillsData {
 			probs, err := GetProblemsInSkill(skillsData[index].ID)
 			if err != nil {
 				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 			skillsData[index].NumberOfProblems = len(probs)
+			if unlockedSkills[index] && !skill.Learned {
+				recommended = *skill
+			}
 		}
 		data := struct {
 			UnlockedSkills map[string]bool
 			IsLoggedIn     bool
 			IsAdmin        bool
 			SkillsData     map[string]*Skill
+			Recommended    Skill
 		}{
 			unlockedSkills,
 			IsLoggedIn,
 			dao.IsAdmin(r),
 			skillsData,
+			recommended,
 		}
 		templating.RenderPageWithBase(w, "skill-tree", data)
 	}
