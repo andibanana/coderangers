@@ -59,7 +59,6 @@ func main() {
 	judge.DIR = filepath.Join(wd, "submissions")
 	os.Mkdir(judge.DIR, 0777)
 	judge.InitQueues()
-	fmt.Println("RESEND: ", judge.ResendReceivedAndCheckInqueue())
 
 	mux := http.NewServeMux()
 
@@ -96,6 +95,8 @@ func main() {
 	// http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts"))))
 
 	emails.SendEmailsEvery(24 * time.Hour)
+
+	fmt.Println("RESEND: ", judge.ResendReceivedAndCheckInqueue())
 
 	fmt.Println("serving")
 	log.Println("Start")
