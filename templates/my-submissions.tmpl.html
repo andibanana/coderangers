@@ -32,7 +32,7 @@
       cell2.innerHTML = data.Username;
       cell3.innerHTML = data.Verdict;
       cell4.innerHTML = data.Runtime;
-      cell5.innerHTML = data.Timestamp;
+      cell5.innerHTML = moment(data.Timestamp).fromNow();
     }
   }
 {{end}}
@@ -71,11 +71,18 @@
               <td><a href="/profile/{{.UserID}}">{{.Username}}</a></td>
               <td>{{.Verdict}}</td>
               <td>{{.Runtime}}</td>
-              <td>{{.Timestamp}}</td>
+              <td title={{.Timestamp}}>{{.Timestamp}}</td>
             </tr>
       		{{end}}
         </table>
 
 	</div>
-
+  <script src="/js/moment.min.js"></script>
+  <script>
+    var rows = document.getElementById("submissions").children[0].children;
+    for (var i = 1; i < rows.length; i++) {
+      var cell = rows[i].children[5];
+      cell.innerHTML = moment(cell.innerHTML).fromNow();
+    }
+  </script>
 {{end}}

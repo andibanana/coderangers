@@ -64,7 +64,7 @@ func GetAchievements(userID int) (achievements []Achievement, unearned []Achieve
 			continue
 		}
 
-		achievement.Image = "learned/" + id + ".png"
+		achievement.Image = "unearned/" + id + ".png"
 		achievement.Title = "Learned skill " + title + " (" + id + ")"
 		achievement.Description = "Learned skill " + title + " (" + id + ")"
 		unearned = append(unearned, achievement)

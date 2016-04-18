@@ -74,7 +74,6 @@
           <td>Delete</td>
           {{end}}
         </tr>
-
         {{range .ProblemList}}
           <tr class="{{if .Solved}}problemRowSolved{{else}}problemRowUnsolved{{end}}">
 <!--             <td>{{if $.IsLoggedIn}}{{.Solved}}{{end}}</td>
@@ -87,7 +86,11 @@
                 <td><a href="/edit/{{.Index}}">Edit Problem</a></td>
                 <td><form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> </td>
               {{end}}
-       
+          {{if eq $.Recommended.Index .Index}}
+            <td>       
+            recommended.
+            </td>    
+          {{end}}
           </tr>
         {{end}}
 

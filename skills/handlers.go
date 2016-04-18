@@ -28,9 +28,16 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var problemsInSkill []problems.Problem
 	var userID int
+	var recommended problems.Problem
 	if loggedIn {
 		userID, _ := cookies.GetUserID(r)
 		problemsInSkill, err = getProblemsInSkillForUser(skill, userID)
+		for _, element := range problemsInSkill {
+			if !element.Solved {
+				recommended = element
+				break
+			}
+		}
 	} else {
 		problemsInSkill, err = GetProblemsInSkill(skill)
 	}
@@ -49,12 +56,14 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		IsAdmin     bool
 		IsLoggedIn  bool
 		Locked      bool
+		Recommended problems.Problem
 	}{
 		problemsInSkill,
 		skills,
 		dao.IsAdmin(r),
 		loggedIn,
 		!unlockedSkills[skill],
+		recommended,
 	}
 	templating.RenderPageWithBase(w, "skill", data)
 }
