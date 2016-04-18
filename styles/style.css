@@ -174,6 +174,12 @@ a:hover{
 	padding-top: 10px;
 }
 
+.targeteer{
+	position: absolute;
+	left: 100px;
+	top: 100px;
+}
+
 .modalHeader{
 	background-color: #66CC99;
 	padding: 10px;
@@ -484,6 +490,12 @@ a:hover{
 .homePageWelcomeImage{
 	height: 140px;
 	width: auto;
+}
+
+.arrowProbs{
+	height: 90px;
+	width: auto;
+	display: none;
 }
 
 .homePageWelcomeText{

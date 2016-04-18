@@ -5,7 +5,53 @@
 
   document.getElementById("progressBar").style.width = {{.Skill.Solved}}/{{len .ProblemList}}*100 +'%';
 
+  function GetScreenCordinates(obj) {
+        var p = {};
+        p.x = obj.offsetLeft;
+        p.y = obj.offsetTop;
+        while (obj.offsetParent) {
+            p.x = p.x + obj.offsetParent.offsetLeft;
+            p.y = p.y + obj.offsetParent.offsetTop;
+            if (obj == document.getElementsByTagName("body")[0]) {
+                break;
+            }
+            else {
+                obj = obj.offsetParent;
+            }
+        }
+        return p;
+    }
 
+    var tgtCoords;
+
+    if(GetScreenCordinates(document.getElementById("tgt")) != null){
+      tgtCoords = GetScreenCordinates(document.getElementById("tgt"));
+      document.getElementById('arrow').style.left = '"' + tgtCoords.x + 'px"';
+      document.getElementById('arrow').style.top = '"' + tgtCoords.y + 'px"';
+      document.getElementById('arrow').style.display = "block";
+    }else{
+      document.getElementById('arrow').style.display = "none";
+    }
+
+    var xCD;
+    var yCD;
+
+    xCD = (tgtCoords.x + 10) + 'px';
+    yCD = (tgtCoords.y - 20) + 'px';
+
+    document.getElementById('arrow').style.left = xCD;
+    document.getElementById('arrow').style.top = yCD;
+
+    document.getElementById("containerSKI").style.left = (tgtCoords.x + 150) + "px";
+    document.getElementById("containerSKI").style.top = (tgtCoords.y - 10) + "px";
+
+    function showTip(x){
+    document.getElementById("containerSKI").style.display = "block";
+    }
+
+    function hideTip(x){
+    document.getElementById("containerSKI").style.display = "none";
+    }
 
 {{end}}
 {{define "content"}}
@@ -40,6 +86,16 @@
   Solved: {{.Skill.Solved}}
   Problems To Unlock: {{.Skill.NumberOfProblemsToUnlock}}
   Problem Count: {{len .ProblemList}} -->
+
+  <div class="containerSkillTreeInformation" id="containerSKI">
+        <div class="skillTreeInformationHeader">
+          <h3 class="noMargin" id="skillName">Start mastering this skill by solving this problem.</h3>
+        </div>
+<!-- 
+        <div id="skillTreeInformationContent" class="skillTreeInfomrationContent">
+          Start learning this skill by solving this problem.
+        </div> -->
+  </div>
 
 
 
@@ -87,14 +143,17 @@
                 <td><form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> </td>
               {{end}}
           {{if eq $.Recommended.Index .Index}}
-            <td>       
-            recommended.
-            </td>    
+            <td id="tgt">       
+            
+            </td>  
           {{end}}
           </tr>
         {{end}}
 
-        
+        <img src="/images/scientistPointer.png" class="arrowProbs targeteer" id="arrow" onmouseover="showTip(this)" onmouseout="hideTip(this)">  
+
+        <!-- This stuff floats -->
+
 
 
   </div>
