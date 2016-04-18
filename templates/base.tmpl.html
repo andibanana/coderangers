@@ -74,29 +74,41 @@ kng hindi accepted check relatedproblem to suggest
 
         <div class="status">
           <h3><span id="problemName"><a href="/view/1">ADVENT Dark Events</a></span><br></h3>
-          <span id="submissionId">Submission ID: 10</span><br>
-          <span id="difficulty">Difficulty: 5</span><br>
-          <span id="runtime">Runtime: 21ms</span><br>
-          <span id="verdict">Verdict: Accepted</span><br>
-
+          <span id="submissionId"><!-- Submission ID: 10 --></span><br>
+          <span id="verdict"><!-- Runtime: 21ms --></span><br>
+          <hr>
           <br>
-          <h4>Profile</h4>
+          <h4 id="prof1">Profile</h4>
+
+          <div class="XPNotif" id="XPNotif">
+            <!-- You have earned 5xp -->
+          </div>
+
            <a href="/profile">
-            <div class="containerProfileBannerM">
+            <div class="containerProfileBannerM" id="prof3">
                 <img id="rankImageM" src="/images/rank icons/1.png" class="rankImage2">
               <div class="profileBannerInfoM">
-                <h2 id="usernameM">JM</h2>
-                <h4 id="levelM">Level: 1</h4>
+                <h2 id="usernameM"><!-- JM --></h2>
+                <h4 id="levelM"><!-- Level: 1 --></h4>
 
                 <div class="containerProgressFlexible">
-                    <div id="progressBarM" class="progressBar"><div id="progressBarTextSkillM" class="progressBarText">22/30 XP 
+                    <div id="progressBarM" class="progressBar"><div id="progressBarTextSkillM" class="progressBarText"><!-- 22/30 XP  -->
                     </div></div>
                   </div>
 
               </div>
               
             </div>
-         </a>
+         </a><br id=prof4>
+
+         <div class="recommendedProblems" id="recommendedProblems">
+            <h4 id="recommendationTitle"><!-- Stuck? Maybe you could try this instead: --></h4>
+            <div id="recommendedProblemsContent">
+              <h3><span id="problemName"><a href="/view/1">Best Sharpshooter Class Build</a></span><br></h3>
+                <br>
+                Description: Lorem ipsuisdfsaf dsfas dfsaf sg fhdha  afgasdfsadf fdsafsdf...
+            </div>
+          </div>
 
           <div class="achievements" id="achievements">
             <h4 id="achievementsTitle">Achievements Unlocked:</h4>
@@ -108,19 +120,11 @@ kng hindi accepted check relatedproblem to suggest
             </div>
           </div> 
 
-          <div class="recommendedProblems" id="recommendedProblems">
-            <h4 id="recommendationTitle">Stuck? Maybe you could try this instead:</h4>
-            <div id="recommendedProblemsContent">
-              <h3><span id="problemName"><a href="/view/1">Best Sharpshooter Class Build</a></span><br></h3>
-                Difficulty: 5<br>
-                Description: Lorem ipsuisdfsaf dsfas dfsaf sg fhdha  afgasdfsadf fdsafsdf...
-            </div>
-          </div>
-
         </div>
 
           <div class="modalFooter" id="modalFooter">
-            <button type="button" class="orangeBtn modalOkayButton">Okay</button>
+            <button type="button" class="orangeBtn modalOkayButton" id="modalOkBtn">Okay</button>
+            <button type="button" class="blueBtn modalOkayButton marginRightHack" id="modalTryBtn">Try Again</button>
           </div>
 
         <div id="recommendations"></div>
@@ -141,23 +145,25 @@ kng hindi accepted check relatedproblem to suggest
             location.reload();
             return;
           }
-          //alert(e.data);
+          alert(e.data);
 
           if(data.Submission.Verdict == "accepted"){
             document.getElementById("headerMessage").innerHTML = "Accepted";
             document.getElementById("modalHeader").style.backgroundColor = "#66CC99";
+            document.getElementById("modalTryBtn").innerHTML = "Next Prob";
             }
           else{
             document.getElementById("headerMessage").innerHTML = "Rejected";
             document.getElementById("modalHeader").style.backgroundColor = "#CC3F3F";
+            document.getElementById("modalTryBtn").innerHTML = "Try Again";
           }
 
           // data.Problem.Title
-          document.getElementById("problemName").innerHTML = "<a href=/view/" + data.Problem.Index + "\">" + data.Problem.Title + "</a>";
+          document.getElementById("problemName").innerHTML = '<a href="/view/' + data.Problem.Index + '">' + data.Problem.Title + "</a>";
           document.getElementById("submissionId").innerHTML = "Submission ID: " + data.Submission.ID;
-          document.getElementById("difficulty").innerHTML = "Difficulty: " + data.Problem.Difficulty;
+          //document.getElementById("difficulty").innerHTML = "Difficulty: " + data.Problem.Difficulty;
           document.getElementById("verdict").innerHTML = "Verdict: " + data.Submission.Verdict;
-          document.getElementById("runtime").innerHTML = "Runtime: " + data.Submission.Runtime;
+          //document.getElementById("runtime").innerHTML = "Runtime: " + data.Submission.Runtime;
 
           submissionID = data.Submission.ID;
           
@@ -179,14 +185,12 @@ kng hindi accepted check relatedproblem to suggest
               document.getElementById("recommendedProblemsContent").innerHTML = "";
 
             }else{
-              document.getElementById("achievementContent").innerHTML = "None";
-              }
-
-              document.getElementById("recommendationTitle").innerHTML = "";
-              document.getElementById("recommendedProblemsContent").innerHTML = "";
+              document.getElementById("achievementsTitle").innerHTML = "";
+              document.getElementById("achievementContent").innerHTML = "";
+            }
 
           }else{
-            if(data.NewAchievements != null){
+            /*if(data.RelatedProblems != null){
             document.getElementById("recommendationTitle").innerHTML = "Stuck? Try this instead:";
             document.getElementById("recommendedProblemsContent").innerHTML = 
             "<h3><span id=\"problemName\"><a href=\"/view/" +
@@ -195,19 +199,114 @@ kng hindi accepted check relatedproblem to suggest
                 Difficulty: " + data.RelatedProblems[0].Difficulty + "<br> \
                 Description: " + data.RelatedProblems[0].Description.substring(0,150) + "...";
               }else{
-                document.getElementById("recommendationTitle").innerHTML = "No similar problems to recommend";
                 document.getElementById("recommendedProblemsContent").innerHTML = "";
-              }
+              }*/
 
             document.getElementById("achievementsTitle").innerHTML = "";
             document.getElementById("achievementContent").innerHTML = "";
           }
+
+          if(data.RelatedProblems != null){
+
+            if(data.Submission.Verdict == "accepted"){
+              document.getElementById("recommendationTitle").innerHTML = "Try this problem next!";
+            }else{
+              document.getElementById("recommendationTitle").innerHTML = "Stuck? Try this instead:";
+            }
+            
+            if(data.RelatedProblems[0].Description == ""){
+              document.getElementById("recommendedProblemsContent").innerHTML = 
+              "<h3><span id=\"problemName\"><a href=\"/view/" +
+              data.RelatedProblems[0].Index + "\">" + data.RelatedProblems[0].Title +
+              "</a></span><br></h3>"
+               + " \
+              Description: " + "(Problem description in attached document)";
+            }else{
+              document.getElementById("recommendedProblemsContent").innerHTML = 
+              "<h3><span id=\"problemName\"><a href=\"/view/" +
+              data.RelatedProblems[0].Index + "\">" + data.RelatedProblems[0].Title +
+              "</a></span><br></h3>"
+               + " \
+              Description: " + data.RelatedProblems[0].Description.substring(0,150) + "...";
+            }
+            
+          }else{
+            document.getElementById("recommendedProblemsContent").innerHTML = "";
+            document.getElementById("recommendationTitle").innerHTML = "";
+          }
+
+
+          if(data.FirstTime && data.Submission.Verdict == "accepted"){
+            document.getElementById("prof1").style.display = "block";
+            document.getElementById("XPNotif").style.display = "block";
+            document.getElementById("prof3").style.display = "block";
+            document.getElementById("prof4").style.display = "block";
+
+            document.getElementById("XPNotif").innerHTML = "You have earned " + data.Problem.Difficulty + " XP!";
+
+            document.getElementById("levelM").innerHTML = "Level: " + (Math.floor(data.User.Experience/30) + 1);
+            
+            var width;
+            var xp = data.User.Experience - data.Problem.Difficulty;
+            var finalXP = data.User.Experience;
+
+            var inc = data.Problem.Difficulty/50;
+            var delayTime = 3;
+            var id, id2;
+
+            document.getElementById("progressBarM").style.backgroundColor = "orange";
+            function delay(){
+              delayTime -= 1;
+              if(delayTime <= 0){
+                clearInterval(id2)
+                id = setInterval(frame, 10);
+              }
+              
+            }
+            function frame(){
+              if(xp >= finalXP){
+                clearInterval(id)
+              }else{
+                
+
+                console.log(xp);
+                xp+=inc;
+                width = (xp % 30)/30*100;
+                document.getElementById("progressBarM").style.width = width +'%'
+                document.getElementById("progressBarTextSkillM").innerHTML = (Math.floor(xp) % 30) + "/30 XP";
+              }
+            }
+
+            id = setInterval(frame, 10);
+            //id2 = setInterval(delay, 1000);
+            
+            width = (data.User.Experience % 30) - data.Problem.Difficulty/30*100;
+
+            document.getElementById("rankImageM").src = "/images/rank icons/" + (Math.floor(data.User.Experience/30) + 1) + ".png";
 
           document.getElementById("usernameM").innerHTML = data.User.Username;
           document.getElementById("levelM").innerHTML = "Level: " + (Math.floor(data.User.Experience/30) + 1);
           document.getElementById("progressBarTextSkillM").innerHTML = (data.User.Experience % 30) + "/30 XP";
           document.getElementById("progressBarM").style.width = (data.User.Experience % 30)/30*100 +'%'
           document.getElementById("rankImageM").src = "/images/rank icons/" + (Math.floor(data.User.Experience/30) + 1) + ".png";
+
+          }else if(!data.FirstTime && data.Submission.Verdict == "Accepted"){
+            /*document.getElementById("XPNotif").innerHTML = "No XP earned, you have already solved this problem before";*/
+            document.getElementById("prof1").style.display = "none";
+            document.getElementById("XPNotif").style.display = "none";
+            document.getElementById("prof3").style.display = "none";
+            document.getElementById("prof4").style.display = "block";
+
+          }else{
+            document.getElementById("prof1").style.display = "none";
+            document.getElementById("XPNotif").style.display = "none";
+            document.getElementById("prof3").style.display = "none";
+            document.getElementById("prof4").style.display = "block";
+          }
+
+
+
+
 
           var modal = document.getElementById("submissionReportModal");
 
@@ -227,9 +326,24 @@ kng hindi accepted check relatedproblem to suggest
               modal.style.display = "none";
           }
 
-          var modalOk = document.getElementsByClassName("modalOkayButton")[0];
+          var modalOk = document.getElementById("modalOkBtn");
           modalOk.onclick = function() {
               modal.style.display = "none";
+              var xhttp = new XMLHttpRequest();
+              xhttp.open("POST", "/viewed-notification", true);
+              xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+              xhttp.send("submission_id="+submissionID);
+          }
+
+          var modalTryAgain = document.getElementById("modalTryBtn");
+          modalTryAgain.onclick = function() {
+              modal.style.display = "none";
+              if(data.Submission.Verdict == "accepted"){
+                window.location.href = "/view/" + data.RelatedProblems[0].Index;
+              }else{
+                window.location.href = "/view/" + data.Problem.Index;
+              }
+              
               var xhttp = new XMLHttpRequest();
               xhttp.open("POST", "/viewed-notification", true);
               xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -248,34 +362,7 @@ kng hindi accepted check relatedproblem to suggest
           }
         }
 
-        var modal = document.getElementById("submissionReportModal");
-
-          // Get the button that opens the modal
-          var btn = document.getElementById("myBtn");
-
-          // Get the <span> element that closes the modal
-          var span = document.getElementsByClassName("close")[0];
-
-          /*btn.onclick = function() {
-             modal.style.display = "block";
-           }*/
-
-          //modal.style.display = "block";
-          var modalOk = document.getElementsByClassName("modalOkayButton")[0];
-          modalOk.onclick = function() {
-              modal.style.display = "none";
-          }
-
-          span.onclick = function() {
-              modal.style.display = "none";
-          }
-
-          // When the user clicks anywhere outside of the modal, close it
-          window.onclick = function(event) {
-              if (event.target == modal) {
-                  modal.style.display = "none";
-              }
-          }
+        
 
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "/connect", true);

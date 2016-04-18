@@ -47,6 +47,7 @@ type Submission struct {
 	Runtime         float64
 	ProblemTitle    string
 	Language        string
+	Timestamp       time.Time
 }
 
 type VerdictData struct {
@@ -67,6 +68,9 @@ const (
 	UvaUsername = "CodeRanger2"
 	UvaUserID   = "821610"
 )
+
+//Test darkmega12 705026
+//Running CodeRanger2 821610
 
 type UserSubmissions struct {
 	Submissions UvaSubmissions `json:"821610"`
@@ -236,10 +240,20 @@ func sendNotification(s Submission, prob problems.Problem) {
 		if err != nil {
 			log.Println(err)
 		}
+		relatedProblems, err = getUnsolvedUnlockedProblem(s.UserID)
+		if err != nil {
+			log.Println(err)
+		}
 	} else {
 		relatedProblems, err = GetRelatedProblems(s.UserID, s.ProblemIndex)
 		if err != nil {
 			log.Println(err)
+		}
+		if len(relatedProblems) == 0 {
+			relatedProblems, err = getUnsolvedUnlockedProblem(s.UserID)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	}
 	user, err := users.GetUserData(s.UserID)

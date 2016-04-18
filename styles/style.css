@@ -368,11 +368,11 @@ a:hover{
 }
 
 .containerAchievements{
-	display: flex;
+	display: div;
 	align-items: flex-start;
 	font-size: 12px;
 	text-align: center;
-
+  width:700px;
 }
 
 .problemRowUnsolved a{
@@ -392,7 +392,7 @@ a:hover{
 }
 
 .achievementItem{
-	display:flex;
+	display:inline-flex;
 	margin: 10px;
 	flex-direction: column;
 	align-items: center;
@@ -630,6 +630,16 @@ a:hover{
 
 .orangeBtn{
 	background: #FF6600;
+	color: #FFFFFF;
+	border: none;
+	height: 40px;
+	width: 125px;
+	font-size: 19px;
+	margin-top:5px;
+}
+
+.blueBtn{
+	background: #2599B6;
 	color: #FFFFFF;
 	border: none;
 	height: 40px;
@@ -950,7 +960,13 @@ td:nth-child(1){
 }
 
 .currentUserLeaderboard{
-	background: red !important;
+	background: #FFD8A1 !important;
+	font-weight: bold;
+}
+
+/*Hacks*/
+.marginRightHack{
+	margin-right: 10px;
 }
 
 

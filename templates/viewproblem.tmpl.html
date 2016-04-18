@@ -1,9 +1,7 @@
 {{define "title"}}{{.Problem.Title}}{{end}}
 {{define "script"}}{{end}}
 {{define "content"}}
-
     <div class="containerContent">
-
       <div class="vProblemTitleHeader">
         <div class="problemInfoElementLargeSmallMargin">
             <!-- <a href="/skill/{{.Problem.SkillID}}"> --><img src="/images/{{if .Problem.Solved}}solved{{else}}unsolved{{end}}.png" class="difficultyImageSmallNoMargin" title="{{if .Problem.Solved}}Solved{{else}}Unsolved{{end}}"><!-- </a> -->
@@ -41,8 +39,8 @@
 		<form action="/submit/{{.Problem.Index}}" method="POST" {{if .Locked}} disabled {{end}}>
       {{if not (eq .Problem.UvaID "")}}
         <div>
-          <input type="radio" name="language" value="Java" required><label>Java</label>
-          <input type="radio" name="language" value="C"><label>C</label>
+          <input id="JavaButton" type="radio" name="language" value="Java" onchange="setEditorJava()" required {{if eq .Language "java"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>Java</label>
+          <input type="radio" name="language" value="C" onchange="setEditorC()" {{if eq .Language "c"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>C</label>
         </div>
       {{else}}
       <input type="hidden" name="language" value="Java">
@@ -66,5 +64,47 @@
         matchBrackets: true,
         autoCloseBrackets: true,
       });
+      var c = 
+      `#include <stdio.h>
+      
+int main() {
+    
+    return 0;
+}
+      `;
+      var java =
+      `import java.util.Scanner;
+
+public class Main {
+
+  public static void main(String[] args) {
+    Scanner in = new Scanner(System.in);
+  }
+}
+      `;
+      
+      function setEditorJava() {
+        c = editor.getValue();
+        editor.setValue(java);
+        editor.setOption("mode", "text/x-java");
+      }
+      function setEditorC() {
+        java = editor.getValue();
+        editor.setValue(c);
+        editor.setOption("mode", "text/x-c");
+      }
+      {{if not (eq .Language "")}}
+        editor.setOption("mode", "text/x-{{.Language}}")
+        editor.setValue({{.Code}});
+        {{if eq .Language "c"}}
+        c = {{.Code}};
+        {{else}}
+        java = {{.Code}};
+        {{end}}
+        language = {{.Language}};
+      {{else}}
+        editor.setValue(java);
+        document.getElementById("JavaButton").checked = true;
+      {{end}}
     </script>
 {{end}}

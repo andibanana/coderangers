@@ -60,23 +60,34 @@
       </div>
 
       <div class="profileInfo2">
+      {{if .Achievements}}
       <h1 class="noMargin">Skills Learned/Mastered</h1>
 
         <div class="containerAchievements">
-              {{if .Achievements}}
                 {{range .Achievements}}
                 <div class="achievementItem">
                   <div>
-                    <img src="/images/achievements/{{.Image}}" class="achievementImage"><br>
+                    <a href={{.Link}}><img src="/images/achievements/{{.Image}}" class="achievementImage"></a><br>
                     {{.Title}}
                   </div>
                 </div>
                 {{end}}
-              {{else}}
-                <h2>None... For now...</h2>
-              {{end}}
         </div>
+      {{end}}
+      {{if .Unearned}}
+      <h1 class="noMargin">Unearned Skills</h1>
 
+        <div class="containerAchievements">
+                {{range .Unearned}}
+                <div class="achievementItem">
+                  <div>
+                    <a href={{.Link}}><img src="/images/achievements/{{.Image}}" class="achievementImage"></a><br>
+                    {{.Title}}
+                  </div>
+                </div>
+                {{end}}
+        </div>
+      {{end}}
   </div>
 </div>
 

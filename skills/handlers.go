@@ -27,6 +27,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var problemsInSkill []problems.Problem
+	var userID int
 	if loggedIn {
 		userID, _ := cookies.GetUserID(r)
 		problemsInSkill, err = getProblemsInSkillForUser(skill, userID)
@@ -37,17 +38,23 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	unlockedSkills, err := GetUnlockedSkills(userID)
+	if err != nil {
+		templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	data := struct {
 		ProblemList []problems.Problem
 		Skill       Skill
 		IsAdmin     bool
 		IsLoggedIn  bool
+		Locked      bool
 	}{
 		problemsInSkill,
 		skills,
 		dao.IsAdmin(r),
 		loggedIn,
+		!unlockedSkills[skill],
 	}
 	templating.RenderPageWithBase(w, "skill", data)
 }

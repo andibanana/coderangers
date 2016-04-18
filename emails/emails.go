@@ -2,6 +2,7 @@ package emails
 
 import (
 	"coderangers/dao"
+	"coderangers/helper"
 	"coderangers/judge"
 	"coderangers/problems"
 	"coderangers/skills"
@@ -40,13 +41,10 @@ func SendEmailsToInactive() (err error) {
 		if err != nil {
 			return
 		}
-		submittime, err = time.Parse("2006-01-02 15:04:05.999999999Z07:00", timestamp)
+		submittime, err = helper.ParseTime(timestamp)
 		if err != nil {
-			submittime, err = time.Parse("2006-01-02 15:04:05", timestamp)
-			if err != nil {
-				return
-			}
-			submittime.Add(8 * time.Hour)
+			log.Println(err)
+			return
 		}
 		duration := time.Since(submittime)
 		var days = int(math.Floor(duration.Hours() / 24))
@@ -91,16 +89,16 @@ func SendEmailsToInactive() (err error) {
 			if len(unsolvedProblems) != 0 {
 				var user users.UserData
 				problem, err = judge.GetProblem(unsolvedProblems[0])
-				message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/view/` + fmt.Sprintf("%d", problem.Index) + `"><h2>` + problem.Title + `</h2></a>`
+				message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/view/` + fmt.Sprintf("%d", problem.Index) + `?mail=true"><h2>` + problem.Title + `</h2></a>`
 				message += `You can try to solve this problem!<br>`
-				user, err = judge.GetUserWhoRecentlySolvedProblem(unsolvedProblems[0], userID)
+				user, err = judge.GetUserWhoRecentlySolvedProblem(userID, unsolvedProblems[0])
 				if err == nil && len(user.Username) != 0 {
-					message += `<a href="http://coderangers.pro/profile/` + fmt.Sprintf("%d", user.ID) + `">` + user.Username + `</a> recently solved this.<br>`
+					message += `<a href="http://coderangers.pro/profile/` + fmt.Sprintf("%d", user.ID) + `?mail=true">` + user.Username + `</a> recently solved this.<br>`
 				}
 				message += "</div>"
 			}
 			if suggestSkill {
-				message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/skill/` + skill.ID + `">` + `<div style="display:inline-block;"><img src="http://coderangers.pro/images/skill icons/` + skill.ID + `.png" style="vertical-align:middle;max-width:100px;"></div><div style="display:inline-block;vertical-align:middle;"><h2 style="display:inline;">` + skill.Title + "</h2><br></a>"
+				message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/skill/` + skill.ID + `?mail=true">` + `<div style="display:inline-block;"><img src="http://coderangers.pro/images/skill icons/` + skill.ID + `.png" style="vertical-align:middle;max-width:100px;"></div><div style="display:inline-block;vertical-align:middle;"><h2 style="display:inline;">` + skill.Title + "</h2><br></a>"
 				message += skill.Description + "<br></div><br>"
 				if skill.Learned {
 					message += "You should try to master this skill. Solve " + strconv.Itoa(skill.NumberOfProblems-skill.Solved) + " more problems to master the skill.<br>"

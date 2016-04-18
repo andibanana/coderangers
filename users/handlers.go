@@ -145,7 +145,7 @@ func ViewProfileHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 			return
 		}
-		badges, err := achievements.GetAchievements(userID)
+		badges, unearned, err := achievements.GetAchievements(userID)
 		if err != nil {
 			templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 			return
@@ -155,11 +155,13 @@ func ViewProfileHandler(w http.ResponseWriter, r *http.Request) {
 			IsAdmin      bool
 			IsLoggedIn   bool
 			Achievements []achievements.Achievement
+			Unearned     []achievements.Achievement
 		}{
 			userData,
 			dao.IsAdmin(r),
 			cookies.IsLoggedIn(r),
 			badges,
+			unearned,
 		}
 		templating.RenderPageWithBase(w, "viewprofile", data)
 	default:
@@ -180,7 +182,7 @@ func ViewUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 			return
 		}
-		badges, err := achievements.GetAchievements(userID)
+		badges, unearned, err := achievements.GetAchievements(userID)
 		if err != nil {
 			templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 			return
@@ -190,11 +192,13 @@ func ViewUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 			IsAdmin      bool
 			IsLoggedIn   bool
 			Achievements []achievements.Achievement
+			Unearned     []achievements.Achievement
 		}{
 			userData,
 			dao.IsAdmin(r),
 			cookies.IsLoggedIn(r),
 			badges,
+			unearned,
 		}
 		templating.RenderPageWithBase(w, "viewprofile", data)
 	default:
