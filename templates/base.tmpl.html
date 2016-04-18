@@ -73,9 +73,17 @@ kng hindi accepted check relatedproblem to suggest
         </div>
 
         <div class="status">
-          <h3><span id="problemName"><a href="/view/1">ADVENT Dark Events</a></span><br></h3>
-          <span id="submissionId"><!-- Submission ID: 10 --></span><br>
-          <span id="verdict"><!-- Runtime: 21ms --></span><br>
+          <div class="submittedProblemM">
+            <img src="/images/skill icons/A.png" class="imageSmallM" id="statusM">
+              <div class="submittedProblemTextM left">
+                <h3><span id="problemName"><a href="/view/1">ADVENT Dark Events</a></span><br></h3>
+                <!--<span id="submissionId">Submission ID: 10</span><br>-->
+                <span id="verdict"><!-- Runtime: 21ms --></span><br>
+              </div>
+            <img src="/images/skill icons/B.png" class="imageSmallM aLeft" id="difficultyM">
+            <img src="/images/skill icons/C.png" class="imageSmallM aLeft" id="skillM">
+
+          </div>
           <hr>
           <br>
           <h4 id="prof1">Profile</h4>
@@ -99,16 +107,21 @@ kng hindi accepted check relatedproblem to suggest
               </div>
               
             </div>
-         </a><br id=prof4>
+         </a><br id="prof4">
 
-         <div class="recommendedProblems" id="recommendedProblems">
-            <h4 id="recommendationTitle"><!-- Stuck? Maybe you could try this instead: --></h4>
-            <div id="recommendedProblemsContent">
-              <h3><span id="problemName"><a href="/view/1">Best Sharpshooter Class Build</a></span><br></h3>
-                <br>
-                Description: Lorem ipsuisdfsaf dsfas dfsaf sg fhdha  afgasdfsadf fdsafsdf...
-            </div>
+        <div class="submittedProblemM">
+           <img src="/images/scientist.png" class="scientistImageM">
+           <div class="submittedProblemTextM">
+             <div class="recommendedProblems" id="recommendedProblems">
+                <h4 id="recommendationTitle"><!-- Stuck? Maybe you could try this instead: --></h4>
+                <div id="recommendedProblemsContent">
+                  <h3><span id="problemName"><a href="/view/1">Best Sharpshooter Class Build</a></span><br></h3>
+                    <br>
+                    Description: Lorem ipsuisdfsaf dsfas dfsaf sg fhdha  afgasdfsadf fdsafsdf...
+                </div>
+              </div>
           </div>
+        </div>
 
           <div class="achievements" id="achievements">
             <h4 id="achievementsTitle">Achievements Unlocked:</h4>
@@ -147,6 +160,21 @@ kng hindi accepted check relatedproblem to suggest
           }
           alert(e.data);
 
+            var solvedTxt;
+
+            if(data.Problem.Solved){
+              solvedTxt = "solved";
+            }else{
+              solvedTxt = "unsolved";
+            }
+
+            document.getElementById("statusM").src = "/images/" + solvedTxt + ".png";
+            document.getElementById("statusM").title = solvedTxt;
+            document.getElementById("difficultyM").src = "/images/difficulty icons/" + data.Problem.Difficulty + ".png";
+            document.getElementById("difficultyM").title = "Difficulty: " + data.Problem.Difficulty;
+            document.getElementById("skillM").src = "/images/skill icons/" + data.Problem.SkillID + ".png";
+            document.getElementById("skillM").title = "Skill: " + data.Problem.SkillID;
+
           if(data.Submission.Verdict == "accepted"){
             document.getElementById("headerMessage").innerHTML = "Accepted";
             document.getElementById("modalHeader").style.backgroundColor = "#66CC99";
@@ -160,7 +188,7 @@ kng hindi accepted check relatedproblem to suggest
 
           // data.Problem.Title
           document.getElementById("problemName").innerHTML = '<a href="/view/' + data.Problem.Index + '">' + data.Problem.Title + "</a>";
-          document.getElementById("submissionId").innerHTML = "Submission ID: " + data.Submission.ID;
+          //document.getElementById("submissionId").innerHTML = "Submission ID: " + data.Submission.ID;
           //document.getElementById("difficulty").innerHTML = "Difficulty: " + data.Problem.Difficulty;
           document.getElementById("verdict").innerHTML = "Verdict: " + data.Submission.Verdict;
           //document.getElementById("runtime").innerHTML = "Runtime: " + data.Submission.Runtime;
@@ -209,7 +237,7 @@ kng hindi accepted check relatedproblem to suggest
           if(data.RelatedProblems != null){
 
             if(data.Submission.Verdict == "accepted"){
-              document.getElementById("recommendationTitle").innerHTML = "Try this problem next!";
+              document.getElementById("recommendationTitle").innerHTML = "Nice work! We've got another one we think you can handle:";
             }else{
               document.getElementById("recommendationTitle").innerHTML = "Stuck? Try this instead:";
             }
@@ -338,7 +366,12 @@ kng hindi accepted check relatedproblem to suggest
           var modalTryAgain = document.getElementById("modalTryBtn");
           modalTryAgain.onclick = function() {
               modal.style.display = "none";
-              window.location.href = "/view/" + data.RelatedProblems[0].Index;
+              if(data.Submission.Verdict == "accepted"){
+                window.location.href = "/view/" + data.RelatedProblems[0].Index;
+              }else{
+                window.location.href = "/view/" + data.Problem.Index;
+              }
+              
               var xhttp = new XMLHttpRequest();
               xhttp.open("POST", "/viewed-notification", true);
               xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
