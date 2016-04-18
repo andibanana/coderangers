@@ -86,6 +86,40 @@
 		document.getElementById("containerSKI").style.display = "none";
 	}
 
+	function GetScreenCoordinates(obj) {
+        var p = {};
+        p.x = obj.offsetLeft;
+        p.y = obj.offsetTop;
+        while (obj.offsetParent) {
+            p.x = p.x + obj.offsetParent.offsetLeft;
+            p.y = p.y + obj.offsetParent.offsetTop;
+            if (obj == document.getElementsByTagName("body")[0]) {
+                break;
+            }
+            else {
+                obj = obj.offsetParent;
+            }
+        }
+        return p;
+    }
+
+    var test = GetScreenCoordinates(document.getElementById("A"));
+
+    // For some retarded reason, doing the inverse (which is so much easier) wont work :/
+    document.getElementById("AR_A").setAttribute("class", "st29 skillTreeLocHide");
+    document.getElementById("AR_B").setAttribute("class", "st29 skillTreeLocHide");
+    document.getElementById("AR_C1").setAttribute("class", "st29 skillTreeLocHide");
+    document.getElementById("AR_D1").setAttribute("class", "st29 skillTreeLocHide");
+    document.getElementById("AR_F1").setAttribute("class", "st29 skillTreeLocHide");
+    document.getElementById("AR_C2").setAttribute("class", "st29 skillTreeLocHide");
+    document.getElementById("AR_D2").setAttribute("class", "st29 skillTreeLocHide");
+    document.getElementById("AR_E").setAttribute("class", "st29 skillTreeLocHide");
+    document.getElementById("AR_F2").setAttribute("class", "st29 skillTreeLocHide");
+	document.getElementById("AR_D3").setAttribute("class", "st29 skillTreeLocHide");
+    document.getElementById("AR_F3").setAttribute("class", "st29 skillTreeLocHide");
+
+
+    document.getElementById("AR_{{.Recommended.ID}}").setAttribute("class", "st29 skillTreeLocShow");
 
 
 
@@ -127,7 +161,6 @@
 
 
     	</div>
-      {{.Recommended}}
     	<div class="containerSkillTree">
 
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
@@ -794,6 +827,42 @@
 		<use xlink:href="#Sym_F3"  width="112.3" height="112.3" id="F3" y="-112.3" transform="matrix(1 0 0 -1 623.7754 858.1699)" overflow="visible"/>
 	</a>
 
+</g>
+
+<g id="Arrows">
+	<g id="AR_A">
+		<polygon class="st29" points="310.3,41.6 335.2,75.1 310.3,108.6 		"/>
+	</g>
+	<g id="AR_B">
+		<polygon class="st29" points="311.2,209 336.1,242.5 311.2,276 		"/>
+	</g>
+	<g id="AR_C1">
+		<polygon class="st29" points="98.3,375.6 123.3,409.1 98.3,442.6 		"/>
+	</g>
+	<g id="AR_D1">
+		<polygon class="st29" points="98.3,545 123.2,578.5 98.3,611.9 		"/>
+	</g>
+	<g id="AR_F1">
+		<polygon class="st29" points="98.3,883.2 123.2,916.6 98.3,950.1 		"/>
+	</g>
+	<g id="AR_C2">
+		<polygon class="st29" points="487.8,376.2 512.7,409.7 487.8,443.2 		"/>
+	</g>
+	<g id="AR_D2">
+		<polygon class="st29" points="375.1,545.5 400,579 375.1,612.5 		"/>
+	</g>
+	<g id="AR_E">
+		<polygon class="st29" points="380.2,709.8 405.1,743.3 380.2,776.7 		"/>
+	</g>
+	<g id="AR_F2">
+		<polygon class="st29" points="380.1,886.1 405,919.6 380.1,953.1 		"/>
+	</g>
+	<g id="AR_D3">
+		<polygon class="st29" points="588.6,547.7 613.5,581.2 588.6,614.7 		"/>
+	</g>
+	<g id="AR_F3">
+		<polygon class="st29" points="588.6,886.1 613.5,919.6 588.6,953.1 		"/>
+	</g>
 </g>
 </svg>
 

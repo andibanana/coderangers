@@ -5,7 +5,7 @@
 
   document.getElementById("progressBar").style.width = {{.Skill.Solved}}/{{len .ProblemList}}*100 +'%';
 
-  function GetScreenCordinates(obj) {
+  function GetScreenCoordinates(obj) {
         var p = {};
         p.x = obj.offsetLeft;
         p.y = obj.offsetTop;
@@ -24,8 +24,8 @@
 
     var tgtCoords;
 
-    if(GetScreenCordinates(document.getElementById("tgt")) != null){
-      tgtCoords = GetScreenCordinates(document.getElementById("tgt"));
+    if(GetScreenCoordinates(document.getElementById("tgt")) != null){
+      tgtCoords = GetScreenCoordinates(document.getElementById("tgt"));
       document.getElementById('arrow').style.left = '"' + tgtCoords.x + 'px"';
       document.getElementById('arrow').style.top = '"' + tgtCoords.y + 'px"';
       document.getElementById('arrow').style.display = "block";

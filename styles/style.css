@@ -498,6 +498,9 @@ a:hover{
 	display: none;
 }
 
+.st29{fill:#C6222F;}
+
+
 .homePageWelcomeText{
 	flex-direction: row;
 	align-items: center;
@@ -576,6 +579,14 @@ a:hover{
 
 .skillTreePathLocked{
 	stroke: gray;
+}
+
+.skillTreeLocHide{
+	display: none;
+}
+
+.skilltreeLocShow{
+	display: block;
 }
 
 .containerSkillTreeInformation{
