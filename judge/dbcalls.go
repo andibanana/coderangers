@@ -597,7 +597,7 @@ func getSubmissionsReceivedAndInqueue() (submissions []Submission, err error) {
 	return
 }
 
-func getUnsolvedUnlockedProblem(userID int) (unlockedUnsolvedProblems []problems.Problem, err error) {
+func GetUnsolvedUnlockedProblem(userID int) (unlockedUnsolvedProblems []problems.Problem, err error) {
 	unsolvedProblems, err := GetUnsolvedProblems(userID)
 	if err != nil {
 		return

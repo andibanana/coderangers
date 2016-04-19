@@ -96,9 +96,24 @@ func SendEmailsToInactive() (err error) {
 					message += `<a href="http://coderangers.pro/profile/` + fmt.Sprintf("%d", user.ID) + `?mail=true">` + user.Username + `</a> recently solved this.<br>`
 				}
 				message += "</div>"
+			} else {
+				unlockedProblems, err := judge.GetUnsolvedUnlockedProblem(userID)
+				if err != nil {
+					return err
+				}
+				var user users.UserData
+				if len(unlockedProblems) != 0 {
+					problem = unlockedProblems[0]
+					message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/view/` + fmt.Sprintf("%d", problem.Index) + `?mail=true"><h2>` + problem.Title + `</h2></a>`
+					message += `You can try to solve this problem!<br>`
+					user, err = judge.GetUserWhoRecentlySolvedProblem(userID, problem.Index)
+					if err == nil && len(user.Username) != 0 {
+						message += `<a href="http://coderangers.pro/profile/` + fmt.Sprintf("%d", user.ID) + `?mail=true">` + user.Username + `</a> recently solved this.<br>`
+					}
+				}
 			}
 			if suggestSkill {
-				message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/skill/` + skill.ID + `?mail=true">` + `<div style="display:inline-block;"><img src="http://coderangers.pro/images/skill icons/` + skill.ID + `.png" style="vertical-align:middle;max-width:100px;"></div><div style="display:inline-block;vertical-align:middle;"><h2 style="display:inline;">` + skill.Title + "</h2><br></a>"
+				message += `<div style="background-color:#DBDBDB;"><a href="http://coderangers.pro/skill/` + skill.ID + `?mail=true">` + `<div style="display:inline-block;"><img src="http://coderangers.pro/images/skill-icons/` + skill.ID + `.png" style="vertical-align:middle;max-width:100px;"></div><div style="display:inline-block;vertical-align:middle;"><h2 style="display:inline;">` + skill.Title + "</h2><br></a>"
 				message += skill.Description + "<br></div><br>"
 				if skill.Learned {
 					message += "You should try to master this skill. Solve " + strconv.Itoa(skill.NumberOfProblems-skill.Solved) + " more problems to master the skill.<br>"
@@ -113,7 +128,7 @@ func SendEmailsToInactive() (err error) {
 }
 
 func SendEmailsEvery(interval time.Duration) {
-	//SendEmailsToInactive()
+	// SendEmailsToInactive()
 	ticker := time.NewTicker(interval)
 	quit := make(chan struct{})
 	go func() {
@@ -150,6 +165,5 @@ func SendEmail(to, subject, body string) (err error) {
 		[]string{to},
 		[]byte("Subject: "+subject+"\r\n"+mime+body+"\r\n"),
 	)
-
 	return
 }

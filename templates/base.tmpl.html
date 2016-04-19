@@ -74,14 +74,14 @@ kng hindi accepted check relatedproblem to suggest
 
         <div class="status">
           <div class="submittedProblemM">
-            <img src="/images/skill icons/A.png" class="imageSmallM" id="statusM">
+            <img src="/images/skill-icons/A.png" class="imageSmallM" id="statusM">
               <div class="submittedProblemTextM left">
                 <h3><span id="problemName"><a href="/view/1">ADVENT Dark Events</a></span><br></h3>
                 <!--<span id="submissionId">Submission ID: 10</span><br>-->
                 <span id="verdict"><!-- Runtime: 21ms --></span><br>
               </div>
-            <img src="/images/skill icons/B.png" class="imageSmallM aLeft" id="difficultyM">
-            <img src="/images/skill icons/C.png" class="imageSmallM aLeft" id="skillM">
+            <img src="/images/skill-icons/B.png" class="imageSmallM aLeft" id="difficultyM">
+            <img src="/images/skill-icons/C.png" class="imageSmallM aLeft" id="skillM">
 
           </div>
           <hr>
@@ -172,7 +172,7 @@ kng hindi accepted check relatedproblem to suggest
             document.getElementById("statusM").title = solvedTxt;
             document.getElementById("difficultyM").src = "/images/difficulty icons/" + data.Problem.Difficulty + ".png";
             document.getElementById("difficultyM").title = "Difficulty: " + data.Problem.Difficulty;
-            document.getElementById("skillM").src = "/images/skill icons/" + data.Problem.SkillID + ".png";
+            document.getElementById("skillM").src = "/images/skill-icons/" + data.Problem.SkillID + ".png";
             document.getElementById("skillM").title = "Skill: " + data.Problem.SkillID;
 
           if(data.Submission.Verdict == "accepted"){

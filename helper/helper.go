@@ -15,6 +15,7 @@ func ParseTime(timestamp string) (submittime time.Time, err error) {
 	if err != nil {
 		submittime, err = time.Parse("2006-01-02 15:04:05", timestamp)
 		if err != nil {
+			submittime, err = time.Parse("2006-01-02 15:04:05.999999999Z07:00", timestamp)
 			return
 		}
 		submittime = submittime.Add(8 * time.Hour)

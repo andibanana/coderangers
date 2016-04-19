@@ -422,7 +422,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		suggestProblem := false
 		var problem problems.Problem
 
-		unsolvedUnlockedProblems, err := getUnsolvedUnlockedProblem(userID)
+		unsolvedUnlockedProblems, err := GetUnsolvedUnlockedProblem(userID)
 		if len(unsolvedUnlockedProblems) != 0 {
 			problem = unsolvedUnlockedProblems[rand.Intn(len(unsolvedUnlockedProblems))]
 			suggestProblem = true
@@ -459,7 +459,7 @@ func RandomHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userID, _ := cookies.GetUserID(r)
-		unsolvedUnlockedProblems, err := getUnsolvedUnlockedProblem(userID)
+		unsolvedUnlockedProblems, err := GetUnsolvedUnlockedProblem(userID)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprint(w, "")

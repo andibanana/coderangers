@@ -246,7 +246,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 		if err != nil {
 			log.Println(err)
 		}
-		relatedProblems, err = getUnsolvedUnlockedProblem(s.UserID)
+		relatedProblems, err = GetUnsolvedUnlockedProblem(s.UserID)
 		if err != nil {
 			log.Println(err)
 		}
@@ -256,7 +256,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 			log.Println(err)
 		}
 		if len(relatedProblems) == 0 {
-			relatedProblems, err = getUnsolvedUnlockedProblem(s.UserID)
+			relatedProblems, err = GetUnsolvedUnlockedProblem(s.UserID)
 			if err != nil {
 				log.Println(err)
 			}
