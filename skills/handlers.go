@@ -50,6 +50,9 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 		templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	if !unlockedSkills[skill] {
+		recommended.Index = -1
+	}
 	data := struct {
 		ProblemList []problems.Problem
 		Skill       Skill
