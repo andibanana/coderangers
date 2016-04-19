@@ -159,7 +159,7 @@ func SendEmail(to, subject, body string) (err error) {
 	// and send the email all in one step.
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
 	err = smtp.SendMail(
-		"smtp.gmail.com:25",
+		"smtp.gmail.com:587",
 		auth,
 		"CodeRangers",
 		[]string{to},
