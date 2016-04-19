@@ -616,3 +616,14 @@ func GetUnsolvedUnlockedProblem(userID int) (unlockedUnsolvedProblems []problems
 	}
 	return
 }
+
+func getNumberOtherUsersSolved(problemID int) (solveCount int, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+
+	err = db.QueryRow(`SELECT COUNT(*) FROM submissions 
+                      WHERE problem_id = ? AND verdict = ?`, problemID, problems.Accepted).Scan(&solveCount)
+	return
+}

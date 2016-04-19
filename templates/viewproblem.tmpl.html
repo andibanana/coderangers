@@ -21,9 +21,13 @@
       </div>
       <hr>
 		<div class="infoHeaderLarge">
-          
-
-      	</div>
+        
+        <div class="otherUser">Number of Other Users Solved: {{$.SolveCount}}</div>  
+        {{if $.HasOtherUser}}
+        <div class="otherUser">{{$.OtherUser.Username}} has recently solved this problem.</div>
+        {{end}}
+        
+        </div>
 
     {{if eq .Problem.UvaID "" }}
 		<p style="width:800px">{{.Problem.Description}}</p>

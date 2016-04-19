@@ -41,6 +41,9 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
                
       </div>
 
+      {{if $.HasOtherUser}}
+      <div class="otherUser">{{$.OtherUser.Username}} has recently solved this problem.</div>
+      {{end}}
 
       <div>{{.Problem.Description}}</div>
 

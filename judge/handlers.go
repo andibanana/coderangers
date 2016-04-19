@@ -225,14 +225,30 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
+
+		otherUser, err := GetUserWhoRecentlySolvedProblem(problem.Index, userID)
+		hasOtherUser := true
+		if err != nil {
+			hasOtherUser = false
+		}
+
+		solveCount, err := getNumberOtherUsersSolved(problem.Index)
+		if err != nil {
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		data := struct {
-			Problem    problems.Problem
-			Skill      skills.Skill
-			Locked     bool
-			IsAdmin    bool
-			IsLoggedIn bool
-			Code       string
-			Language   string
+			Problem      problems.Problem
+			Skill        skills.Skill
+			Locked       bool
+			IsAdmin      bool
+			IsLoggedIn   bool
+			Code         string
+			Language     string
+			OtherUser    users.UserData
+			HasOtherUser bool
+			SolveCount   int
 		}{
 			problem,
 			skill,
@@ -241,6 +257,9 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			cookies.IsLoggedIn(r),
 			code,
 			language,
+			otherUser,
+			hasOtherUser,
+			solveCount,
 		}
 
 		templating.RenderPageWithBase(w, "viewproblem", data)
@@ -427,6 +446,19 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			problem = unsolvedUnlockedProblems[rand.Intn(len(unsolvedUnlockedProblems))]
 			suggestProblem = true
 		}
+
+		homeMessage := [2]string{
+			"Just like the old saying goes, coding a day keeps the doctor away. So keep Practicing!",
+			"Statistics says that coding everyday increases one's coding skills, 99.9 percent of the time",
+		}
+		message := homeMessage[rand.Intn(len(homeMessage))]
+
+		user, err := GetUserWhoRecentlySolvedProblem(userID, problem.Index)
+		hasOtherUser := true
+		if err != nil {
+			hasOtherUser = false
+		}
+
 		data := struct {
 			IsLoggedIn     bool
 			IsAdmin        bool
@@ -435,6 +467,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			UserData       users.UserData
 			SuggestProblem bool
 			Problem        problems.Problem
+			HasOtherUser   bool
+			OtherUser      users.UserData
+			Message        string
 		}{
 			cookies.IsLoggedIn(r),
 			dao.IsAdmin(r),
@@ -443,6 +478,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			userData,
 			suggestProblem,
 			problem,
+			hasOtherUser,
+			user,
+			message,
 		}
 		templating.RenderPageWithBase(w, "home", data)
 	default:

@@ -1018,6 +1018,10 @@ td:nth-child(1){
 	margin-right: 10px;
 }
 
+.otherUser{
+	color: green;
+}
+
 
 /* Add PT Sans FONT */
 /* cyrillic-ext */
