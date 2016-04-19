@@ -22,9 +22,10 @@
       <hr>
 		<div class="infoHeaderLarge">
         
-        <div class="otherUser">Number of Other Users Solved: {{$.SolveCount}}</div>  
-        {{if $.HasOtherUser}}
+        {{if and (eq .SolveCount 1) .HasOtherUser}}
         <div class="otherUser">{{$.OtherUser.Username}} has recently solved this problem.</div>
+        {{else if and (gt .SolveCount 1) .HasOtherUser}}
+        <div class="otherUser">{{$.OtherUser.Username}} and {{minus .SolveCount 1}} other/s have recently solved this problem.</div>
         {{end}}
         
         </div>

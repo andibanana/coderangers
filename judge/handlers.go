@@ -226,13 +226,13 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 
-		otherUser, err := GetUserWhoRecentlySolvedProblem(problem.Index, userID)
+		otherUser, err := GetUserWhoRecentlySolvedProblem(userID, problem.Index)
 		hasOtherUser := true
 		if err != nil {
 			hasOtherUser = false
 		}
 
-		solveCount, err := getNumberOtherUsersSolved(problem.Index)
+		solveCount, err := getNumberOtherUsersSolved(userID, problem.Index)
 		if err != nil {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
