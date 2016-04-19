@@ -91,6 +91,10 @@ func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
 			templating.RenderPage(w, "changepassword", "New password not the same as confirm new password.")
 			return
 		}
+		if len(newPassword) < 2 {
+			templating.RenderPage(w, "changepassword", "New password too short.")
+			return
+		}
 
 		userID, ok := Login(username, oldPassword)
 		if !ok {
