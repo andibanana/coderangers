@@ -98,7 +98,6 @@
   </div>
 
 
-
     <div class="containerSkillHeader">
 <!--"/images/skill icons/" + {{.Skill.Title}} + ".png"-->
       <div class="containerSkillIcon">
@@ -137,7 +136,7 @@
               <!-- <td>{{.Index}}</td> -->
               <td><a href="/view/{{.Index}}">{{.Title}}</a></td>
               <td><img class="difficultyImageSmall2" src="/images/difficulty icons/{{.Difficulty}}.png"></td>
-              <td><img class="difficultyImageSmall2" title="{{if $.Locked}}Locked{{else}}{{if .Solved}}Solved{{else}}Unsolved{{end}}{{end}}" src="/images/{{if $.Locked}}Locked{{else}}{{if .Solved}}solved{{else}}unsolved{{end}}{{end}}.png"></td>
+              <td><img class="difficultyImageSmall2" title="{{if $.Locked}}Locked{{else if .Solved}}Solved{{else}}Unsolved{{end}}" src="/images/{{if $.Locked}}locked{{else}}{{if .Solved}}solved{{else}}unsolved{{end}}{{end}}.png"></td>
               {{ if $.IsAdmin }}
                 <td><a href="/edit/{{.Index}}">Edit Problem</a></td>
                 <td><form style="display:inline;" action="/delete" method="POST"><input type="hidden" value="{{.Index}}" name="problem_id"><input type="submit" value="Delete"></form> </td>

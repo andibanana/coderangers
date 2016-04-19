@@ -30,7 +30,7 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 	var userID int
 	var recommended problems.Problem
 	if loggedIn {
-		userID, _ := cookies.GetUserID(r)
+		userID, _ = cookies.GetUserID(r)
 		problemsInSkill, err = getProblemsInSkillForUser(skill, userID)
 		for _, element := range problemsInSkill {
 			if !element.Solved {
