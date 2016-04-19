@@ -266,8 +266,9 @@ func AddTables() (err error) {
       user_id INTEGER,
       viewed boolean,
       
+      PRIMARY KEY(submission_id, user_id),
       FOREIGN KEY(submission_id) REFERENCES submissions(id),
-      FOREIGN KEY(user_id) REFERENCES users(id)
+      FOREIGN KEY(user_id) REFERENCES user_account(id)
     )
   `)
 	if err != nil {
