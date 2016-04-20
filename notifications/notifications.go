@@ -75,20 +75,23 @@ func (handler *ConnsHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request
 
 	closeNotif := rw.(http.CloseNotifier).CloseNotify()
 
-	go func() {
-		<-closeNotif
-		handler.closingConns <- conn
-	}()
-
 	rw.Header().Set("Content-Type", "text/event-stream")
 	rw.Header().Set("Cache-Control", "no-cache")
 	rw.Header().Set("Connection", "keep-alive")
 	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
+Loop:
 	for {
-		fmt.Fprintf(rw, "data: %s\n\n", <-conn.SSEConn)
-		flusher.Flush()
+		select {
+		case msg := <-conn.SSEConn:
+			fmt.Fprintf(rw, "data: %s\n\n", msg)
+			flusher.Flush()
+		case <-closeNotif:
+			handler.closingConns <- conn
+			break Loop
+		}
 	}
+
 }
 
 func (handler *ConnsHandler) handleConns() {
