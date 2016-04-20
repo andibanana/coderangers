@@ -558,11 +558,12 @@ func ResendReceivedAndCheckInqueue() (err error) {
 		return err
 	}
 	for _, sub := range subs {
+		resub := sub
 		if sub.Verdict == problems.Inqueue {
-			uvaQueue <- &sub
+			uvaQueue <- &resub
 		} else if sub.Verdict == problems.Received ||
 			sub.Verdict == problems.Compiling || sub.Verdict == problems.Running {
-			submissionQueue <- &sub
+			submissionQueue <- &resub
 		}
 	}
 	return
