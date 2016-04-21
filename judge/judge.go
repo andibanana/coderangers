@@ -322,9 +322,18 @@ func (UvaJudge) judge(s *Submission) {
 	str := "send " + p.UvaID + " " + filepath.Join(s.Directory, `Main.`+language) + "\n"
 
 	io.WriteString(stdin, str)
+	timeout := time.After(30 * time.Second)
+	tick := time.Tick(2 * time.Second)
 	for !(strings.Contains(stdout.String(), "Send ok") || strings.Contains(stdout.String(), "send failed") ||
 		strings.Contains(stdout.String(), "Login error")) {
-		time.Sleep(2 * time.Second)
+		select {
+		case <-timeout:
+			log.Println("Uva-Node timedout. Here bug.")
+			stdout.Reset()
+			go addToSubmissionQueue(s)
+			return
+		case <-tick:
+		}
 	}
 
 	if strings.Contains(stdout.String(), "send failed") || strings.Contains(stdout.String(), "Login error") {
@@ -336,8 +345,16 @@ func (UvaJudge) judge(s *Submission) {
 	stdout.Reset() // cleans out the stdout of the cmd to be used for another judging.
 
 	time.Sleep(6 * time.Second)
+	timeout = time.After(30 * time.Second)
+	tick = time.Tick(2 * time.Second)
 	notgotten := true
 	for notgotten {
+		select {
+		case <-timeout:
+			log.Println("Unable to get uva-id. Timeout and notgotten uva-id.")
+			go addToSubmissionQueue(s)
+		case <-tick:
+		}
 		resp, err := http.Get("http://uhunt.felix-halim.net/api/subs-user-last/" + UvaUserID + "/1")
 
 		if err == nil {
