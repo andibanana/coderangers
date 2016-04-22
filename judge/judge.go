@@ -368,6 +368,7 @@ func (UvaJudge) judge(s *Submission) {
 		case <-timeout:
 			log.Println("Unable to get uva-id. Timeout and notgotten uva-id.")
 			go addToSubmissionQueue(s)
+			return
 		case <-tick:
 		}
 		resp, err := http.Get("http://uhunt.felix-halim.net/api/subs-user-last/" + UvaUserID + "/1")
