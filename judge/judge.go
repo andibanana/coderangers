@@ -144,7 +144,21 @@ func InitQueues() {
 			go uvaJudge.checkVerdict(s)
 		}
 	}()
-	cmd := exec.Command("npm", "start")
+
+	startUvaNode()
+}
+
+// func restartUvaNode() {
+// err := cmd.Process.Kill()
+// fmt.Println(err)
+// io.WriteString(stdin, "exit")
+// cmd.Wait()
+// fmt.Println("KILLED!")
+// startUvaNode()
+// }
+
+func startUvaNode() {
+	cmd = exec.Command("npm", "start")
 	cmd.Dir = UvaNodeDirectory
 	cmd.Stdout = &stdout
 	stdin, _ = cmd.StdinPipe()
@@ -309,6 +323,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 }
 
 func (UvaJudge) judge(s *Submission) {
+	stdout.Reset() // cleans out the stdout of the cmd to be used for another judging.
 	p, _ := GetProblem(s.ProblemIndex)
 
 	io.WriteString(stdin, "use uva "+UvaUsername+"\n")
@@ -329,7 +344,7 @@ func (UvaJudge) judge(s *Submission) {
 		select {
 		case <-timeout:
 			log.Println("Uva-Node timedout. Here bug.")
-			stdout.Reset()
+			// restartUvaNode()
 			go addToSubmissionQueue(s)
 			return
 		case <-tick:
@@ -337,12 +352,11 @@ func (UvaJudge) judge(s *Submission) {
 	}
 
 	if strings.Contains(stdout.String(), "send failed") || strings.Contains(stdout.String(), "Login error") {
-		stdout.Reset()
+		log.Println("UVA-NODE: ", stdout.String())
+		// restartUvaNode()
 		go addToSubmissionQueue(s)
 		return
 	}
-
-	stdout.Reset() // cleans out the stdout of the cmd to be used for another judging.
 
 	time.Sleep(6 * time.Second)
 	timeout = time.After(30 * time.Second)
