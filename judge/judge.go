@@ -125,7 +125,7 @@ func InitQueues() {
 			if err != nil {
 				log.Println(err)
 			}
-
+			log.Println("checking ", s.ID)
 			if p.UvaID == "" {
 				if s.Language == Java {
 					go codeRangerJudge.judge(s)
@@ -134,6 +134,7 @@ func InitQueues() {
 				}
 			} else {
 				uvaJudge.judge(s)
+				log.Println("judging ", s.ID)
 			}
 		}
 	}()
