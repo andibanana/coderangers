@@ -32,7 +32,7 @@ func page(content string) string {
 }
 
 func main() {
-	log.SetFlags(log.Llongfile)
+	log.SetFlags(log.Llongfile | log.LstdFlags)
 	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal("error log file", err)

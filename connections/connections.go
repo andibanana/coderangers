@@ -4,7 +4,7 @@ import (
 	"coderangers/cookies"
 	"coderangers/judge"
 	"coderangers/notifications"
-	"log"
+	// "log"
 	"net/http"
 )
 
@@ -17,7 +17,7 @@ func CheckHandler(w http.ResponseWriter, r *http.Request) {
 
 	subID, err := notifications.GetUnviewedNotifications(userID)
 	if err != nil {
-		log.Println(err)
+		// log.Println(err)
 		return
 	}
 

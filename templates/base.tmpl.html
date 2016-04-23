@@ -352,6 +352,10 @@ kng hindi accepted check relatedproblem to suggest
 
           span.onclick = function() {
               modal.style.display = "none";
+              var xhttp = new XMLHttpRequest();
+              xhttp.open("POST", "/viewed-notification", true);
+              xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+              xhttp.send("submission_id="+submissionID);
           }
 
           var modalOk = document.getElementById("modalOkBtn");
@@ -365,6 +369,10 @@ kng hindi accepted check relatedproblem to suggest
 
           var modalTryAgain = document.getElementById("modalTryBtn");
           modalTryAgain.onclick = function() {
+              var xhttp = new XMLHttpRequest();
+              xhttp.open("POST", "/viewed-notification", true);
+              xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+              xhttp.send("submission_id="+submissionID);
               modal.style.display = "none";
               if(data.Submission.Verdict == "accepted"){
                 window.location.href = "/view/" + data.RelatedProblems[0].Index;
@@ -372,10 +380,6 @@ kng hindi accepted check relatedproblem to suggest
                 window.location.href = "/view/" + data.Problem.Index;
               }
               
-              var xhttp = new XMLHttpRequest();
-              xhttp.open("POST", "/viewed-notification", true);
-              xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-              xhttp.send("submission_id="+submissionID);
           }
 
           // When the user clicks anywhere outside of the modal, close it

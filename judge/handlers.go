@@ -197,7 +197,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			userID, _ = cookies.GetUserID(r)
 			err = users.AddViewedProblem(userID, index)
 			if err != nil {
-				log.Println(err)
+				// log.Println(err)
 			}
 			problem, err = GetUserProblem(index, userID)
 			if err != nil {
@@ -223,7 +223,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		code, language, err := getLastCodeInSubmission(userID, index)
 		if err != nil {
-			log.Println(err)
+			// log.Println(err)
 		}
 
 		otherUser, err := GetUserWhoRecentlySolvedProblem(userID, problem.Index)
