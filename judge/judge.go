@@ -149,14 +149,13 @@ func InitQueues() {
 	startUvaNode()
 }
 
-// func restartUvaNode() {
-// err := cmd.Process.Kill()
-// fmt.Println(err)
-// io.WriteString(stdin, "exit")
-// cmd.Wait()
-// fmt.Println("KILLED!")
-// startUvaNode()
-// }
+func restartUvaNode() {
+	kill := exec.Command("killall", "-9", "node")
+	log.Println(kill.Run())
+	cmd.Wait()
+	log.Println("uva-node restarted!")
+	startUvaNode()
+}
 
 func startUvaNode() {
 	cmd = exec.Command("npm", "start")
@@ -345,7 +344,7 @@ func (UvaJudge) judge(s *Submission) {
 		select {
 		case <-timeout:
 			log.Println("Uva-Node timedout. Here bug.")
-			// restartUvaNode()
+			restartUvaNode()
 			go addToSubmissionQueue(s)
 			return
 		case <-tick:
@@ -354,7 +353,7 @@ func (UvaJudge) judge(s *Submission) {
 
 	if strings.Contains(stdout.String(), "send failed") || strings.Contains(stdout.String(), "Login error") {
 		log.Println("UVA-NODE: ", stdout.String())
-		// restartUvaNode()
+		restartUvaNode()
 		go addToSubmissionQueue(s)
 		return
 	}
@@ -368,6 +367,7 @@ func (UvaJudge) judge(s *Submission) {
 		case <-timeout:
 			log.Println("Unable to get uva-id. Timeout and notgotten uva-id.")
 			go addToSubmissionQueue(s)
+			restartUvaNode()
 			return
 		case <-tick:
 		}
