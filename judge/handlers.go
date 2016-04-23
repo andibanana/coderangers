@@ -307,6 +307,7 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		s.ID = submissionID
+		log.Println("added to db ", s.ID)
 		s.ProblemTitle = problem.Title
 		user, err := users.GetUserData(userID)
 		if err != nil {
@@ -319,11 +320,9 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			notifications.SendMessageTo(s.UserID, string(message), notifications.Submissions)
 		}
-		if err != nil {
-			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+		log.Println("before add ", s.ID)
 		go addToSubmissionQueue(s)
+		log.Println("after add ", s.ID)
 		http.Redirect(w, r, "/submissions/", http.StatusFound)
 	default:
 		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
@@ -484,6 +483,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		templating.RenderPageWithBase(w, "home", data)
 	default:
+		log.Println(r.Method)
 		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
 }
