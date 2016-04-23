@@ -121,6 +121,7 @@ func InitQueues() {
 	submissionQueue = make(chan *Submission)
 	go func() {
 		for s := range submissionQueue {
+			log.Println("getting ", s.ID)
 			p, err := GetProblem(s.ProblemIndex)
 			if err != nil {
 				log.Println(err)
@@ -134,9 +135,10 @@ func InitQueues() {
 				}
 			} else {
 				uvaJudge.judge(s)
-				log.Println("judging ", s.ID)
 			}
+			log.Println("judged ", s.ID)
 		}
+		log.Println("Submission Queue Closed!!!!")
 	}()
 
 	uvaQueue = make(chan *Submission)
@@ -144,6 +146,7 @@ func InitQueues() {
 		for s := range uvaQueue {
 			go uvaJudge.checkVerdict(s)
 		}
+		log.Println("UVa Queue Closed!!!!")
 	}()
 
 	startUvaNode()
@@ -196,6 +199,7 @@ func (UvaJudge) checkVerdict(s *Submission) {
 		for i := 0; i < len(submissions.Subs); i++ {
 			if submissions.Subs[i][0] == s.UvaSubmissionID {
 				if submissions.Subs[i][2] == 10 {
+					log.Println("sub err ", s.ID)
 					submissionQueue <- s
 				} else if submissions.Subs[i][2] == 20 || submissions.Subs[i][2] == 0 {
 					time.Sleep(2 * time.Second)
@@ -323,6 +327,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 }
 
 func (UvaJudge) judge(s *Submission) {
+	log.Println("start judge ", s.ID)
 	stdout.Reset() // cleans out the stdout of the cmd to be used for another judging.
 	p, _ := GetProblem(s.ProblemIndex)
 
@@ -396,11 +401,13 @@ func (UvaJudge) judge(s *Submission) {
 			notgotten = false
 		}
 	}
-
+	log.Println("end judge ", s.ID)
 }
 
 func addToSubmissionQueue(s *Submission) {
+	log.Println("adding ", s.ID)
 	submissionQueue <- s
+	log.Println("added ", s.ID)
 }
 
 func (CodeRangerJudge) judge(s *Submission) {
