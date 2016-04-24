@@ -318,9 +318,11 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		} else {
+			log.Println("send message ", s.ID)
 			notifications.SendMessageTo(s.UserID, string(message), notifications.Submissions)
+			log.Println("sent message ", s.ID)
 		}
-		log.Println("before add ", s.ID)
+		log.Println("before  add ", s.ID)
 		go addToSubmissionQueue(s)
 		log.Println("after add ", s.ID)
 		http.Redirect(w, r, "/submissions/", http.StatusFound)

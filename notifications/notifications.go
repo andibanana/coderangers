@@ -75,23 +75,20 @@ func (handler *ConnsHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request
 
 	closeNotif := rw.(http.CloseNotifier).CloseNotify()
 
+	go func() {
+		<-closeNotif
+		handler.closingConns <- conn
+	}()
+
 	rw.Header().Set("Content-Type", "text/event-stream")
 	rw.Header().Set("Cache-Control", "no-cache")
 	rw.Header().Set("Connection", "keep-alive")
 	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
-Loop:
-	for {
-		select {
-		case msg := <-conn.SSEConn:
-			fmt.Fprintf(rw, "data: %s\n\n", msg)
-			flusher.Flush()
-		case <-closeNotif:
-			handler.closingConns <- conn
-			break Loop
-		}
+	for msg := range conn.SSEConn {
+		fmt.Fprintf(rw, "data: %s\n\n", msg)
+		flusher.Flush()
 	}
-
 }
 
 func (handler *ConnsHandler) handleConns() {
@@ -103,9 +100,12 @@ func (handler *ConnsHandler) handleConns() {
 			}
 			handler.connSet[conn.UserID][conn] = true
 		case conn := <-handler.closingConns:
-			delete(handler.connSet[conn.UserID], conn)
+			if _, ok := handler.connSet[conn.UserID][conn]; ok {
+				close(conn.SSEConn)
+				delete(handler.connSet[conn.UserID], conn)
+			}
 		case msg := <-handler.broadcasts:
-			for conn, _ := range handler.connSet[msg.To] {
+			for conn := range handler.connSet[msg.To] {
 				if conn.URL == msg.URL {
 					conn.SSEConn <- msg.Message
 				}
