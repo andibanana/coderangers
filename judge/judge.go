@@ -278,6 +278,11 @@ func sendNotification(s Submission, prob problems.Problem) {
 			if err != nil {
 				log.Println(err)
 			}
+			for i, element := range relatedProblems {
+				if element.Index == s.ProblemIndex {
+					relatedProblems = append(relatedProblems[:i], relatedProblems[i+1:]...)
+				}
+			}
 		}
 	}
 	user, err := users.GetUserData(s.UserID)
