@@ -281,6 +281,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 			for i, element := range relatedProblems {
 				if element.Index == s.ProblemIndex {
 					relatedProblems = append(relatedProblems[:i], relatedProblems[i+1:]...)
+					break
 				}
 			}
 		}
