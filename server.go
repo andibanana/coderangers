@@ -64,7 +64,7 @@ func main() {
 	// users.Register("jaira_bat-og", "bat-og", "jaira_bat-og@dlsu.edu.ph", false)
 	// users.Register("alexczar_delatorre", "delatorre", "alexczar_delatorre@dlsu.edu.ph", false)
 	// users.Register("hannah_saliot", "saliot", "hannah_saliot@dlsu.edu.ph", false)
-	users.Register("ivana_lim", "lim", "ivana_lim@dlsu.edu.ph", false)
+	// users.Register("ivana_lim", "lim", "ivana_lim@dlsu.edu.ph", false)
 
 	templating.InitTemplates()
 	wd, _ := os.Getwd()
