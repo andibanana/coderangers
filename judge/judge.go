@@ -9,21 +9,24 @@ import (
 	"coderangers/skills"
 	"coderangers/users"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
+	"html"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
+	"net/http/cookiejar"
+	"net/url"
 	"os/exec"
 	"path/filepath"
-	"runtime"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
 
 var DIR string
-var OS string
 
 type Judge interface {
 	judge(s Submission)
@@ -78,8 +81,6 @@ type UserSubmissions struct {
 	Submissions UvaSubmissions `json:"821610"`
 }
 
-var UvaNodeDirectory string
-
 const (
 	Java = "Java"
 	C    = "C"
@@ -106,18 +107,9 @@ func (e Error) Error() string {
 var (
 	submissionQueue chan *Submission
 	uvaQueue        chan *Submission
-	cmd             *exec.Cmd
-	stdin           io.WriteCloser
-	stdout          bytes.Buffer
 )
 
 func InitQueues() {
-	OS = runtime.GOOS
-	if OS == "windows" {
-		UvaNodeDirectory = `C:\uva-node`
-	} else {
-		UvaNodeDirectory = `/root/uva-node`
-	}
 	submissionQueue = make(chan *Submission)
 	go func() {
 		for s := range submissionQueue {
@@ -149,53 +141,23 @@ func InitQueues() {
 		log.Println("UVa Queue Closed!!!!")
 	}()
 
-	startUvaNode()
-}
-
-func restartUvaNode() {
-	kill := exec.Command("killall", "-9", "node")
-	log.Println(kill.Run())
-	cmd.Wait()
-	log.Println("uva-node restarted!")
-	startUvaNode()
-}
-
-func startUvaNode() {
-	cmd = exec.Command("npm", "start")
-	cmd.Dir = UvaNodeDirectory
-	cmd.Stdout = &stdout
-	stdin, _ = cmd.StdinPipe()
-	err := cmd.Start()
-	if err != nil {
-		log.Fatal("npm not found!")
-	}
-	io.WriteString(stdin, "add uva "+UvaUsername+" "+UvaUsername+"\n")
-	if strings.Contains(stdout.String(), "is not recognized as an internal or external command,") ||
-		strings.Contains(stdout.String(), "command not found") {
-		log.Fatal("UVA NODE NOT FOUND!")
-	}
-	for {
-		if strings.Contains(stdout.String(), "ERR!") {
-			log.Fatal("UVA NODE NOT FOUND OR NPM INSTALL NOT YET RUN.")
-		}
-		if strings.Contains(stdout.String(), "Account added successfully") || strings.Contains(stdout.String(), "An existing account was replaced") {
-			break
-		}
-	}
 }
 
 func (UvaJudge) checkVerdict(s *Submission) {
-	// fmt.Println("checking")
 	prob, err := GetProblem(s.ProblemIndex)
 	// fmt.Println("http://uhunt.felix-halim.net/api/subs-nums/" + UvaUserID + "/" + prob.UvaID + "/" + strconv.Itoa(s.UvaSubmissionID - 1))
 	resp, err := http.Get("http://uhunt.felix-halim.net/api/subs-nums/" + UvaUserID + "/" + prob.UvaID + "/" + strconv.Itoa(s.UvaSubmissionID-1))
 	defer resp.Body.Close()
 	if err != nil {
+		log.Println(err)
 		uvaQueue <- s
 	} else {
 		userSubmissions := new(UserSubmissions)
 		json.NewDecoder(resp.Body).Decode(userSubmissions)
 		submissions := userSubmissions.Submissions
+		if (len(submissions.Subs)) == 0 {
+			uvaQueue <- s
+		}
 		for i := 0; i < len(submissions.Subs); i++ {
 			if submissions.Subs[i][0] == s.UvaSubmissionID {
 				if submissions.Subs[i][2] == 10 {
@@ -334,10 +296,7 @@ func sendNotification(s Submission, prob problems.Problem) {
 
 func (UvaJudge) judge(s *Submission) {
 	log.Println("start judge ", s.ID)
-	stdout.Reset() // cleans out the stdout of the cmd to be used for another judging.
 	p, _ := GetProblem(s.ProblemIndex)
-
-	io.WriteString(stdin, "use uva "+UvaUsername+"\n")
 	var language string
 	if s.Language == Java {
 		language = "java"
@@ -345,75 +304,44 @@ func (UvaJudge) judge(s *Submission) {
 		language = "c"
 	}
 
-	str := "send " + p.UvaID + " " + filepath.Join(s.Directory, `Main.`+language) + "\n"
-
-	io.WriteString(stdin, str)
-	timeout := time.After(30 * time.Second)
-	tick := time.Tick(2 * time.Second)
-	for !(strings.Contains(stdout.String(), "Send ok") || strings.Contains(stdout.String(), "send failed") ||
-		strings.Contains(stdout.String(), "Login error")) {
-		select {
-		case <-timeout:
-			log.Println("Uva-Node timedout. Here bug.")
-			restartUvaNode()
-			go addToSubmissionQueue(s)
-			return
-		case <-tick:
-		}
+	bytes, err := ioutil.ReadFile(filepath.Join(s.Directory, `Main.`+language))
+	if err != nil {
+		log.Println(err)
+		go addToSubmissionQueue(s)
+		return
 	}
-
-	if strings.Contains(stdout.String(), "send failed") || strings.Contains(stdout.String(), "Login error") {
-		log.Println("UVA-NODE: ", stdout.String())
-		restartUvaNode()
+	code := string(bytes)
+	msg, err := submitUVA(UvaUsername, UvaUsername, p.UvaID, languageToUvaID(s.Language), code)
+	if err != nil {
+		log.Println(err)
 		go addToSubmissionQueue(s)
 		return
 	}
 
-	time.Sleep(6 * time.Second)
-	timeout = time.After(30 * time.Second)
-	tick = time.Tick(2 * time.Second)
-	notgotten := true
-	for notgotten {
-		select {
-		case <-timeout:
-			log.Println("Unable to get uva-id. Timeout and notgotten uva-id.")
-			go addToSubmissionQueue(s)
-			restartUvaNode()
-			return
-		case <-tick:
-		}
-		resp, err := http.Get("http://uhunt.felix-halim.net/api/subs-user-last/" + UvaUserID + "/1")
-
-		if err == nil {
-			defer resp.Body.Close()
-			submissions := new(UvaSubmissions)
-			err = json.NewDecoder(resp.Body).Decode(submissions)
-			submissionID := submissions.Subs[0][0]
-			used, err := usedSubmissionID(submissionID)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			if used { // if the submission is used already that means uhunt is not updated yet. try again.
-				continue
-			}
-			err = updateUvaSubmissionID(s.ID, submissionID)
-			if err != nil {
-				log.Println(err)
-			}
-			UpdateVerdict(s, problems.Inqueue)
-			s.UvaSubmissionID = submissionID
-			uvaQueue <- s
-			notgotten = false
-		}
+	// if you want to get the submission ID:
+	var submissionID int
+	n, err := fmt.Sscanf(msg, "Submission received with ID %d", &submissionID)
+	if n != 1 || err != nil {
+		log.Println(msg)
+		log.Println(err)
+		go addToSubmissionQueue(s)
+		return
 	}
+	err = updateUvaSubmissionID(s.ID, submissionID)
+	if err != nil {
+		log.Println(err)
+		go addToSubmissionQueue(s)
+		return
+	}
+	s.Verdict = problems.Inqueue
+	UpdateVerdict(s, problems.Inqueue)
+	s.UvaSubmissionID = submissionID
+	uvaQueue <- s
 	log.Println("end judge ", s.ID)
 }
 
 func addToSubmissionQueue(s *Submission) {
-	log.Println("adding ", s.ID)
 	submissionQueue <- s
-	log.Println("added ", s.ID)
 }
 
 func (CodeRangerJudge) judge(s *Submission) {
@@ -457,7 +385,6 @@ func (CodeRangerJudge) judge(s *Submission) {
 
 	if strings.Replace(output, "\r\n", "\n", -1) != strings.Replace(p.Output, "\r\n", "\n", -1) {
 		// whitespace checks..? floats? etc.
-		// fmt.Println(output)
 		s.Verdict = problems.WrongAnswer
 		UpdateVerdict(s, problems.WrongAnswer)
 		sendNotification(*s, p)
@@ -613,4 +540,135 @@ func ResendReceivedAndCheckInqueue() (err error) {
 		}
 	}
 	return
+}
+
+type Language int
+
+const (
+	AnsiC   = "1"
+	JavaUva = "2"
+	Cpp     = "3"
+	Pascal  = "4"
+	Cpp11   = "5"
+	Python3 = "6"
+)
+
+func languageToUvaID(lang string) string {
+	switch lang {
+	case Java:
+		return JavaUva
+	case C:
+		return AnsiC
+	}
+	return "-1"
+}
+
+func submitUVA(username, password, problemID, language, code string) (string, error) {
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		return "", err
+	}
+
+	client := &http.Client{
+		Jar:     jar,
+		Timeout: 30 * time.Second,
+	}
+
+	resp, err := client.Get("https://uva.onlinejudge.org/")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	re := regexp.MustCompile(`(?s)<form[^>]*id="mod_loginform"[^>]*>(.*?)</form>`)
+	loginForm := re.FindString(string(body))
+	if loginForm == "" {
+		return "", errors.New("uva-go: could not find UVA login form")
+	}
+
+	loginVals := url.Values{}
+	re = regexp.MustCompile(`name="([^"]*)"[^>]*value="([^"]*)"`)
+	for _, match := range re.FindAllStringSubmatch(loginForm, -1) {
+		name := match[1]
+		value := match[2]
+		loginVals.Set(name, value)
+	}
+
+	re = regexp.MustCompile(`action="(.*?)"`)
+	match := re.FindStringSubmatch(loginForm)
+	if len(match) != 2 {
+		return "", errors.New("uva-go: could not find UVA login URL")
+	}
+	loginURL := html.UnescapeString(match[1])
+
+	loginVals.Set("username", username)
+	loginVals.Set("passwd", password)
+	resp, err = client.PostForm(loginURL, loginVals)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	redirectURL, err := resp.Location()
+	if err != nil {
+		return "", errors.New("uva-go: login failed")
+	}
+
+	mpart := &bytes.Buffer{}
+	w := multipart.NewWriter(mpart)
+	err = w.WriteField("problemid", "")
+	if err != nil {
+		return "", err
+	}
+	err = w.WriteField("category", "")
+	if err != nil {
+		return "", err
+	}
+	err = w.WriteField("localid", problemID)
+	if err != nil {
+		return "", err
+	}
+	err = w.WriteField("language", language)
+	if err != nil {
+		return "", err
+	}
+	err = w.WriteField("code", code)
+	if err != nil {
+		return "", err
+	}
+	_, err = w.CreateFormFile("codeupl", "")
+	if err != nil {
+		return "", err
+	}
+	err = w.Close()
+	if err != nil {
+		return "", err
+	}
+
+	submitURL := "https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=25&page=save_submission"
+	req, err := http.NewRequest("POST", submitURL, mpart)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Add("Content-Type", w.FormDataContentType())
+
+	resp, err = client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	redirectURL, err = resp.Location()
+	if err != nil {
+		return "", errors.New("uva-go: submission failed")
+	}
+
+	msg := redirectURL.Query().Get("mosmsg")
+
+	return msg, nil
 }

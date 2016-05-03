@@ -322,9 +322,7 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			notifications.SendMessageTo(s.UserID, string(message), notifications.Submissions)
 			log.Println("sent message ", s.ID)
 		}
-		log.Println("before  add ", s.ID)
 		go addToSubmissionQueue(s)
-		log.Println("after add ", s.ID)
 		http.Redirect(w, r, "/submissions/", http.StatusFound)
 	default:
 		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
