@@ -52,6 +52,7 @@ func NewSSEConnsHandler() (handler *ConnsHandler) {
 }
 
 func (handler *ConnsHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	defer req.Body.Close()
 	flusher, ok := rw.(http.Flusher)
 	if !ok {
 		templating.ErrorPage(rw, "Streaming unsupported!", http.StatusInternalServerError)

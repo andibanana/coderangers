@@ -446,6 +446,7 @@ func (s *Submission) run(p problems.Problem) (string, *Error) {
 		cmd.Start()
 		timeout := time.After(time.Duration(p.TimeLimit) * time.Second)
 		done := make(chan error)
+		defer close(done)
 		go func() { done <- cmd.Wait() }()
 		select {
 		case <-timeout:
