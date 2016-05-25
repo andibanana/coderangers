@@ -261,6 +261,16 @@ func AddTables() (err error) {
 	db, err := Open()
 
 	_, err = db.Exec(`
+    CREATE TABLE IF NOT EXISTS email_tracking (
+      user_id INTEGER,
+      timestamp BIGINT,
+      
+      PRIMARY KEY(user_id, timestamp),
+      FOREIGN KEY(user_id) REFERENCES user_account(id)
+    )
+  `)
+
+	_, err = db.Exec(`
     CREATE TABLE IF NOT EXISTS notifications (
       submission_id INTEGER,
       user_id INTEGER,

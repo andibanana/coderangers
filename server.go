@@ -106,6 +106,7 @@ func main() {
 	mux.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./js"))))
 	// http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts"))))
 
+	mux.HandleFunc("/email-logo", emails.EmailLogoHandler)
 	emails.SendEmailsEvery(24 * time.Hour)
 
 	fmt.Println("RESEND: ", judge.ResendReceivedAndCheckInqueue())
