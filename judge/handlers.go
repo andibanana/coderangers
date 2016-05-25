@@ -289,6 +289,10 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		d, _ := ioutil.TempDir(DIR, "")
 		lang := r.FormValue("language")
+		if len(r.FormValue("code")) == 0 {
+			templating.ErrorPage(w, "Empty code", http.StatusUnauthorized)
+			return
+		}
 		if lang == Java {
 			ioutil.WriteFile(filepath.Join(d, "Main.java"), []byte(r.FormValue("code")), 0600)
 		} else if lang == C {
