@@ -179,13 +179,18 @@ func EmailLogoHandler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		u := r.FormValue("u")
 		t := r.FormValue("t")
+		i, err := strconv.ParseInt(t, 10, 64)
+		if err != nil {
+			log.Println(err)
+		}
+		dateSent := time.Unix(i, 0)
 		db, err := dao.Open()
 		if err != nil {
 			log.Println(err)
 		}
-		_, err = db.Exec("INSERT INTO email_tracking VALUES(?, ?)", u, t)
+		_, err = db.Exec("INSERT INTO email_tracking VALUES(?, ?, ?)", u, dateSent, time.Now())
 		if err != nil {
-			log.Println(err)
+			// log.Println(err)
 		}
 		http.ServeFile(w, r, "images/logoBlack.png")
 	}

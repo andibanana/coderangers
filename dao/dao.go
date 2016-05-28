@@ -12,7 +12,7 @@ import (
 const SQLiteDatabaseURL = "file:database.sqlite?cache=shared&mode=rwc"
 const MySQLDatabaseURL = "root:p@ssword@tcp(127.0.0.1:3306)/"
 const MySQLDB = "coderangers"
-const MySQL = false
+const MySQL = true
 
 var db *sql.DB
 
@@ -263,12 +263,17 @@ func AddTables() (err error) {
 	_, err = db.Exec(`
     CREATE TABLE IF NOT EXISTS email_tracking (
       user_id INTEGER,
-      timestamp BIGINT,
+      timestamp_sent DATETIME,
+      timestamp_viewed DATETIME,
       
-      PRIMARY KEY(user_id, timestamp),
+      PRIMARY KEY(user_id, timestamp_sent),
       FOREIGN KEY(user_id) REFERENCES user_account(id)
     )
   `)
+
+	if err != nil {
+		return err
+	}
 
 	_, err = db.Exec(`
     CREATE TABLE IF NOT EXISTS notifications (
