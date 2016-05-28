@@ -241,8 +241,10 @@ func getUserSubmissions(userID, limit, offset int) (submissions []Submission, co
 	}
 
 	err = db.QueryRow(`SELECT COUNT(*) 
-                        FROM problems, submissions, user_account
-                        WHERE submissions.problem_id = problems.id AND user_account.id = submissions.user_id`).Scan(&count)
+                    FROM problems, submissions, user_account
+                    WHERE submissions.problem_id = problems.id 
+                    AND user_account.id = submissions.user_id
+                    AND user_account.id = ?`, userID).Scan(&count)
 	if err != nil {
 		return
 	}
