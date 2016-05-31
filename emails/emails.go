@@ -41,7 +41,10 @@ func SendEmailsToInactive() (err error) {
 		if err != nil {
 			return
 		}
-		return SendInactiveEmail(userID, username, email, timestamp)
+		err = SendInactiveEmail(userID, username, email, timestamp)
+		if err != nil {
+			return
+		}
 	}
 	return
 }
