@@ -66,6 +66,12 @@ func main() {
 	// users.Register("hannah_saliot", "saliot", "hannah_saliot@dlsu.edu.ph", false)
 	// users.Register("ivana_lim", "lim", "ivana_lim@dlsu.edu.ph", false)
 
+	users.Register("kevin_gray_chan", "chan", "kevin_gray_chan@dlsu.edu.ph", false)
+	users.Register("darren_david", "david", "darren_david@dlsu.edu.ph", false)
+	users.Register("lorenzo_bautista", "bautista", "lorenzo_bautista@dlsu.edu.ph", false)
+	users.Register("abigail_zamora", "zamora", "abigail_zamora@dlsu.edu.ph", false)
+	users.Register("joshua_patrick_ramos", "ramos", "joshua_patrick_ramos@dlsu.edu.ph", false)
+
 	templating.InitTemplates()
 	wd, _ := os.Getwd()
 	judge.DIR = filepath.Join(wd, "submissions")
