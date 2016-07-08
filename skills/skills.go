@@ -253,6 +253,7 @@ func GetUnlockedSkills(userID int) (unlockedSkills map[string]bool, err error) {
 		}
 	}
 	unlockedSkills["A"] = true
+	unlockedSkills["MOCK"] = true
 	return
 }
 
