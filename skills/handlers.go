@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func SkillHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,6 +26,12 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+	if skill == "MOCK" {
+		start, _ := time.Parse(time.RFC3339, "2016-07-09T09:00:00+08:00")
+		if time.Now().Before(start) {
+			return
+		}
 	}
 	var problemsInSkill []problems.Problem
 	var userID int
