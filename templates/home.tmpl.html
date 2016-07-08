@@ -22,6 +22,9 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
 
   </div>
 
+  {{if .Started}}
+  <h1><a href="/skill/MOCK">MOCK EXAM</a></h1>
+  {{end}}
   {{if .SuggestProblem}}
 
   <h1>Problem</h1>

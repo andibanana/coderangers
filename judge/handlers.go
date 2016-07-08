@@ -494,7 +494,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			hasOtherUser = false
 		}
-
+		start, _ := time.Parse(time.RFC3339, "2016-07-09T09:00:00+08:00")
+		after := time.Now().After(start)
 		data := struct {
 			IsLoggedIn     bool
 			IsAdmin        bool
@@ -506,6 +507,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			HasOtherUser   bool
 			OtherUser      users.UserData
 			Message        string
+			Started        bool
 		}{
 			cookies.IsLoggedIn(r),
 			dao.IsAdmin(r),
@@ -517,6 +519,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			hasOtherUser,
 			user,
 			message,
+			after,
 		}
 		templating.RenderPageWithBase(w, "home", data)
 	default:
