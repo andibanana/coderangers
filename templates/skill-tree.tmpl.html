@@ -11,7 +11,11 @@
 
 	//Color nodes (locked or unlocked)
 	{{range $key, $value := .UnlockedSkills}}
+    try{
 		document.getElementById({{$key}}).setAttribute("filter", {{if $value}}""{{else}}"url(#css_grayscale)"{{end}});
+    } catch (err) {
+      console.log("missing {{$key}}")
+    }
 	{{end}}
 
 	//Color paths (locked or unlocked)
@@ -118,9 +122,11 @@
 	document.getElementById("AR_D3").setAttribute("class", "st29 skillTreeLocHide");
     document.getElementById("AR_F3").setAttribute("class", "st29 skillTreeLocHide");
 
-
+    try{
     document.getElementById("AR_{{.Recommended.ID}}").setAttribute("class", "st29 skillTreeLocShow");
-
+    } catch(err) {
+      console.log("Missing {{.Recommended.ID}}");
+    }
 
 
 {{end}}
