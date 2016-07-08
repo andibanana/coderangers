@@ -1,6 +1,7 @@
 package judge
 
 import (
+	"bytes"
 	"coderangers/cookies"
 	"coderangers/dao"
 	"coderangers/notifications"
@@ -104,6 +105,18 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			MemoryLimit:  memory_limit,
 			Tags:         stringToArray(r.FormValue("tags")),
 		}
+		if len(p.Input) == 0 {
+			file, _, err := r.FormFile("inputfile")
+			defer file.Close()
+
+			if err != nil {
+				fmt.Fprintln(w, err)
+				return
+			}
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(file)
+			p.Input = buf.String()
+		}
 		err = editProblem(*p)
 		if err != nil {
 			log.Println(err)
@@ -155,6 +168,18 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			MemoryLimit:  memory_limit,
 			Tags:         tags,
 		}
+		if len(p.Input) == 0 {
+			file, _, err := r.FormFile("inputfile")
+			defer file.Close()
+
+			if err != nil {
+				fmt.Fprintln(w, err)
+				return
+			}
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(file)
+			p.Input = buf.String()
+		}
 		err = AddProblem(*p)
 		if err != nil {
 			log.Println(err)
@@ -202,6 +227,10 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			problem, err = GetUserProblem(index, userID)
 			if err != nil {
 				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			start, _ := time.Parse(time.RFC3339, "2016-07-09T09:00:00+08:00")
+			if problem.SkillID == "MOCK" && time.Now().Before(start) {
 				return
 			}
 		} else {
@@ -279,6 +308,10 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		problem, err := GetProblem(index)
 		if err != nil {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		end, _ := time.Parse(time.RFC3339, "2016-07-10T09:00:00+08:00")
+		if problem.SkillID == "MOCK" && time.Now().After(end) {
 			return
 		}
 		userID, _ := cookies.GetUserID(r)

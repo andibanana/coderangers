@@ -3,9 +3,9 @@
     display:block;
   }
 </style>
-<form action="/add-problem" method="POST">
+<form action="/add-problem" method="POST" enctype="multipart/form-data">
   <label>Title: <input type="text" name="title"></label>
-  <label>Description: <input type="text" name="description"></label>
+  <label>Description: <textarea type="text" name="description"></textarea></label>
   <label>Skill: <input type="text" name="skill"></label>
   <label>Difficulty: <input type="text" name="difficulty"></label>
   <label>Uva ID: <input type="text" name="uva_id"></label>
@@ -14,6 +14,7 @@
   <label>Tags: <input type="text" name="tags"></label>
   <label>Sample Input: <textarea name="sample_input"></textarea></label>
   <label>Sample Output: <textarea name="sample_output"></textarea></label>
+  <label>Input File: <input type="file" name="inputfile"></label>
   <label>Input: <textarea name="input"></textarea></label>
   <label>Output: <textarea name="output"></textarea></label>
   <input type="submit">
