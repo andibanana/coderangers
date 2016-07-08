@@ -229,16 +229,16 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			start, _ := time.Parse(time.RFC3339, "2016-07-09T09:00:00+08:00")
-			if problem.SkillID == "MOCK" && time.Now().Before(start) {
-				return
-			}
 		} else {
 			problem, err = GetProblem(index)
 			if err != nil {
 				templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+		}
+		start, _ := time.Parse(time.RFC3339, "2016-07-09T09:00:00+08:00")
+		if problem.SkillID == "MOCK" && time.Now().Before(start) {
+			return
 		}
 		skill, err := skills.GetSkill(problem.SkillID)
 		if err != nil {
