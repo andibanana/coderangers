@@ -90,6 +90,7 @@ func main() {
 	mux.HandleFunc("/submit/", judge.SubmitHandler)
 	mux.HandleFunc("/submissions/", judge.SubmissionsHandler)
 	mux.HandleFunc("/my-submissions/", judge.MySubmissionsHandler)
+	mux.HandleFunc("/skill-summary/", judge.SkillSummaryHandler)
 	mux.HandleFunc("/register", users.RegisterHandler)
 	mux.HandleFunc("/login", users.LoginHandler)
 	mux.HandleFunc("/logout", users.LogoutHandler)

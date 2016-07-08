@@ -154,7 +154,8 @@ func GetProblemsInSkill(skillID string) (problemsInSkill []problems.Problem, err
                         inputoutput 
                         ON (problems.id = inputoutput.problem_id)
                         , skills
-                        WHERE skill_id = skills.id AND skill_id = ?;`, skillID)
+                        WHERE skill_id = skills.id AND skill_id = ?
+                        ORDER BY problems.id;`, skillID)
 	if err != nil {
 		return
 	}

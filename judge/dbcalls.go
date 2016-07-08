@@ -629,3 +629,32 @@ func getNumberOtherUsersSolved(userID, problemID int) (solveCount int, err error
                     WHERE problem_id = ? AND verdict = ? AND user_id != ?;`, problemID, problems.Accepted, userID).Scan(&solveCount)
 	return
 }
+
+func getSkillSummary(skillID string) (users map[string][]Submission, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+
+	rows, err := db.Query(`SELECT username, problem_id, title, username, MIN(timestamp), verdict FROM user_account, submissions, problems
+                  WHERE user_account.id = submissions.user_id AND problems.id = submissions.problem_id
+                  AND verdict = ? AND skill_id = ?
+                  GROUP BY username, problem_id
+                  ORDER BY username, problem_id, timestamp;`, problems.Accepted, skillID)
+
+	users = make(map[string][]Submission)
+	for rows.Next() {
+		var submission Submission
+		var timestamp string
+		err = rows.Scan(&submission.Username, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &timestamp, &submission.Verdict)
+		if err != nil {
+			return
+		}
+		submission.Timestamp, err = helper.ParseTime(timestamp)
+		if err != nil {
+			return
+		}
+		users[submission.Username] = append(users[submission.Username], submission)
+	}
+	return
+}

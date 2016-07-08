@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+  <html>
+<title>
+{{.Skill}}
+</title>
+<style>
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+</style>
+<body>
+  <table>
+  <tr>
+    <th>Username</th>
+    {{range .ProblemList}}
+      <th>{{.Title}}</th>
+    {{end}}
+  </tr>
+  {{range $key, $element := .Submissions}}
+  <tr>
+  <td>{{$key}}</td>
+  {{range $inner, $submission := $element}}
+    <td>{{$submission.Verdict}}</td>
+  {{end}}
+  </tr>
+  {{end}}
+  </table>
+</body>
+</html>
