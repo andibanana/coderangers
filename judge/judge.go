@@ -53,6 +53,7 @@ type Submission struct {
 	ProblemTitle    string
 	Language        string
 	Timestamp       time.Time
+	Tries           int
 }
 
 type VerdictData struct {
@@ -121,7 +122,7 @@ func InitQueues() {
 			log.Println("checking ", s.ID)
 			if p.UvaID == "" {
 				if s.Language == Java {
-					go codeRangerJudge.judge(s)
+					codeRangerJudge.judge(s)
 				} else {
 					codeRangerJudge.judge(s)
 				}

@@ -630,23 +630,23 @@ func getNumberOtherUsersSolved(userID, problemID int) (solveCount int, err error
 	return
 }
 
-func getSkillSummary(skillID string) (users map[string][]Submission, err error) {
+func getSkillSummary(skillID string) (users map[string]map[int]Submission, err error) {
 	db, err := dao.Open()
 	if err != nil {
 		return
 	}
 
-	rows, err := db.Query(`SELECT username, problem_id, title, username, MIN(timestamp), verdict FROM user_account, submissions, problems
+	rows, err := db.Query(`SELECT username, problem_id, title, MIN(timestamp), verdict FROM user_account, submissions, problems
                   WHERE user_account.id = submissions.user_id AND problems.id = submissions.problem_id
                   AND verdict = ? AND skill_id = ?
                   GROUP BY username, problem_id
                   ORDER BY username, problem_id, timestamp;`, problems.Accepted, skillID)
 
-	users = make(map[string][]Submission)
+	users = make(map[string]map[int]Submission)
 	for rows.Next() {
 		var submission Submission
 		var timestamp string
-		err = rows.Scan(&submission.Username, &submission.ProblemIndex, &submission.ProblemTitle, &submission.Username, &timestamp, &submission.Verdict)
+		err = rows.Scan(&submission.Username, &submission.ProblemIndex, &submission.ProblemTitle, &timestamp, &submission.Verdict)
 		if err != nil {
 			return
 		}
@@ -654,7 +654,39 @@ func getSkillSummary(skillID string) (users map[string][]Submission, err error) 
 		if err != nil {
 			return
 		}
-		users[submission.Username] = append(users[submission.Username], submission)
+		if users[submission.Username] == nil {
+			users[submission.Username] = make(map[int]Submission)
+		}
+		users[submission.Username][submission.ProblemIndex] = submission
 	}
+	rows, err = db.Query(`SELECT COUNT(*) as failed, username, problem_id, title, MAX(timestamp) FROM user_account, submissions, problems
+                        WHERE user_account.id = submissions.user_id AND problems.id = submissions.problem_id
+                        AND verdict != ? AND skill_id = ?
+                        GROUP BY username, problem_id
+                        ORDER BY username, problem_id, timestamp;`, problems.Accepted, skillID)
+
+	for rows.Next() {
+		var submission Submission
+		var timestamp string
+		err = rows.Scan(&submission.Tries, &submission.Username, &submission.ProblemIndex, &submission.ProblemTitle, &timestamp)
+		if err != nil {
+			return
+		}
+		submission.Timestamp, err = helper.ParseTime(timestamp)
+		if err != nil {
+			return
+		}
+		if users[submission.Username] == nil {
+			users[submission.Username] = make(map[int]Submission)
+		}
+		if users[submission.Username][submission.ProblemIndex].ProblemIndex == submission.ProblemIndex {
+			temp := users[submission.Username][submission.ProblemIndex]
+			temp.Tries = submission.Tries
+			users[submission.Username][submission.ProblemIndex] = temp
+		} else {
+			users[submission.Username][submission.ProblemIndex] = submission
+		}
+	}
+
 	return
 }

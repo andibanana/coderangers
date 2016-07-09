@@ -23,8 +23,8 @@ table, th, td {
   {{range $key, $element := .Submissions}}
   <tr>
   <td>{{$key}}</td>
-  {{range $inner, $submission := $element}}
-    <td>{{$submission.Verdict}}</td>
+  {{range $index, $elem := $.ProblemList}}
+    <td>{{(index $element $elem.Index).Verdict}} - Failed({{(index $element $elem.Index).Tries}})</td>
   {{end}}
   </tr>
   {{end}}
