@@ -21,6 +21,8 @@ type UserData struct {
 	Submitted  int
 	Accepted   int
 	Attempted  int
+	LastName   string
+	FirstName  string
 }
 
 func GetUserData(userID int) (data UserData, err error) {
@@ -29,7 +31,7 @@ func GetUserData(userID int) (data UserData, err error) {
 		return
 	}
 
-	err = db.QueryRow("SELECT id, username, email FROM user_account WHERE id = ?", userID).Scan(&data.ID, &data.Username, &data.Email)
+	err = db.QueryRow("SELECT id, username, email, last_name, first_name FROM user_account WHERE id = ?", userID).Scan(&data.ID, &data.Username, &data.Email, &data.LastName, &data.FirstName)
 
 	err = db.QueryRow(`SELECT SUM(difficulty) FROM
                     (SELECT DISTINCT problem_id, difficulty FROM submissions, problems 
@@ -59,5 +61,20 @@ func AddViewedProblem(userID, problemID int) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func addName(userID int, lastName, firstName string) error {
+	db, err := dao.Open()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("UPDATE user_account SET last_name = ?, first_name = ? WHERE id = ?;", lastName, firstName, userID)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

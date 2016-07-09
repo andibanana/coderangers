@@ -89,6 +89,8 @@ func CreateDB() error {
 		CREATE TABLE user_account (
 			id INTEGER PRIMARY KEY ` + AUTOINCREMENT + `,
 					
+      last_name VARCHAR(50),
+      first_name VARCHAR(50),
 			username VARCHAR(50) UNIQUE NOT NULL,
 			hashed_password CHARACTER(60) NOT NULL,
       email VARCHAR(50) UNIQUE NOT NULL,

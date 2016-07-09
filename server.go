@@ -43,7 +43,7 @@ func main() {
 	fmt.Println(err)
 	fmt.Println(dao.AddTables())
 	if err == nil {
-		_, err = users.Register("admin", "admin", "frzsk@yahoo.com", true)
+		_, err = users.Register("admin", "admin", "frzsk@yahoo.com", "", "", true)
 		if err != nil {
 			log.Println(err)
 		}
@@ -94,6 +94,7 @@ func main() {
 	mux.HandleFunc("/register", users.RegisterHandler)
 	mux.HandleFunc("/login", users.LoginHandler)
 	mux.HandleFunc("/logout", users.LogoutHandler)
+	mux.HandleFunc("/add-name", users.AddNameHandler)
 	mux.HandleFunc("/change-password", users.ChangePasswordHandler)
 	mux.HandleFunc("/add-skill", skills.AddSkillHandler)
 	mux.HandleFunc("/edit-skill/", skills.EditSkillHandler)

@@ -22,7 +22,7 @@ func Login(username, password string) (userID int, ok bool) {
 	return userID, err == nil
 }
 
-func Register(username, password, email string, admin bool) (int, error) {
+func Register(username, password, email, lastName, firstName string, admin bool) (int, error) {
 	db, err := dao.Open()
 	if err != nil {
 		return 0, err
@@ -30,8 +30,8 @@ func Register(username, password, email string, admin bool) (int, error) {
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 0)
 
-	result, err := db.Exec("INSERT INTO user_account (username, hashed_password, email, admin, date_joined) VALUES (?, ?, ?, ?, ?)",
-		username, hashedPassword, email, admin, time.Now())
+	result, err := db.Exec("INSERT INTO user_account (username, hashed_password, email, last_name, first_name, admin, date_joined) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		username, hashedPassword, email, lastName, firstName, admin, time.Now())
 	if err != nil {
 		return 0, err
 	}

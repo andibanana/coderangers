@@ -30,8 +30,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		admin := accessLevel == "admin"
-
-		userID, err := Register(username, password, email, admin)
+		lastName := r.FormValue("last_name")
+		firstName := r.FormValue("first_name")
+		userID, err := Register(username, password, email, lastName, firstName, admin)
 		if err != nil {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
@@ -69,6 +70,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	default:
 		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
+	}
+}
+
+func AddNameHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		if !cookies.IsLoggedIn(r) {
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		}
+		userID, _ := cookies.GetUserID(r)
+
+		lastName := r.FormValue("last_name")
+		firstName := r.FormValue("first_name")
+		err := addName(userID, lastName, firstName)
+		if err != nil {
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		http.Redirect(w, r, "/profile", http.StatusSeeOther)
 	}
 }
 
