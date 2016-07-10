@@ -572,28 +572,22 @@ func SkillSummaryHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		// newSubmissions := make(map[string][]Submission)
-		// for key, subs := range submissions {
-		// index := 0
-		// for _, element := range problemList {
-		// if index < len(subs) && element.Index == subs[index].ProblemIndex {
-		// newSubmissions[key] = append(newSubmissions[key], subs[index])
-		// index++
-		// } else {
-		// var none Submission
-		// none.Verdict = "none"
-		// newSubmissions[key] = append(newSubmissions[key], none)
-		// }
-		// }
-		// }
+		userData, err := users.GetNames()
+		if err != nil {
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		data := struct {
 			ProblemList []problems.Problem
 			Submissions map[string]map[int]Submission
 			Skill       string
+			Users       map[string]users.UserData
 		}{
 			problemList,
 			submissions,
 			skill,
+			userData,
 		}
 		templating.RenderPage(w, "summary", data)
 	}

@@ -78,3 +78,30 @@ func addName(userID int, lastName, firstName string) error {
 
 	return nil
 }
+
+func GetNames() (users map[string]UserData, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+
+	users = make(map[string]UserData)
+
+	rows, err := db.Query(`SELECT IFNULL(first_name, ""), IFNULL(last_name, "") , username
+                        FROM user_account;`)
+
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var user UserData
+		err = rows.Scan(&user.FirstName, &user.LastName, &user.Username)
+		if err != nil {
+			return
+		}
+		users[user.Username] = user
+	}
+
+	return
+}

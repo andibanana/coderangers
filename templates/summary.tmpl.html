@@ -15,6 +15,8 @@ table, th, td {
 <body>
   <table>
   <tr>
+    <th>Last Name</th>
+    <th>First Name</th>
     <th>Username</th>
     {{range .ProblemList}}
       <th>{{.Title}}</th>
@@ -22,6 +24,8 @@ table, th, td {
   </tr>
   {{range $key, $element := .Submissions}}
   <tr>
+  <td>{{(index $.Users $key).LastName}}</td>
+  <td>{{(index $.Users $key).FirstName}}</td>
   <td>{{$key}}</td>
   {{range $index, $elem := $.ProblemList}}
     <td>{{(index $element $elem.Index).Verdict}} - Failed({{(index $element $elem.Index).Tries}})</td>

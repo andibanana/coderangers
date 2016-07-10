@@ -107,7 +107,7 @@ func CreateDB() error {
       id VARCHAR(20) PRIMARY KEY,
       
 			title VARCHAR(100) NOT NULL,
-      description TEXT NOT NULL,
+      description LONGTEXT NOT NULL,
       number_of_problems_to_unlock INTEGER NOT NULL
 		)
 	`)
@@ -120,14 +120,14 @@ func CreateDB() error {
       id INTEGER PRIMARY KEY ` + AUTOINCREMENT + `,
 			
 			title VARCHAR(100) NOT NULL,
-      description TEXT NOT NULL,
+      description LONGTEXT NOT NULL,
       skill_id VARCHAR(20) NOT NULL,
       uva_id VARCHAR(100) NOT NULL,
       difficulty INTEGER,
       time_limit INTEGER,
       memory_limit INTEGER,
-      sample_input TEXT,
-      sample_output TEXT,
+      sample_input LONGTEXT,
+      sample_output LONGTEXT,
       
       FOREIGN KEY(skill_id) REFERENCES skills(id)
 		)
@@ -166,8 +166,8 @@ func CreateDB() error {
       problem_id INTEGER,
       input_number INTEGER,
     
-			input TEXT NOT NULL,
-      output TEXT NOT NULL,
+			input LONGTEXT NOT NULL,
+      output LONGTEXT NOT NULL,
       
       PRIMARY KEY(problem_id, input_number),
       FOREIGN KEY(problem_id) REFERENCES problems(id)
