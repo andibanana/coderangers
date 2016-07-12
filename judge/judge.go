@@ -480,7 +480,7 @@ func (s *Submission) run(p problems.Problem) (string, *Error) {
 		cmd.Wait()
 		ioutil.WriteFile(filepath.Join(dir, "in.txt"), []byte(p.Input), 0600)
 		cmd = exec.Command("isolate", "--time="+fmt.Sprintf("%d", p.TimeLimit), "--mem=262144",
-			"--meta=meta.txt", "--stdin=in.txt", "--stdout=out.txt", "--run", "a.out")
+			"--meta=meta.txt", "--stdin=in.txt", "--stdout=out.txt", "--stderr=stderr.txt", "--run", "a.out")
 		stdout.Reset()
 		cmd.Dir = dir
 		cmd.Stdout = &stdout
@@ -495,10 +495,15 @@ func (s *Submission) run(p problems.Problem) (string, *Error) {
 			log.Println(err)
 		}
 		meta := string(bytes)
+		bytes, err = ioutil.ReadFile(filepath.Join(dir, "stderr.txt"))
+		if err != nil {
+			log.Println(err)
+		}
+		solutionStderr := string(bytes)
 		for _, elem := range strings.Split(meta, "\n") {
 			pair := strings.Split(elem, ":")
-			if pair[0] == "exitcode" && pair[1] != "0" {
-				return "", &Error{problems.RuntimeError, ""}
+			if pair[0] == "exitsig" && pair[1] != "0" {
+				return "", &Error{problems.RuntimeError, solutionStderr}
 			}
 			if pair[0] == "time-wall" {
 				s.Runtime, err = strconv.ParseFloat(pair[1], 64)
