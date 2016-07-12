@@ -369,11 +369,10 @@ func (CodeRangerJudge) judge(s *Submission) {
 	t := time.Now()
 	output, err := s.run(p)
 	d := time.Now().Sub(t)
-	if s.Runtime != 0 {
-		UpdateRuntime(s.ID, s.Runtime)
-	} else {
-		UpdateRuntime(s.ID, helper.Truncate(d.Seconds(), 3))
+	if s.Runtime == 0 {
+		s.Runtime = helper.Truncate(d.Seconds(), 3)
 	}
+	UpdateRuntime(s.ID, s.Runtime)
 	if err != nil {
 		s.Verdict = err.Verdict
 		UpdateVerdict(s, s.Verdict)

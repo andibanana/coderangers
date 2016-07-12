@@ -188,7 +188,7 @@ func CreateDB() error {
       language VARCHAR(5),
       timestamp DATETIME NOT NULL,
       runtime_error TEXT,
-      runtime NUMERIC,
+      runtime DECIMAL(10,3),
       
       FOREIGN KEY(user_id) REFERENCES user_account(id),
       FOREIGN KEY(problem_id) REFERENCES problems(id)
