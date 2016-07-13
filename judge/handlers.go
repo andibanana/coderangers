@@ -593,3 +593,22 @@ func SkillSummaryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func RuntimeErrorHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		sid := r.URL.Path[len("/runtime-error/"):]
+		id, err := strconv.Atoi(sid)
+		if err != nil {
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		runtime, err := GetError(id)
+		if err != nil {
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		templating.RenderPage(w, "runtime-error", runtime)
+	}
+}

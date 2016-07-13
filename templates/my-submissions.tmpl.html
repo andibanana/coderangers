@@ -69,9 +69,10 @@
         		  <td>{{.ID}}</td>
               <td><a href="/view/{{.ProblemIndex}}">{{.ProblemTitle}}</a></td>
               <td><a href="/profile/{{.UserID}}">{{.Username}}</a></td>
-              <td>{{.Verdict}}</td>
+              <td>{{if eq .Verdict "runtime error"}}<a href="/runtime-error/{{.ID}}">{{end}}{{.Verdict}}{{if eq .Verdict "runtime error"}}</a>{{end}}</td>
               <td>{{.Runtime}}</td>
               <td title={{.Timestamp}}>{{.Timestamp}}</td>
+              {{if eq .Verdict "runtime error"}}<td><a href="/runtime-error/{{.ID}}">error</a></td>{{end}}
             </tr>
       		{{end}}
         </table>

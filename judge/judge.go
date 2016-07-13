@@ -377,6 +377,9 @@ func (CodeRangerJudge) judge(s *Submission) {
 		s.Verdict = err.Verdict
 		UpdateVerdict(s, s.Verdict)
 		sendNotification(*s, p)
+		if s.Verdict == problems.RuntimeError {
+			UpdateRutimeError(s.ID, err.Details)
+		}
 		return
 	}
 

@@ -366,6 +366,36 @@ func UpdateRuntime(id int, runtime float64) error {
 	return nil
 }
 
+func UpdateRutimeError(id int, runtimeError string) error {
+	db, err := dao.Open()
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("UPDATE submissions SET runtime_error = ? WHERE id = ?", runtimeError, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetError(id int) (runtimeError string, err error) {
+	db, err := dao.Open()
+	if err != nil {
+		return
+	}
+
+	err = db.QueryRow(`SELECT IFNULL(runtime_error, "") FROM submissions WHERE id = ?`, id).Scan(&runtimeError)
+
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func updateUvaSubmissionID(id, submissionID int) error {
 	db, err := dao.Open()
 	if err != nil {
