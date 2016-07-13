@@ -360,7 +360,7 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("sent message ", s.ID)
 		}
 		go addToSubmissionQueue(s)
-		http.Redirect(w, r, "/submissions/", http.StatusFound)
+		http.Redirect(w, r, "/my-submissions/", http.StatusFound)
 	default:
 		templating.ErrorPage(w, "", http.StatusMethodNotAllowed)
 	}
@@ -603,7 +603,20 @@ func RuntimeErrorHandler(w http.ResponseWriter, r *http.Request) {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
+		if !cookies.IsLoggedIn(r) {
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		}
+		userID, _ := cookies.GetUserID(r)
+		submission, err := GetSubmission(id)
+		if err != nil {
+			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if submission.UserID != userID {
+			templating.ErrorPage(w, "Not your submission", http.StatusBadRequest)
+			return
+		}
 		runtime, err := GetError(id)
 		if err != nil {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
