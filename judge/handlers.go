@@ -254,10 +254,10 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// start, _ = time.Parse(time.RFC3339, "2016-07-16T13:00:00+08:00")
-		// if problem.SkillID == "EXAM1" && time.Now().Before(start) {
-		// return
-		// }
+		start, _ = time.Parse(time.RFC3339, "2016-07-16T13:00:00+08:00")
+		if problem.SkillID == "EXAM1" && time.Now().Before(start) {
+			return
+		}
 
 		skill, err := skills.GetSkill(problem.SkillID)
 		if err != nil {
