@@ -32,10 +32,14 @@
 
     {{if eq .Problem.UvaID "" }}
 		<p style="width:800px">{{.Problem.Description | boldItalics}}</p>
+    {{if not (eq .Problem.SampleInput "")}}
 		<h2>Sample Input</h2>
 		<p>{{.Problem.SampleInput | fixNewLines}}</p>
+    {{end}}
+    {{if not (eq .Problem.SampleInput "")}}
 		<h2>Sample Output</h2>
 		<p>{{.Problem.SampleOutput | fixNewLines}}</p>
+    {{end}}
     {{else}}
     <iframe src="https://uva.onlinejudge.org/external/{{makeUvaExternal .Problem.UvaID}}/{{ .Problem.UvaID}}.html" width="1000px" height="568px"></iframe>
     {{end}}

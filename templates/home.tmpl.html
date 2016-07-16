@@ -23,7 +23,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
   </div>
 
   {{if .Started}}
-  <h1><a href="/skill/MOCK">MOCK EXAM</a></h1>
+  <h1><a href="/skill/EXAM1">EXAM</a></h1>
   {{end}}
   {{if .SuggestProblem}}
   <form action="/add-name" method="POST">
@@ -53,7 +53,7 @@ document.getElementById("progressBarSkill").style.width = {{.Skill.Solved}}/{{.S
       <div class="otherUser">{{$.OtherUser.Username}} has recently solved this problem.</div>
       {{end}}
 
-      <div>{{.Problem.Description}}</div>
+      <div>{{/*.Problem.Description*/}}</div>
 
 
       <!-- <div class="infoHeader">

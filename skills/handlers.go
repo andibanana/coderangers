@@ -33,6 +33,13 @@ func SkillHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	// if skill == "EXAM1" {
+	// start, _ := time.Parse(time.RFC3339, "2016-07-16T13:00:00+08:00")
+	// if time.Now().Before(start) {
+	// return
+	// }
+	// }
+
 	var problemsInSkill []problems.Problem
 	var userID int
 	var recommended problems.Problem
