@@ -5,6 +5,8 @@
 <div class="containerContent">
 		
   <h1>Leaderboard</h1>
+  {{if .All}}<div><a href="/leaderboards">Show less</a></div>
+  {{else}}<div><a href="/leaderboards?view=all">Show All</a></div>{{end}}
     <table class="tableLeaderboard">
       <hr>
       <tr>
@@ -15,7 +17,7 @@
       </tr>
       {{ range  $index, $element := .Leaderboards }}
       <tr {{if eq $.UserID $element.ID}}class="currentUserLeaderboard"{{else}}{{end}}>
-        <td>{{add $index 1}}</td>
+        <td>{{$element.Rank}}</td>
         <td><img class="difficultyImageSmall2" src="/images/rank icons/{{xpToLevel $element.Experience}}.png" title="Level: {{xpToLevel $element.Experience}}"></td>
         <td><a href="/profile/{{.ID}}">{{$element.Username}}</a></td>
         <td>{{$element.Experience}}</td>

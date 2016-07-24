@@ -6,6 +6,7 @@ import (
 )
 
 type User struct {
+	Rank       int
 	ID         int
 	Username   string
 	Experience int
@@ -31,9 +32,12 @@ func GetTopUsers(limit, offset int) (users []User, err error) {
 		return users, err
 	}
 
+	rank := 1
 	for rows.Next() {
 		var user User
 		rows.Scan(&user.ID, &user.Username, &user.Experience)
+		user.Rank = rank
+		rank += 1
 		users = append(users, user)
 	}
 
