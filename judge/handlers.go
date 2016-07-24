@@ -105,7 +105,7 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			MemoryLimit:  memory_limit,
 			Tags:         stringToArray(r.FormValue("tags")),
 		}
-		if len(p.Input) == 0 {
+		if len(p.UvaID) == 0 && len(p.Input) == 0 {
 			file, _, err := r.FormFile("inputfile")
 			defer file.Close()
 
@@ -168,7 +168,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			MemoryLimit:  memory_limit,
 			Tags:         tags,
 		}
-		if len(p.Input) == 0 {
+		if len(p.UvaID) == 0 && len(p.Input) == 0 {
 			file, _, err := r.FormFile("inputfile")
 			defer file.Close()
 
@@ -180,7 +180,7 @@ func AddHandler(w http.ResponseWriter, r *http.Request) {
 			buf.ReadFrom(file)
 			p.Input = buf.String()
 		}
-		if len(p.Output) == 0 {
+		if len(p.UvaID) == 0 && len(p.Output) == 0 {
 			file, _, err := r.FormFile("outputfile")
 			defer file.Close()
 
