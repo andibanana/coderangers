@@ -117,6 +117,18 @@ func EditHandler(w http.ResponseWriter, r *http.Request) {
 			buf.ReadFrom(file)
 			p.Input = buf.String()
 		}
+		if len(p.UvaID) == 0 && len(p.Output) == 0 {
+			file, _, err := r.FormFile("outputfile")
+			defer file.Close()
+
+			if err != nil {
+				fmt.Fprintln(w, err)
+				return
+			}
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(file)
+			p.Output = buf.String()
+		}
 		err = editProblem(*p)
 		if err != nil {
 			log.Println(err)
@@ -249,13 +261,9 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-		start, _ := time.Parse(time.RFC3339, "2016-07-09T09:00:00+08:00")
-		if problem.SkillID == "MOCK" && time.Now().Before(start) {
-			return
-		}
 
-		start, _ = time.Parse(time.RFC3339, "2016-07-16T13:00:00+08:00")
-		if problem.SkillID == "EXAM1" && time.Now().Before(start) {
+		start, _ := time.Parse(time.RFC3339, "2016-08-24T10:00:00+08:00")
+		if problem.SkillID == "EXAM2" && time.Now().Before(start) {
 			return
 		}
 
@@ -330,13 +338,8 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		end, _ := time.Parse(time.RFC3339, "2016-07-10T09:00:00+08:00")
-		if problem.SkillID == "MOCK" && time.Now().After(end) {
-			return
-		}
-
-		end, _ = time.Parse(time.RFC3339, "2016-07-17T13:00:00+08:00")
-		if problem.SkillID == "EXAM1" && time.Now().After(end) {
+		end, _ := time.Parse(time.RFC3339, "2016-08-25T10:00:00+08:00")
+		if problem.SkillID == "EXAM2" && time.Now().After(end) {
 			return
 		}
 
@@ -520,7 +523,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			hasOtherUser = false
 		}
-		start, _ := time.Parse(time.RFC3339, "2016-07-16T13:00:00+08:00")
+		start, _ := time.Parse(time.RFC3339, "2016-08-24T10:00:00+08:00")
 		after := time.Now().After(start)
 		data := struct {
 			IsLoggedIn     bool
