@@ -262,11 +262,6 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		start, _ := time.Parse(time.RFC3339, "2016-08-24T10:00:00+08:00")
-		if problem.SkillID == "EXAM2" && time.Now().Before(start) {
-			return
-		}
-
 		skill, err := skills.GetSkill(problem.SkillID)
 		if err != nil {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
@@ -335,11 +330,6 @@ func SubmitHandler(w http.ResponseWriter, r *http.Request) {
 		problem, err := GetProblem(index)
 		if err != nil {
 			templating.ErrorPage(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		end, _ := time.Parse(time.RFC3339, "2016-08-25T10:00:00+08:00")
-		if problem.SkillID == "EXAM2" && time.Now().After(end) {
 			return
 		}
 
@@ -523,8 +513,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			hasOtherUser = false
 		}
-		start, _ := time.Parse(time.RFC3339, "2016-08-24T10:00:00+08:00")
-		after := time.Now().After(start)
 		data := struct {
 			IsLoggedIn     bool
 			IsAdmin        bool
@@ -536,7 +524,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			HasOtherUser   bool
 			OtherUser      users.UserData
 			Message        string
-			Started        bool
 		}{
 			cookies.IsLoggedIn(r),
 			dao.IsAdmin(r),
@@ -548,7 +535,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			hasOtherUser,
 			user,
 			message,
-			after,
 		}
 		templating.RenderPageWithBase(w, "home", data)
 	default:
