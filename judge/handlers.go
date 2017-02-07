@@ -17,6 +17,7 @@ import (
 	"math/rand"
 	"net/http"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -300,6 +301,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			OtherUser    users.UserData
 			HasOtherUser bool
 			SolveCount   int
+			Windows      bool
 		}{
 			problem,
 			skill,
@@ -311,6 +313,7 @@ func ViewHandler(w http.ResponseWriter, r *http.Request) {
 			otherUser,
 			hasOtherUser,
 			solveCount,
+			runtime.GOOS == "windows",
 		}
 
 		templating.RenderPageWithBase(w, "viewproblem", data)

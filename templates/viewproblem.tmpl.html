@@ -43,12 +43,10 @@
     {{else}}
     <iframe src="https://uva.onlinejudge.org/external/{{makeUvaExternal .Problem.UvaID}}/{{ .Problem.UvaID}}.html" width="1000px" height="568px"></iframe>
     {{end}}
-
-
 		<form action="/submit/{{.Problem.Index}}" method="POST" {{if .Locked}} disabled {{end}}>
       <div>
         <input id="JavaButton" type="radio" name="language" value="Java" onchange="setEditorJava()" required {{if eq .Language "java"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>Java</label>
-        <input type="radio" name="language" value="C" onchange="setEditorC()" {{if eq .Language "c"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>C</label>
+        {{if or (not .Windows) (not (eq .Problem.UvaID ""))}}<input type="radio" name="language" value="C" onchange="setEditorC()" {{if eq .Language "c"}}checked{{end}} {{if .Locked}} disabled {{end}}><label>C</label>{{end}}
       </div>
     
 		  <textarea name="code" class="codeBox" placeholder="{{if .Locked}}SKILL LOCKED - learn all requisite skills to solve this problem{{else}}[Place your code here]{{end}}" {{if .Locked}} disabled {{end}}>{{if .Locked}}SKILL LOCKED - learn all requisite skills to solve this problem{{else}}{{.Code}}{{end}}</textarea> <br>
