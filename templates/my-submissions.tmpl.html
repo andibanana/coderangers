@@ -43,7 +43,7 @@
     <div class="containerContent">
     	<h1>Submissions</h1>
       <hr>
-      <div><a href="/submissions">View All Submissions</a></div>
+      <div class="submissionsHolder"><a href="/submissions">View All Submissions</a></div>
       {{if not (eq (minus .Index 1) -1)}}
         <a class="nextBtn" href="/my-submissions/{{minus .Index 1}}"><-Prev</a>
       {{else}}

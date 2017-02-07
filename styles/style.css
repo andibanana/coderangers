@@ -1022,6 +1022,9 @@ td:nth-child(1){
 	color: green;
 }
 
+.submissionsHolder {
+	margin-bottom: 12px;
+}
 
 /* Add PT Sans FONT */
 /* cyrillic-ext */

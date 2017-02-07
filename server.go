@@ -53,24 +53,6 @@ func main() {
 			log.Println(err)
 		}
 	}
-	// add frosh accounts run once. wont break if ran again though.
-	// users.Register("krizia_chiu", "chiu", "krizia_chiu@dlsu.edu.ph", false)
-	// users.Register("joshua_cruzada", "cruzada", "joshua.cruzada@yahoo.com", false)
-	// users.Register("justine_singca", "singca", "justine_singca@dlsu.edu.ph", false)
-	// users.Register("troy_mirafuentes", "mirafuentes", "troy_mirafuentes@dlsu.edu.ph", false)
-	// users.Register("alfonso_secuya", "secuya", "alfonso_secuya@dlsu.edu.ph", false)
-	// users.Register("whilce_dy", "dy", "whilce_dy@dlsu.edu.ph", false)
-	// users.Register("keith_tan", "tan", "samkeithtan@me.com", false)
-	// users.Register("jaira_bat-og", "bat-og", "jaira_bat-og@dlsu.edu.ph", false)
-	// users.Register("alexczar_delatorre", "delatorre", "alexczar_delatorre@dlsu.edu.ph", false)
-	// users.Register("hannah_saliot", "saliot", "hannah_saliot@dlsu.edu.ph", false)
-	// users.Register("ivana_lim", "lim", "ivana_lim@dlsu.edu.ph", false)
-
-	// users.Register("kevin_gray_chan", "chan", "kevin_gray_chan@dlsu.edu.ph", false)
-	// users.Register("darren_david", "david", "darren_david@dlsu.edu.ph", false)
-	// users.Register("lorenzo_bautista", "bautista", "lorenzo_bautista@dlsu.edu.ph", false)
-	// users.Register("abigail_zamora", "zamora", "abigail_zamora@dlsu.edu.ph", false)
-	// users.Register("joshua_patrick_ramos", "ramos", "joshua_patrick_ramos@dlsu.edu.ph", false)
 
 	templating.InitTemplates()
 	wd, _ := os.Getwd()
