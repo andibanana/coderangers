@@ -21,6 +21,8 @@
 7. Get the dependencies of UVA-NODE.
      - `npm install` (inside the uva-node folder)
 
-8. To run the server, run `go build server.go && server` in the coderangers 
+8. Json files in the root folder are config files and should be updated as needed.
+
+9. To run the server, run `go build server.go && server` in the coderangers 
    folder. (In the future, this will become `go install coderangers`)
 
