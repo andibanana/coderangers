@@ -7,14 +7,37 @@ import (
 	"coderangers/problems"
 	"coderangers/skills"
 	"coderangers/users"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math"
 	"net/http"
 	"net/smtp"
+	"os"
 	"strconv"
 	"time"
 )
+
+var config = getConfig()
+
+type Configuration struct {
+	Domain      string
+	Email       string
+	Password    string
+	SmtpAuth    string
+	SmtpAddress string
+}
+
+func getConfig() Configuration {
+	file, _ := os.Open("email.json")
+	decoder := json.NewDecoder(file)
+	configuration := Configuration{}
+	err := decoder.Decode(&configuration)
+	if err != nil {
+		log.Fatal("DOMAIN ERROR", err)
+	}
+	return configuration
+}
 
 func SendEmailsToInactive() (err error) {
 	db, err := dao.Open()
@@ -48,8 +71,6 @@ func SendEmailsToInactive() (err error) {
 	}
 	return
 }
-
-const domain = "coderangers.pro"
 
 func SendInactiveEmail(userID int, username, email, timestamp string) (err error) {
 	submittime, err := helper.ParseTime(timestamp)
@@ -94,17 +115,17 @@ func SendInactiveEmail(userID int, username, email, timestamp string) (err error
 				break
 			}
 		}
-		message := `<img src="http://` + domain + `/email-logo?u=` + fmt.Sprintf("%v", userID) + `&t=` + fmt.Sprintf("%v", time.Now().Unix()) + `" style="max-width:300px;">`
+		message := `<img src="http://` + config.Domain + `/email-logo?u=` + fmt.Sprintf("%v", userID) + `&t=` + fmt.Sprintf("%v", time.Now().Unix()) + `" style="max-width:300px;">`
 		message += "<h1>Hi " + username + "</h1>"
 		message += "You've been inactive for a few days!<br>We want you back, here are a few things you can do!<br>"
 		if len(unsolvedProblems) != 0 {
 			var user users.UserData
 			problem, err = judge.GetProblem(unsolvedProblems[0])
-			message += `<div style="background-color:#DBDBDB;"><a href="http://` + domain + `/view/` + fmt.Sprintf("%d", problem.Index) + `?mail=true"><h2>` + problem.Title + `</h2></a>`
+			message += `<div style="background-color:#DBDBDB;"><a href="http://` + config.Domain + `/view/` + fmt.Sprintf("%d", problem.Index) + `?mail=true"><h2>` + problem.Title + `</h2></a>`
 			message += `You can try to solve this problem!<br>`
 			user, err = judge.GetUserWhoRecentlySolvedProblem(userID, unsolvedProblems[0])
 			if err == nil && len(user.Username) != 0 {
-				message += `<a href="http://` + domain + `/profile/` + fmt.Sprintf("%d", user.ID) + `?mail=true">` + user.Username + `</a> recently solved this.<br>`
+				message += `<a href="http://` + config.Domain + `/profile/` + fmt.Sprintf("%d", user.ID) + `?mail=true">` + user.Username + `</a> recently solved this.<br>`
 			}
 			message += "</div>"
 		} else {
@@ -115,16 +136,16 @@ func SendInactiveEmail(userID int, username, email, timestamp string) (err error
 			var user users.UserData
 			if len(unlockedProblems) != 0 {
 				problem = unlockedProblems[0]
-				message += `<div style="background-color:#DBDBDB;"><a href="http://` + domain + `/view/` + fmt.Sprintf("%d", problem.Index) + `?mail=true"><h2>` + problem.Title + `</h2></a>`
+				message += `<div style="background-color:#DBDBDB;"><a href="http://` + config.Domain + `/view/` + fmt.Sprintf("%d", problem.Index) + `?mail=true"><h2>` + problem.Title + `</h2></a>`
 				message += `You can try to solve this problem!<br>`
 				user, err = judge.GetUserWhoRecentlySolvedProblem(userID, problem.Index)
 				if err == nil && len(user.Username) != 0 {
-					message += `<a href="http://` + domain + `/profile/` + fmt.Sprintf("%d", user.ID) + `?mail=true">` + user.Username + `</a> recently solved this.<br>`
+					message += `<a href="http://` + config.Domain + `/profile/` + fmt.Sprintf("%d", user.ID) + `?mail=true">` + user.Username + `</a> recently solved this.<br>`
 				}
 			}
 		}
 		if suggestSkill {
-			message += `<div style="background-color:#DBDBDB;"><a href="http://` + domain + `/skill/` + skill.ID + `?mail=true">` + `<div style="display:inline-block;"><img src="http://` + domain + `/images/skill-icons/` + skill.ID + `.png" style="vertical-align:middle;max-width:100px;"></div><div style="display:inline-block;vertical-align:middle;"><h2 style="display:inline;">` + skill.Title + "</h2><br></a>"
+			message += `<div style="background-color:#DBDBDB;"><a href="http://` + config.Domain + `/skill/` + skill.ID + `?mail=true">` + `<div style="display:inline-block;"><img src="http://` + config.Domain + `/images/skill-icons/` + skill.ID + `.png" style="vertical-align:middle;max-width:100px;"></div><div style="display:inline-block;vertical-align:middle;"><h2 style="display:inline;">` + skill.Title + "</h2><br></a>"
 			message += skill.Description + "<br></div><br>"
 			if skill.Learned {
 				message += "You should try to master this skill. Solve " + strconv.Itoa(skill.NumberOfProblems-skill.Solved) + " more problems to master the skill.<br>"
@@ -160,15 +181,15 @@ func SendEmail(to, subject, body string) (err error) {
 	// Set up authentication information.
 	auth := smtp.PlainAuth(
 		"",
-		"CodeRangers1@gmail.com",
-		"coderanger123",
-		"smtp.gmail.com",
+		config.Email,
+		config.Password,
+		config.SmtpAuth,
 	)
 	// Connect to the server, authenticate, set the sender and recipient,
 	// and send the email all in one step.
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
 	err = smtp.SendMail(
-		"smtp.gmail.com:587",
+		config.SmtpAddress,
 		auth,
 		"CodeRangers",
 		[]string{to},

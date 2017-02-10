@@ -1,0 +1,6 @@
+{
+  "SQLiteDatabaseURL": "file:database.sqlite?cache=shared&mode=rwc",
+  "MySQLDatabaseURL": "root:p@ssword@tcp(127.0.0.1:3306)/",
+  "MySQLDB": "coderangers",
+  "MySQL": false
+}

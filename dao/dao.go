@@ -3,25 +3,42 @@ package dao
 import (
 	"coderangers/cookies"
 	"database/sql"
+	"encoding/json"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/http"
+	"os"
 )
 
-const SQLiteDatabaseURL = "file:database.sqlite?cache=shared&mode=rwc"
-const MySQLDatabaseURL = "root:p@ssword@tcp(127.0.0.1:3306)/"
-const MySQLDB = "coderangers"
-const MySQL = false
+var config = getConfig()
+
+type Configuration struct {
+	SQLiteDatabaseURL string
+	MySQLDatabaseURL  string
+	MySQLDB           string
+	MySQL             bool
+}
+
+func getConfig() Configuration {
+	file, _ := os.Open("database.json")
+	decoder := json.NewDecoder(file)
+	configuration := Configuration{}
+	err := decoder.Decode(&configuration)
+	if err != nil {
+		log.Fatal("DB CONFIG ERROR", err)
+	}
+	return configuration
+}
 
 var db *sql.DB
 
 func initDB() {
 	var err error
-	if MySQL {
-		db, err = sql.Open("mysql", MySQLDatabaseURL+MySQLDB)
+	if config.MySQL {
+		db, err = sql.Open("mysql", config.MySQLDatabaseURL+config.MySQLDB)
 	} else {
-		db, err = sql.Open("sqlite3", SQLiteDatabaseURL)
+		db, err = sql.Open("sqlite3", config.SQLiteDatabaseURL)
 	}
 	if err != nil {
 		log.Fatal("DB CONNECTION NOT MADE")
@@ -67,14 +84,14 @@ func CheckRealUser(req *http.Request) bool {
 
 func CreateDB() error {
 	var AUTOINCREMENT = "AUTOINCREMENT"
-	if MySQL {
+	if config.MySQL {
 		AUTOINCREMENT = "AUTO_INCREMENT"
-		db, err := sql.Open("mysql", MySQLDatabaseURL)
+		db, err := sql.Open("mysql", config.MySQLDatabaseURL)
 		if err != nil {
 			return err
 		}
 
-		_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + MySQLDB)
+		_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + config.MySQLDB)
 		if err != nil {
 			return err
 		}
