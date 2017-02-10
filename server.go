@@ -10,6 +10,7 @@ import (
 	"coderangers/skills"
 	"coderangers/templating"
 	"coderangers/users"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -27,6 +28,26 @@ TODO:
 - implement the memory stuff and all? hm.. checks.. errors.. validation..
 */
 
+var config = getConfig()
+
+type Configuration struct {
+	AdminUsername string
+	AdminPassword string
+	AdminEmail    string
+	Create        bool
+}
+
+func getConfig() Configuration {
+	file, _ := os.Open("admin.json")
+	decoder := json.NewDecoder(file)
+	configuration := Configuration{}
+	err := decoder.Decode(&configuration)
+	if err != nil {
+		log.Fatal("ADMIN CONFIG ERROR", err)
+	}
+	return configuration
+}
+
 func page(content string) string {
 	return "<html><body>\n" + content + "\n</body></html>"
 }
@@ -40,20 +61,23 @@ func main() {
 	defer f.Close()
 	log.SetOutput(f)
 	err = dao.CreateDB()
-	fmt.Println(err)
-	fmt.Println(dao.AddTables())
 	if err == nil {
-		_, err = users.Register("admin", "admin", "frzsk@yahoo.com", "", "", true)
-		if err != nil {
-			log.Println(err)
-		}
+		dao.AddTables()
 		skills.AddSamples()
 		err = judge.AddSamples()
 		if err != nil {
 			log.Println(err)
 		}
+		fmt.Println("New database created")
 	}
-
+	if config.Create {
+		_, err = users.Register(config.AdminUsername, config.AdminPassword, config.AdminEmail, "", "", true)
+		if err != nil {
+			log.Println(err)
+		} else {
+			fmt.Println("New admin account created")
+		}
+	}
 	templating.InitTemplates()
 	wd, _ := os.Getwd()
 	judge.DIR = filepath.Join(wd, "submissions")

@@ -1,10 +1,12 @@
 package templating
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"runtime/debug"
 	"time"
@@ -12,6 +14,23 @@ import (
 
 var templates *template.Template
 var fmap template.FuncMap
+
+var config = getConfig()
+
+type Configuration struct {
+	Reinit bool
+}
+
+func getConfig() Configuration {
+	file, _ := os.Open("templating.json")
+	decoder := json.NewDecoder(file)
+	configuration := Configuration{}
+	err := decoder.Decode(&configuration)
+	if err != nil {
+		log.Fatal("TEMPLATING ERROR", err)
+	}
+	return configuration
+}
 
 func InitTemplates() {
 	fmap = template.FuncMap{
@@ -54,7 +73,9 @@ func InitTemplates() {
 }
 
 func RenderPage(w http.ResponseWriter, template string, data interface{}) {
-	InitTemplates() // temporary for convenience
+	if config.Reinit {
+		InitTemplates()
+	}
 	err := templates.ExecuteTemplate(w, template+".tmpl.html", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -62,7 +83,9 @@ func RenderPage(w http.ResponseWriter, template string, data interface{}) {
 }
 
 func RenderPageWithBase(w http.ResponseWriter, templ string, data interface{}) {
-	InitTemplates() // temporary for convenience
+	if config.Reinit {
+		InitTemplates()
+	}
 	t := template.New("")
 	t = t.Funcs(fmap)
 	t, err := t.ParseFiles("./templates/base.tmpl.html", "./templates/"+templ+".tmpl.html")
