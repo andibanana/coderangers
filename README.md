@@ -13,13 +13,11 @@
      - `go get "github.com/go-sql-driver/mysql"`
      - `go get "github.com/mattn/go-sqlite3"`
 
-5. Install [Node.js](https://nodejs.org/).
+5. Install [Isolate](https://github.com/ioi/isolate) for C support.
 
-6. Clone UVA-NODE into the root directory (C:\\).
-     - `git clone https://github.com/lucastan/uva-node`
+6. Install [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) for Java support.
 
-7. Get the dependencies of UVA-NODE.
-     - `npm install` (inside the uva-node folder)
+7. Install GCC also for C support.
 
 8. Json files in the root folder are config files and should be updated as needed.
 
