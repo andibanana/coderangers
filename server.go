@@ -10,8 +10,10 @@ import (
 	"coderangers/skills"
 	"coderangers/templating"
 	"coderangers/users"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/crypto/acme/autocert"
 	"log"
 	"net/http"
 	"os"
@@ -35,6 +37,8 @@ type Configuration struct {
 	AdminPassword string
 	AdminEmail    string
 	Create        bool
+	Domain        string
+	Https         bool
 }
 
 func getConfig() Configuration {
@@ -126,9 +130,34 @@ func main() {
 
 	fmt.Println("RESEND: ", judge.ResendReceivedAndCheckInqueue())
 
-	fmt.Println("serving")
+	fmt.Println("serving http")
 	log.Println("Start")
-	http.ListenAndServe(":80", mux)
+
+	if config.Https {
+		go http.ListenAndServe(":80", mux)
+		domains := []string{config.Domain}
+
+		fmt.Println(domains)
+		certManager := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: autocert.HostWhitelist(config.Domain), //your domain here
+			Cache:      autocert.DirCache("certs"),            //folder for storing certificates
+		}
+
+		server := &http.Server{
+			Addr: ":https",
+			TLSConfig: &tls.Config{
+				GetCertificate: certManager.GetCertificate,
+			},
+			Handler: mux,
+		}
+
+		fmt.Println("serving https")
+		server.ListenAndServeTLS("", "")
+	} else {
+		http.ListenAndServe(":80", mux)
+	}
+
 	db, _ := dao.Open()
 	db.Close()
 }

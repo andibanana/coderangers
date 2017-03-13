@@ -4,5 +4,6 @@ log.txt
 stderr.txt
 database.sqlite
 submissions/
+certs/
 **/Thumbs.db
 **/~*

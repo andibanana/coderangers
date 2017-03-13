@@ -1,6 +1,8 @@
 {
+  "domain": "coderangers.pro",
   "adminUsername": "admin",
   "adminPassword": "admin",
   "adminEmail": "frzsk@yahoo.com",
-  "create": true
+  "create": true,
+  "https": false
 }

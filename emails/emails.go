@@ -21,11 +21,15 @@ import (
 var config = getConfig()
 
 type Configuration struct {
-	Domain      string
 	Email       string
 	Password    string
 	SmtpAuth    string
 	SmtpAddress string
+	Domain      string
+}
+
+type ExtraConfig struct {
+	Domain string
 }
 
 func getConfig() Configuration {
@@ -36,6 +40,14 @@ func getConfig() Configuration {
 	if err != nil {
 		log.Fatal("DOMAIN ERROR", err)
 	}
+	file, _ = os.Open("admin.json")
+	decoder = json.NewDecoder(file)
+	extraConfig := ExtraConfig{}
+	err = decoder.Decode(&extraConfig)
+	if err != nil {
+		log.Fatal("DOMAIN ERROR", err)
+	}
+	configuration.Domain = extraConfig.Domain
 	return configuration
 }
 
