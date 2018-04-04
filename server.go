@@ -37,7 +37,7 @@ type Configuration struct {
 	AdminPassword string
 	AdminEmail    string
 	Create        bool
-	Domain        string
+	Domain        []string
 	Https         bool
 }
 
@@ -130,18 +130,15 @@ func main() {
 
 	fmt.Println("RESEND: ", judge.ResendReceivedAndCheckInqueue())
 
-	fmt.Println("serving http")
 	log.Println("Start")
 
 	if config.Https {
-		go http.ListenAndServe(":80", mux)
-		domains := []string{config.Domain}
 
-		fmt.Println(domains)
+		fmt.Println(config.Domain)
 		certManager := autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
-			HostPolicy: autocert.HostWhitelist(config.Domain), //your domain here
-			Cache:      autocert.DirCache("certs"),            //folder for storing certificates
+			HostPolicy: autocert.HostWhitelist(config.Domain...), //your domain here
+			Cache:      autocert.DirCache("certs"),               //folder for storing certificates
 		}
 
 		server := &http.Server{
@@ -152,9 +149,11 @@ func main() {
 			Handler: mux,
 		}
 
-		fmt.Println("serving https")
+		fmt.Println("serving https and redirecting http")
+		go http.ListenAndServe(":80", certManager.HTTPHandler(nil))
 		server.ListenAndServeTLS("", "")
 	} else {
+		fmt.Println("serving http")
 		http.ListenAndServe(":80", mux)
 	}
 

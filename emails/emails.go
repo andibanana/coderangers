@@ -29,7 +29,7 @@ type Configuration struct {
 }
 
 type ExtraConfig struct {
-	Domain string
+	Domain []string
 }
 
 func getConfig() Configuration {
@@ -47,7 +47,7 @@ func getConfig() Configuration {
 	if err != nil {
 		log.Fatal("DOMAIN ERROR", err)
 	}
-	configuration.Domain = extraConfig.Domain
+	configuration.Domain = extraConfig.Domain[0]
 	return configuration
 }
 
