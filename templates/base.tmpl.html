@@ -370,7 +370,7 @@ kng hindi accepted check relatedproblem to suggest
           var modalTryAgain = document.getElementById("modalTryBtn");
           modalTryAgain.onclick = function() {
               var xhttp = new XMLHttpRequest();
-              xhttp.open("POST", "/viewed-notification", true);
+              xhttp.open("POST", "/viewed-notification", false);
               xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
               xhttp.send("submission_id="+submissionID);
               modal.style.display = "none";
