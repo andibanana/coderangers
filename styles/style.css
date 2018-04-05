@@ -685,6 +685,7 @@ a:hover{
 	width: 125px;
 	font-size: 19px;
 	margin-top:5px;
+	font-family: "Myriad Pro", "PT Sans";
 }
 
 .blueBtn{
@@ -759,6 +760,7 @@ a:hover{
     margin:0;
     padding:0;
     color: #FFFFFF;
+	font-family: "Myriad Pro", "PT Sans";
 }
 
 .sideBarBtn:hover{
